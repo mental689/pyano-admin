@@ -1,3 +1,6 @@
 from django.contrib import admin
+from employer.models import *
 
-# Register your models here.
+admin.site.register(Job)
+admin.site.register(Topic)
+admin.site.register(Employer)

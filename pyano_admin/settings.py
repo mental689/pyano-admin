@@ -37,6 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'common.apps.CommonConfig',
+    'employer.apps.EmployerConfig',
+    'worker.apps.WorkerConfig',
+    'vatic.apps.VaticConfig',
+    'search.apps.SearchConfig',
+    'survey'
 ]
 
 MIDDLEWARE = [
@@ -119,3 +125,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Custom models
+AUTH_USER_MODEL = "common.PyanoUser"
