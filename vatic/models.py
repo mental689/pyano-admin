@@ -105,7 +105,7 @@ class JobGroup(models.Model):
     title = models.CharField(max_length=250, null=False)
     description = models.CharField(max_length=250, null=False)
     duration = models.IntegerField(null=False)
-    cost = models.ForeignKey(Credit, related_name='jobgroups', on_delete=models.CASCADE)
+    cost = models.ForeignKey(Credit, related_name='groups', on_delete=models.CASCADE)
     keywords = models.CharField(max_length=250, null=False)
     height = models.IntegerField(null=False, default=650)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -127,6 +127,9 @@ class Job(models.Model):
     training_mistakes = models.IntegerField(default=0, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('segment', 'group')
 
     def getpage(self):
         return "?id={0}".format(self.id)
@@ -156,7 +159,7 @@ class Job(models.Model):
             return Job(segment=self.segment, group=self.group)
 
     def trainingjob(self):
-        train_of = TrainingOf.objects.filter(video_test=self.segment.video)
+        train_of = TrainingTest.objects.filter(video_test=self.segment.video)
         if len(train_of) > 0:
             return train_of[0]
         return None
@@ -268,6 +271,9 @@ class BoxAttribute(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ('box', 'attribute')
+
 
 class TrainingTest(models.Model):
     video_test = models.ForeignKey(Video, on_delete=models.CASCADE, related_name='testvideos')
@@ -275,12 +281,19 @@ class TrainingTest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ('video_test', 'video_train')
+
 
 class Assignment(models.Model):
     worker = models.ForeignKey(Annotator, on_delete=models.CASCADE, related_name='assignments')
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='assignments')
+    uuid = models.CharField(max_length=255, null=True, unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('worker', 'job')
 
 
 class Bid(models.Model):
@@ -290,3 +303,6 @@ class Bid(models.Model):
     approved_by = models.ForeignKey(Employer, on_delete=models.CASCADE, related_name='approved_bids', null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('candidate', 'job')

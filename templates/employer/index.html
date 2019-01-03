@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    PYANO - employer
+{% endblock %}
+
+{% block body_content %}
+    Welcome!
+    {% if user.is_authenticated %}
+        {% if user.is_employer %}
+            <a href="mailto:{{ user.email }}">{{ user.username }}</a>
+        {% elif user.is_reviewer or user.is_annotator %}
+            You are a worker. Please visit workers' page.
+        {% else %}
+        {% endif %}
+    {% else %}
+    {% endif %}
+{% endblock %}
+
+{% block custom_sidebar %}
+    {% if user.is_authenticated %}
+    <li class="nav-item ">
+        <a class="nav-link active"
+           href="javascript:void(0);"
+           data-toggle="collapse" aria-expanded="false"
+           data-target="#submenu-assets" aria-controls="submenu-assets"><i
+                class="fa fa-fw fa-home"></i>Assets <span
+                class="badge badge-success">6</span></a>
+            <div id="submenu-assets" class="collapse submenu" style="">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/topic/list/">Topics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/job/list/">Jobs</a>
+                    </li>
+                </ul>
+            </div>
+    </li>
+    {% endif %}
+{% endblock %}

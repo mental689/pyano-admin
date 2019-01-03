@@ -1,0 +1,88 @@
+{% extends 'employer/index.html' %}
+{% load static %}
+{% block custom_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/buttons.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/select.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/fixedHeader.bootstrap4.css' %}">
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <!-- ============================================================== -->
+        <!-- basic table  -->
+        <!-- ============================================================== -->
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card">
+                <h5 class="card-header">Jobs in topic "{{ topic.name }}"</h5>
+                <h6 class="card-header">
+                    <ul>
+                        <li>Click on the name of the job to see the details.
+                            It will move you to a page that you can add/edit details of this job.</li>
+                        <li>Click on <i class="fa fa-edit"></i> to edit a topic.</li>
+                        <li>Click on <i class="fa fa-cut"></i> to delete a topic (Caution: it will delete sub-jobs).</li>
+                    <li>If you are allowed to invite outsiders to review your workers, you can click on <i
+                            class="fas fa-users"></i> to invite them.</li>
+                    <li>For KS (keyword-based search), QBE (query-based example search), SUR (survey) and VATIC (space-time annotations)
+                        features, if there is a mark like <i class="fa fa-check-circle"></i>, then your job has the corresponding feature.</li>
+                    </ul>
+                </h6>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered first" id="topics">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Added at</th>
+                                <th>Last update</th>
+                                <th>KS</th>
+                                <th>QBE</th>
+                                <th>SUR</th>
+                                <th>VATIC</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for job in jobs %}
+                                <tr>
+                                    <td><a href="/job/details/?id={{ job.id }}">{{ job.name }}</a></td>
+                                    <td>{{ job.created_at }}</td>
+                                    <td>{{ job.updated_at }}</td>
+                                    <td>{% if job.has_keyword_search %}<i class="fa fa-check-circle"></i>
+                                    {% endif %}</td>
+                                    <td>{% if job.has_qbe_search %}<i class="fa fa-check-circle"></i>
+                                    {% endif %}</td>
+                                    <td>{% if job.has_survey %}<i class="fa fa-check-circle"></i>
+                                    {% endif %}</td>
+                                    <td>{% if job.has_vatic %}<i class="fa fa-check-circle"></i>
+                                    {% endif %}</td>
+                                    <td>
+                                        <a href="/topic/edit/?id={{ topic.id }}"><i class="fa fa-edit"></i></a>
+                                        <a href="/topic/delete/?id={{ topic.id }}"><i class="fa fa-cut"></i></a>
+                                        {% if job.allow_invitation %}
+                                            <a href="/topic/invite_workers/?id={{ topic.id }}"><i
+                                                    class="fas fa-users"></i>
+                                            </a>{% endif %}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card-body">
+                <a href="/job/add/" class="btn btn-success"><i class="fa fa-plus-circle"></i> Add a job</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script src="{% static 'vendor/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/js/data-table.js' %}"></script>
+{% endblock %}

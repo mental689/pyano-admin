@@ -7,4 +7,4 @@ from employer.forms import *
 
 admin.site.register(Reviewer)
 admin.site.register(Annotator)
-admin.site.register(AnnotatorAssignment)
+admin.site.register(SurveyAssignment)

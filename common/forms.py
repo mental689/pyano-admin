@@ -18,8 +18,6 @@ class PyanoUserCreationForm(UserCreationForm):
         user.is_reviewer = True
         user.is_annotator = True
         user.save()
-        student = PyanoUser.objects.create()
-        student.interests.add(*self.cleaned_data.get('interests'))
         return user
 
 
@@ -28,3 +26,11 @@ class PyanoUserChangeForm(UserChangeForm):
     class Meta:
         model = PyanoUser
         fields = UserChangeForm.Meta.fields
+
+
+class LoginForm(forms.ModelForm):
+    def __init__(self, request, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+    email = forms.EmailField(widget=forms.EmailInput())
+    password = forms.CharField(label='', widget=forms.PasswordInput())
+    model = PyanoUser

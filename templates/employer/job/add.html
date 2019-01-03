@@ -1,0 +1,19 @@
+{% extends 'employer/index.html' %}
+
+{% block body_content %}
+    {% if error %}
+        {{ error }}
+    {% else %}
+        {% if form %}
+            <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-group">
+                <button type="submit">Add</button>
+            </div>
+        {% elif status %}
+            The topic is saved!
+        {% endif %}
+    </form>
+    {% endif %}
+{% endblock %}

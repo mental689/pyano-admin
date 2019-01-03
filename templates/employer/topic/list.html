@@ -1,0 +1,62 @@
+{% extends 'employer/index.html' %}
+{% load static %}
+{% block custom_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/buttons.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/select.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/fixedHeader.bootstrap4.css' %}">
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <!-- ============================================================== -->
+        <!-- basic table  -->
+        <!-- ============================================================== -->
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card">
+                <h5 class="card-header">Your topics</h5>
+                <h6 class="card-header">Click on the name of the topic to see the details.
+                Click on <i class="fa fa-edit"></i> to edit a topic.
+                Click on <i class="fa fa-cut"></i> to delete a topic.</h6>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered first" id="topics">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for topic in topics %}
+                                <tr>
+                                    <td><a href="/topic/details/?id={{ topic.id }}">{{ topic.name }}</a></td>
+                                    <td>{{ topic.description }}</td>
+                                <td>
+                                    <a href="/topic/edit/?id={{ topic.id }}"><i class="fa fa-edit"></i></a>
+                                    <a href="/topic/delete/?id={{ topic.id }}"><i class="fa fa-cut"></i></a>
+                                </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card-body">
+            <a href="/topic/add/" class="btn btn-success"><i class="fa fa-plus-circle"></i> Add a topic</a>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script src="{% static 'vendor/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/js/data-table.js' %}"></script>
+{% endblock %}

@@ -4,6 +4,7 @@ from employer.models import Job
 from survey.models import Video
 # Create your models here.
 
+
 class KeywordSearch(models.Model):
     parent = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='searchTasks')
     keyword = models.CharField(max_length=255, blank=False, null=False)

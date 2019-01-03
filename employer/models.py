@@ -12,14 +12,20 @@ class Topic(models.Model):
     Teacher may have to prepare the topics.
     """
     name = models.CharField(max_length=255, blank=False, null=False)
+    description = models.TextField(default='', help_text='Teachers will provide a description of the topics in their labs.')
+    owner = models.ForeignKey(Employer, help_text='Owner of the topic', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Job(models.Model):
     """
     Teacher may have to prepare jobs for workers (reviewers + annotators)
-    Each job will contain three sub-tasks: search (keyword- or qbe-based), survey by users and VATIC.
+    Each job will contain thre
+    e sub-tasks: search (keyword- or qbe-based), survey by users and VATIC.
     Teacher may be allowed to invite outsiders to review workers' jobs.
     """
     name = models.CharField(max_length=255, blank=False, null=False)
@@ -32,6 +38,8 @@ class Job(models.Model):
     is_completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.name
 
 
 class Credit(models.Model):
@@ -39,3 +47,4 @@ class Credit(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='credits')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
