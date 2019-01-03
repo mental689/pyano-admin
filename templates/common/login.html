@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block body_content %}
+    {% if not user.is_authenticated %}
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-group">
+            <button type="submit">Login</button>
+        </div>
+    </form>
+    {% endif %}
+{% endblock %}
