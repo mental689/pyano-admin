@@ -13,3 +13,4 @@ class PyanoAdmin(UserAdmin):
 
 
 admin.site.register(PyanoUser, PyanoAdmin)
+admin.site.register(SystemSetting)

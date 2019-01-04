@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    PYANO - worker
+{% endblock %}
+
+{% block body_content %}
+    Welcome!
+    {% if user.is_authenticated %}
+        {% if user.is_annotator or user.is_annotator %}
+            <a href="mailto:{{ user.email }}">{{ user.username }}</a>
+        {% elif user.is_employer %}
+            Please visit project owner's page!
+        {% else %}
+        {% endif %}
+    {% else %}
+    {% endif %}
+{% endblock %}
+
+{% block custom_sidebar %}
+    {% if user.is_authenticated %}
+        <li class="nav-item ">
+            <a class="nav-link active"
+               href="javascript:void(0);"
+               data-toggle="collapse" aria-expanded="false"
+               data-target="#submenu-assets" aria-controls="submenu-assets"><i
+                    class="fa fa-fw fa-home"></i>Assets <span
+                    class="badge badge-success">6</span></a>
+            <div id="submenu-assets" class="collapse submenu" style="">
+                {% if user.is_annotator %}
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/worker/jobs/">Available jobs</a>
+                        </li>
+                    </ul>
+                {% else %}
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/invitation/list/">Available invitations</a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </li>
+    {% endif %}
+{% endblock %}

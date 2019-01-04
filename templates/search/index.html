@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{% static 'css/selectize.css' %}">
+    <style>
+        /* Start by setting display:none to make this hidden.
+       Then we position it in relation to the viewport window
+       with position:fixed. Width, height, top and left speak
+       speak for themselves. Background we set to 80% white with
+       our animation centered, and no-repeating */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(0, 0, 0, .5) url('http://sampsonresume.com/labs/pIkfp.gif') 50% 50% no-repeat;
+        }
+
+        /* When the body has the loading class, we turn
+           the scrollbar off with overflow:hidden */
+        body.loading {
+            overflow: hidden;
+        }
+
+        /* Anytime the body has the loading class, our
+           modal element will be visible */
+        body.loading .modal {
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block body_content %}
+    {% if error %}
+        <div class="card">
+            <h5 class="card-header">Errors</h5>
+            <div class="card-body">
+                {{ error }}
+            </div>
+        </div>
+    {% else %}
+        <div class="card">
+            <h5 class="card-header">Search form for project: {{ job.name }}</h5>
+            <h6 class="card-header">The topic for this search is <b>{{ job.topic.name }}</b>.
+                Please confirm with the project owner to know more about what you have to do.
+                <a href="mailto:{{ job.topic.owner.user.email }}">{{ job.topic.owner.user.email }}</a>
+                Please read the guideline from project owners before entering keywords.
+            </h6>
+            <div class="card-body">
+                {% csrf_token %}
+                <form action="javascript:void(0);">
+                    <input type="hidden" name="id" value="{{ job.id }}">
+                    <div class="">
+                        <label for="keywords">Keywords</label>
+                        <input type="text" class="" name="keywords" id="keywords"
+                               placeholder="Keywords to search. Separate keywords by comma."
+                               required="">
+                    </div>
+                    <label class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" class="custom-control-input" name="hd"><span
+                            class="custom-control-label">HD videos only</span>
+                    </label>
+                    <label class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" checked="" class="custom-control-input" name="cc"><span
+                            class="custom-control-label">Creative Commons videos only</span>
+                    </label>
+                    <label class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" class="custom-control-input" name="long"><span
+                            class="custom-control-label">Long videos only (videos which have more than 20 minutes)</span>
+                    </label>
+                    <div class="form-row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 ">
+                            <button class="btn btn-primary" onclick="keyword_search();">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="videos"></div>
+        <div class="card">
+            <h5 class="card-header">Guidelines from project owner</h5>
+            <div class="card-body">
+                {{ job.guideline|safe }}
+            </div>
+        </div>
+    {% endif %}
+    <div class="modal"></div>
+{% endblock %}
+
+{% block custom_js %}
+    <script src="{% static 'js/selectize.js' %}"></script>
+    <script>
+        $('input[name=keywords]').selectize({
+            plugins: ['remove_button', 'restore_on_backspace'],
+            delimiter: ',',
+            persist: false,
+            create: function (input) {
+                return {
+                    value: input,
+                    text: input
+                }
+            }
+        });
+
+        function keyword_search() {
+            $("body").addClass('loading');
+            var keywords = $('input[name=keywords]').val();
+            if (keywords === "") {
+                alert("You have to provide at least one keyword.");
+                $("body").removeClass('loading');
+            }
+            var post_data = {
+                'keywords': keywords,
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                'projectId': $('input[name=id]').val()
+            };
+            if ($('#hd').is(':checked')) {
+                post_data['pref_hd'] = $('input[name=hd]').val();
+            }
+            if ($('#cc').is(':checked')) {
+                post_data['pref_cc'] = $('input[name=cc]').val();
+            }
+            if ($('#long').is(':checked')) {
+                post_data['pref_long'] = $('input[name=long]').val();
+            }
+            var posting = $.post(
+                '/search/',
+                post_data
+            );
+
+            posting.done(function (data) {
+                console.log(data);
+                if (!data.error) {
+                    $('#videos').empty();
+                    var html = '<div class="card"><h5 class="card-header">Searched videos: found ' + data.videos.length + ' results</h5>' +
+                        '<div class="card-body">';
+                    for (var i = 0; i < data.videos.length; ++i) {
+                        var v = data.videos[i];
+                        html += ('<iframe width="280" height="157" src="https://www.youtube.com/embed/' + v.id.videoId + '" frameborder="0"' +
+                            '                    allow="autoplay; encrypted-media"' +
+                            '                    allowfullscreen></iframe>');
+                    }
+                    html += '</div></div>';
+                    $('#videos').html(html);
+                    {#$('#videos').html("Got " + data.num_results + " search items and added to our database.");#}
+                } else {
+                    alert("There are some errors in server side: ");
+                }
+            }).fail(function (data) {
+                console.log(data);
+                alert("There are some errors in server side");
+            });
+            $("body").removeClass('loading');
+        }
+    </script>
+{% endblock %}

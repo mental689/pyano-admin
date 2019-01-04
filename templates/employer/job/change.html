@@ -1,0 +1,74 @@
+{% extends 'employer/index.html' %}
+{% load static %}
+
+{% block body_content %}
+    <div class="card">
+        <h5 class="card-header">Edit job "{{ job.name }}"</h5>
+        <div class="card-body">
+            {% if error %}
+                {{ error }}
+            {% else %}
+                {% if job %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ id }}" name="id">
+                        <div class="form-group">
+                            <label for="name" class="col-form-label">Name</label>
+                            <input id="name" name="name" type="text" class="form-control" value="{{ job.name }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="topic" class="col-form-label">Topic</label>
+                            <select class="form-control form-control-sm" id="topic">
+                                {% for topic in topics %}
+                                    <option value="{{ topic.id }}"
+                                            {% if topic.id == job.topic.id %}selected{% endif %}>{{ topic.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" {% if job.has_keyword_search %}checked{% endif %}
+                                       class="custom-control-input" name="ks"><span
+                                    class="custom-control-label">Keyword search</span>
+                            </label>
+                            <label class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" {% if job.has_qbe_search %}checked{% endif %}
+                                       class="custom-control-input" name="qbe"><span
+                                    class="custom-control-label">QBE search</span>
+                            </label>
+                            <label class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" {% if job.has_survey %}checked{% endif %}
+                                       class="custom-control-input" name="survey"><span
+                                    class="custom-control-label">Survey</span>
+                            </label>
+                            <label class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" {% if job.has_vatic %}checked{% endif %}
+                                       class="custom-control-input" name="vatic"><span
+                                    class="custom-control-label">VATIC</span>
+                            </label>
+                            <label class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" {% if job.allow_invitation %}checked{% endif %}
+                                       class="custom-control-input" name="invitation"><span
+                                    class="custom-control-label">Allow inviting outsiders to review</span>
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            <label for="guideline" class="col-form-label">Guideline</label>
+                            <textarea id="guideline" name="guideline">{{ job.guideline|safe }}</textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 ">
+                                <button class="btn btn-primary" type="submit">Change</button>
+                            </div>
+                        </div>
+                    </form>
+                {% elif status %}
+                    The topic is saved!
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.conf import settings
 from employer.forms import AddTopicForm
 from employer.models import Topic, Job
+from django.db.models import Count
 
 import logging
 
@@ -38,7 +39,9 @@ class ChangeTopicView(View):
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            redirect(to='{}/login/?next=/topic/change/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
+            return redirect(to='{}/login/?next=/topic/change/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
+        if not request.user.is_employer:
+            return redirect(to="/")
         id = request.GET.get('id', None)
         if id is not None:
             topic = Topic.objects.filter(id=id).first()
@@ -48,7 +51,9 @@ class ChangeTopicView(View):
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            redirect(to='{}/login/?next=/'.format(settings.LOGIN_URL))
+            return redirect(to='{}/login/?next=/'.format(settings.LOGIN_URL))
+        if not request.user.is_employer:
+            return redirect(to="/")
         context = {}
         try:
             id = request.POST.get('id', None)
@@ -74,8 +79,10 @@ class TopicListView(View):
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            redirect(to='{}/login/?next=/topic/list/'.format(settings.LOGIN_URL))
-        topics = Topic.objects.filter(owner__user=request.user)
+            return redirect(to='{}/login/?next=/topic/list/'.format(settings.LOGIN_URL))
+        if not request.user.is_employer:
+            return redirect(to="/")
+        topics = Topic.objects.filter(owner__user=request.user).annotate(num_jobs=Count('jobs'))
         return render(request, template_name=self.template_name, context={'topics': topics})
 
 
@@ -84,7 +91,9 @@ class TopicDetailView(View):
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            redirect(to='{}/login/?next=/topic/details/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
+            return redirect(to='{}/login/?next=/topic/details/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
+        if not request.user.is_employer:
+            return redirect(to="/")
         topic = Topic.objects.filter(id=request.GET.get('id', None)).first()
         jobs = Job.objects.filter(topic__owner__user=request.user,
                                   topic__id=request.GET.get('id', None))

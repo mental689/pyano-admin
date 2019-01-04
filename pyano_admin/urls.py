@@ -16,14 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('employer.urls')),
     path('worker/', include('worker.urls')),
     path('vatic/', include('vatic.urls')),
-    path('search/', include('search.urls'))
+    path('search/', include('search.urls')),
+    url(r'^tinymce/', include('tinymce.urls')),
+    url(r'^survey/', include('survey.urls'))
 ]
-
-if 'surveys' in settings.INSTALLED_APPS:
-    urlpatterns += path('survey/', include('survey.urls'))

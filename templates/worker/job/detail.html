@@ -1,0 +1,71 @@
+{% extends 'worker/index.html' %}
+{% load static %}
+
+{% block body_content %}
+    {% if not error %}
+        <h1>{{ job.name }}</h1>
+        <div class="card">
+            <h5 class="card-header">Tasks</h5>
+        <h6 class="card-header">Click on the link for each task to see sub-tasks.
+        Amount is the quantity of available works you can make.
+        Credit is the number of points you can obtain after completing (and beign approved by project owners) a work.</h6>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered first" id="topics">
+                        <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Link</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Credits</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if job.has_keyword_search %}
+                            <tr>
+                                <td>Keyword search</td>
+                                <td><a href="/search/?projectId={{ job.id }}">/search/?projectId={{ job.id }}</a></td>
+                                <td>Free participation (No invitation needed)</td>
+                            <td>Unlimited</td>
+                            <td>0</td>
+                            </tr>
+                        {% endif %}
+                        {% if job.has_qbe_search %}
+                            <tr>
+                                <td>Query-based example search</td>
+                                <td>
+                                    <a href="/qbe_search/?projectId={{ job.id }}">/qbe_search/?projectId={{ job.id }}</a>
+                                </td>
+                                <td>Only invited participants.</td>
+                            <td>Unlimited</td>
+                            <td>0</td>
+                            </tr>
+                        {% endif %}
+                        {% if job.has_survey %}
+                            {% for survey in surveys %}
+                                <tr>
+                                    <td>{{ survey }}</td>
+                                    <td>
+                                        <a href="/survey/detail/?id={{ survey.survey.id }}">/survey/detail/?id={{ survey.survey.id }}</a>
+                                    </td>
+                                    <td>Free participation (No invitation needed)</td>
+                                <td>{{ survey.num_videos }}</td>
+                            <td>-</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
+    {% else %}
+        <h1>Errors</h1>
+        <div class="card">
+            <div class="card-body">{{ error }}</div>
+        </div>
+        </div>
+    {% endif %}
+{% endblock %}

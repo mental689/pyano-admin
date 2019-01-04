@@ -39,6 +39,7 @@
                                 <th>QBE</th>
                                 <th>SUR</th>
                                 <th>VATIC</th>
+                                <th>Status</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -56,6 +57,7 @@
                                     {% endif %}</td>
                                     <td>{% if job.has_vatic %}<i class="fa fa-check-circle"></i>
                                     {% endif %}</td>
+                                    <td>{% if job.is_completed %}Completed{% else %}Ongoing{% endif %}</td>
                                     <td>
                                         <a href="/topic/edit/?id={{ topic.id }}"><i class="fa fa-edit"></i></a>
                                         <a href="/topic/delete/?id={{ topic.id }}"><i class="fa fa-cut"></i></a>

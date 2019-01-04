@@ -1,0 +1,30 @@
+{% extends 'worker/index.html' %}
+{% load static %}
+
+{% block body_content %}
+    <div class="card">
+        <h5 class="card-header">Reviewer/Annotator registration</h5>
+        <div class="card-body">
+            {% if not user.is_authenticated %}
+                {% if error %}
+                    {{ error }}
+                {% else %}
+                    {% if form %}
+                        <form method="post" class="needs-validation">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="form-group">
+                            <button type="submit">Add</button>
+                        </div>
+                    {% elif status %}
+                        The topic is saved!
+                    {% endif %}
+                </form>
+                {% endif %}
+            {% else %}
+                You are already registered! You have nothing to do here!
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

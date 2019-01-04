@@ -25,6 +25,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Description</th>
+                                <th>Jobs</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -33,6 +34,7 @@
                                 <tr>
                                     <td><a href="/topic/details/?id={{ topic.id }}">{{ topic.name }}</a></td>
                                     <td>{{ topic.description }}</td>
+                                    <td>{{ topic.num_jobs }}</td>
                                 <td>
                                     <a href="/topic/edit/?id={{ topic.id }}"><i class="fa fa-edit"></i></a>
                                     <a href="/topic/delete/?id={{ topic.id }}"><i class="fa fa-cut"></i></a>

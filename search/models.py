@@ -21,3 +21,9 @@ class QBESearch(models.Model):
     worker = models.ForeignKey(PyanoUser, on_delete=models.CASCADE, related_name='qbesearches')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class BlockedChannel(models.Model):
+    channelId = models.CharField(max_length=255, blank=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

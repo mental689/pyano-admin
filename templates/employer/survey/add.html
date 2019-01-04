@@ -1,0 +1,94 @@
+{% extends 'employer/index.html' %}
+{% load static %}
+
+{% block body_content %}
+    <div class="card">
+        <h3 class="card-header">Add a survey</h3>
+        <div class="card-body">
+            {% if error %}
+                {{ error }}
+            {% else %}
+                {% if formset and main_form %}
+                    <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <h5 class="card-header">Survey description</h5>
+                        <div class="card-body">
+                    {{ main_form.as_p }}
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <h5 class="card-header">Guideline to assist the participants</h5>
+                        <div class="card-body">
+                    <textarea id="guideline" name="guideline"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <h5 class="card-header">Questions</h5>
+                        <div class="table-responsive">
+                    <table class="table table-striped table-bordered first" id="questions">
+                        {% for form in formset.forms %}
+                            {% if forloop.first %}
+                                <thead>
+                                <tr>
+                                    {% for field in form.visible_fields %}
+                                        <th>{{ field.label|capfirst }}</th>
+                                    {% endfor %}
+                                </tr>
+                                </thead>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                        </div>
+                    </div>
+                    <input type="hidden" value="0" name="num_of_questions">
+                    <input type="hidden" value="{{ job.id }}" name="projectId">
+                    <div class="form-group">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 ">
+                            <button class="btn btn-primary" type="submit">Add survey</button>
+                            <button class="btn btn-primary" type="button" onclick="add_question();">Add a question</button>
+                        </div>
+                    </div>
+                {% elif status %}
+                    The topic is saved!
+                {% endif %}
+            </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script>
+        tinymce.init({
+            selector: 'textarea[name=guideline]',
+            height: 500,
+            theme: 'modern',
+            plugins: 'print preview fullpage searchreplace autolink directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists textcolor wordcount imagetools contextmenu colorpicker textpattern help',
+            toolbar1: 'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent  | removeformat',
+            image_advtab: true,
+            content_css: [
+                '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+                '//www.tinymce.com/css/codepen.min.css'
+            ]
+        });
+
+        function add_question() {
+            var count = $('#questions tr').length;
+            $("#questions").append('<tr><td><textarea name="questions-' + count + '-text" cols="40" rows="10" id="id_questions-' + count +'-text"> ' +
+                '</textarea></td><td><select name="questions-' + count + '-type" id="id_questions-' + count + '-type"> ' +
+                '<option value="text" selected>text (multiple line)</option> ' +
+                '<option value="short-text">short text (one line)</option> ' +
+                '<option value="radio">radio</option> ' +
+                '<option value="select">select</option> ' +
+                '<option value="select-multiple">Select Multiple</option> ' +
+                '<option value="select_image">Select Image</option> ' +
+                '<option value="integer">integer</option> ' +
+                '</select></td><td><input type="number" name="questions-' + count + '-order" id="id_questions-' + count + '-order"></td>' +
+                '<td><input type="checkbox" name="questions-' + count + '-required" id="id_questions-' + count + '-required"></td>' +
+                '<td><textarea name="questions-' + count + '-choices" cols="40" rows="10" id="id_questions-' + count + '-choices"> ' +
+                '</textarea></td><td><input type="checkbox" name="questions-' + count + '-DELETE" id="id_questions-' + count + '-DELETE"></td></tr>');
+            $('input[name=num_of_questions]').val(count);
+        }
+    </script>
+{% endblock %}
