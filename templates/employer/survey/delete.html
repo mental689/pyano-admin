@@ -1,0 +1,17 @@
+{% extends 'employer/index.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block body_content %}
+    <div class="card">
+        <h5 class="card-header">Survey deletion</h5>
+        <div class="card-body">
+            {% if error %}
+                {{ error }}
+            {% else %}
+                The survey was successfully deleted.
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

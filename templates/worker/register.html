@@ -1,6 +1,10 @@
 {% extends 'worker/index.html' %}
 {% load static %}
 
+{% block custom_css %}
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
+{% endblock %}
+
 {% block body_content %}
     <div class="card">
         <h5 class="card-header">Reviewer/Annotator registration</h5>
@@ -12,9 +16,59 @@
                     {% if form %}
                         <form method="post" class="needs-validation">
                         {% csrf_token %}
+{#                        <h6 class="card-header">Basic information</h6>#}
+{#                        {{ form.non_field_errors }}#}
+{#                        <div class="form-group">#}
+{#                            {{ form.username.errors }}#}
+{#                            <label for="{{ form.username.id_for_label }}" class="col-form-label">{{ form.username.label }}: {{ form.username.help_text }}</label>#}
+{#                            <input id="{{ form.username.id_for_label }}" name="{{ form.username.name }}" type="text"#}
+{#                                   class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            {{ form.email.errors }}#}
+{#                            <label for="{{ form.email.id_for_label }}" class="col-form-label">{{ form.email.label }}: {{ form.email.help_text }}</label>#}
+{#                            <input id="{{ form.email.id_for_label }}" name="{{ form.email.name }}" type="text"#}
+{#                                   class="form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            {{ form.first_name.errors }}#}
+{#                            <label for="{{ form.first_name.id_for_label }}" class="col-form-label">{{ form.first_name.label }}: {{ form.first_name.help_text }}</label>#}
+{#                            <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.name }}" type="text"#}
+{#                                   class="col-lg-4 col-md-4 form-control" required>#}
+{#                            {{ form.last_name.errors }}#}
+{#                            <label for="{{ form.last_name.id_for_label }}" class="col-form-label">{{ form.last_name.label }}: {{ form.last_name.help_text }}</label>#}
+{#                            <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.name }}" type="text"#}
+{#                                   class="col-lg-4 col-md-4 form-control" required>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            {{ form.birthday.errors }}#}
+{#                            <label for="{{ form.birthday.id_for_label }}" class="col-form-label">{{ form.birthday.label }}: {{ form.birthday.help_text }}</label>#}
+{#                            <input id="{{ form.birthday.id_for_label }}" name="{{ form.birthday.name }}" type="text"#}
+{#                                   class="datepicker form-control" required>#}
+{#                        </div>#}
+{#                        <h6 class="card-header">Position to apply for</h6>#}
+{#                        <div class="form-group">#}
+{#                            <label class="custom-control custom-checkbox custom-control-inline">#}
+{#                                <input type="checkbox" name="{{ form.is_reviewer.name }}" class="custom-control-input"><span#}
+{#                                    class="custom-control-label">{{ form.is_reviewer.label }}</span>#}
+{#                            </label>#}
+{#                            <label class="custom-control custom-checkbox custom-control-inline">#}
+{#                                <input type="checkbox" name="{{ form.is_annotator.name }}" class="custom-control-input"><span#}
+{#                                    class="custom-control-label">{{ form.is_annotator.label }}</span>#}
+{#                            </label>#}
+{#                        </div>#}
+{#                        <h6 class="card-header">Personal background</h6>#}
+{#                        <div class="form-group">#}
+{#                        {{ form.job_name.errors }}#}
+{#                                                <label for="{{ form.job_name.id_for_label }}">{{ form.job_name.label }}: {{ form.job_name.help_text }}</label>#}
+{#                            <div class="form-control">{{ form.job_name }}</div>#}
+{#                                            </div>#}
                         {{ form.as_p }}
                         <div class="form-group">
-                            <button type="submit">Add</button>
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 ">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                            </div>
+                        </div>
                         </div>
                     {% elif status %}
                         The topic is saved!
@@ -27,4 +81,16 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block custom_js %}
+    <script src='{% static "js/jquery-ui.min.js" %}'></script>
+    <script>
+        $(function () {
+            $(".datepicker").datepicker({
+                changeMonth: true,
+                changeYear: true,
+            });
+        });
+    </script>
 {% endblock %}

@@ -1,12 +1,36 @@
 from django.views import View
 from django.shortcuts import redirect, render
 from django.conf import settings
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncDate
+from django.utils.timezone import now, timedelta
 from employer.forms import AddJobForm
 from employer.models import Job, Topic
+from common.models import PyanoUser
 from search.models import KeywordSearch, QBESearch
 from survey.models import Survey
 
-import logging
+import logging, os
+from time import time
+import datetime
+LOG_FILE = "./log/employer_jobs_{}.log".format(time())
+if not os.path.exists("./log"):
+    os.makedirs("./log")
+formatter = logging.Formatter(fmt="[%(asctime)s]\t[%(levelname)s]\t[%(message)s]")
+logger = logging.getLogger("youtube")
+logger.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler(LOG_FILE)
+file_handler.setFormatter(fmt=formatter)
+logger.addHandler(hdlr=file_handler)
+
+
+def daterange(start_date, end_date):
+    """
+    Generate an iterator of dates between the two given dates.
+    taken from http://stackoverflow.com/questions/1060279/
+    """
+    for n in range(int((end_date - start_date).days)):
+        yield (start_date + datetime.timedelta(n)).date()
 
 
 class AddJobView(View):
@@ -52,7 +76,7 @@ class ListJobView(View):
 
 
 class DetailJobView(View):
-    template_name ='employer/job/detail.html'
+    template_name = 'employer/job/detail.html'
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -66,10 +90,32 @@ class DetailJobView(View):
             tasks = {}
             if job.has_keyword_search:
                 tasks['ks'] = KeywordSearch.objects.filter(parent=job)
+                ks_by_date = tasks['ks'].annotate(day=TruncDate('created_at')).values('day').annotate(
+                    c=Count('id')).values('day', 'c')
+                data = {}
+                for k in ks_by_date:
+                    data[k['day']] = k['c']
+                tasks['ks_by_date'] = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0} for d in
+                                       daterange(start_date=now()-timedelta(+30), end_date=now()+timedelta(+1))]
+                tasks['ks_by_keywords'] = tasks['ks'].values('keyword').annotate(c=Count('id')).values('keyword',
+                                                                                                       'c').order_by(
+                    '-c')[:5]
             if job.has_qbe_search:
                 tasks['qbe'] = QBESearch.objects.filter(parent=job)
             if job.has_survey:
-                tasks['survey'] = job.surveys.all()
+                tasks['survey'] = job.surveys.annotate(credit=Sum('credits__amount')).all()
+                answers = []
+                for survey in tasks['survey']:
+                    answer = survey.survey.responses.annotate(day=TruncDate('created')).values('day').annotate(c=Count('id')).values('day', 'c')
+                    data = {}
+                    for k in answer:
+                        data[k['day']] = k['c']
+                    data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0} for d in daterange(start_date=now()-timedelta(+30), end_date=now()+timedelta(+1))]
+                    answers.append({'id': survey.id, 'data': data2})
+                tasks['answers_by_date'] = answers
+                users = PyanoUser.objects.all().annotate(c=Count('responses')).values('username', 'c').order_by('-c')[:5]
+
+                tasks['users_surveys'] = users
         return render(request, template_name=self.template_name, context={'job': job, 'tasks': tasks})
 
 
@@ -78,7 +124,8 @@ class ChangeJobView(View):
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/job/change/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
+            return redirect(
+                to='{}/login/?next=/job/change/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
         if not request.user.is_employer:
             return redirect(to="/")
         id = request.GET.get('id', None)

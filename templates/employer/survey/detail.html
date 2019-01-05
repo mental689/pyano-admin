@@ -1,4 +1,5 @@
-{% extends 'worker/index.html' %}
+{% extends 'base.html' %}
+
 {% load static %}
 {% load i18n %}
 
@@ -6,9 +7,11 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
 {% endblock %}
 
+{% block page_header %}
+{{ survey }}
+{% endblock %}
 {% block body_content %}
     {% if not error %}
-        <h1>{{ survey }}</h1>
         <div class="card">
             <h5 class="card-header">Guideline</h5>
             <div class="card-body">
@@ -32,9 +35,9 @@
                             <tr>
                                 <td>{{ video.video.id }}</td>
                                 <td>
-                                    <a href="/survey/{{ survey.survey.id }}/?videoId={{ video.video.id }}">/survey/{{ survey.survey.id }}/?videoId={{ video.video.id }}</a>
+                                    <a href="/survey/{{ survey.survey.id }}/?videoID={{ video.video.id }}">/survey/{{ survey.survey.id }}/?videoID={{ video.video.id }}</a>
                                 </td>
-                                <td>{{ video.video.responses|length }}</td>
+                                <td>{{ video.num_answers }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

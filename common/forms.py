@@ -11,23 +11,15 @@ from common.models import *
 import logging
 
 
-class AddUserForm(ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput, validators=[MinimumLengthValidator(8).validate,
-                                                                       UserAttributeSimilarityValidator(
-                                                                           user_attributes=(
-                                                                           'username', 'first_name', 'last_name',
-                                                                           'email', 'affiliation',
-                                                                           'location')).validate,
-                                                                       CommonPasswordValidator,
-                                                                       NumericPasswordValidator],
-                               help_text=_('Required. Minimum length is 8. '
-                                           'A common password or a password which is too similar to username, fullname or email will be rejected.'
-                                           'A password must have non-numeric characters.')
-                               )
+class AddUserForm(UserCreationForm):
 
     class Meta:
         model = PyanoUser
-        fields = ['username', 'first_name', 'last_name', 'email', 'affiliation', 'phone', 'location', 'country_code']
+        fields = ['username', 'first_name', 'last_name', 'email', 'affiliation',
+                  'phone', 'location', 'country', 'job_name', 'birthday']
+        widgets = {
+            'birthday': forms.DateInput(attrs={'class': 'datepicker'}),
+        }
 
     @transaction.atomic
     def save(self):
@@ -38,8 +30,9 @@ class AddUserForm(ModelForm):
         user.affiliation = self.cleaned_data.get('affiliation')
         user.phone = self.cleaned_data.get('phone')
         user.location = self.cleaned_data.get('location')
-        user.country_code = int(self.cleaned_data.get('country_code'))
-        user.set_password(self.cleaned_data.get('password'))
+        user.country = self.cleaned_data.get('country')
+        user.job_name = int(self.cleaned_data.get('job_name'))
+        user.birthday = self.cleaned_data.get('birthday')
         user.save()
         return user
 
@@ -48,8 +41,11 @@ class AddWorkerForm(UserCreationForm):
 
     class Meta:
         model = PyanoUser
-        fields = ['username', 'first_name', 'is_reviewer', 'is_annotator',
-                  'last_name', 'email', 'affiliation', 'phone', 'location', 'country_code']
+        fields = ['username', 'email', 'first_name', 'last_name', 'birthday','is_reviewer', 'is_annotator', 'job_name',
+                  'affiliation', 'phone', 'country', 'location']
+        widgets = {
+            'birthday': forms.DateInput(attrs={'class': 'datepicker'}),
+        }
 
     @transaction.atomic
     def save(self, commit=True):
@@ -60,7 +56,9 @@ class AddWorkerForm(UserCreationForm):
         user.affiliation = self.cleaned_data.get('affiliation')
         user.phone = self.cleaned_data.get('phone')
         user.location = self.cleaned_data.get('location')
-        user.country_code = int(self.cleaned_data.get('country_code'))
+        user.country = int(self.cleaned_data.get('country'))
+        user.job_name = int(self.cleaned_data.get('job_name'))
+        user.birthday = self.cleaned_data.get('birthday')
         try:
             user.save()
         except Exception as e:

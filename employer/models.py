@@ -56,6 +56,7 @@ class Survey(models.Model):
     class Meta(object):
         verbose_name = _('survey')
         verbose_name_plural = _('surveys')
+        unique_together = ('survey', 'parent')
 
     def __str__(self):
         return self.survey.name
@@ -82,6 +83,9 @@ class Video(models.Model):
     parent = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='videos')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('video', 'parent')
 
     def __str__(self):
         return self.video.vid

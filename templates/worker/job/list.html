@@ -7,6 +7,15 @@
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/fixedHeader.bootstrap4.css' %}">
 {% endblock %}
 
+{% block page_header %}
+    Jobs need workers
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Projects</li>
+{% endblock %}
+
 {% block body_content %}
     <div class="row">
         <!-- ============================================================== -->

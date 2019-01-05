@@ -87,6 +87,11 @@
                         <li class="nav-divider">
                             Menu
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/">
+                            <i class="fas fa-home"></i>Home
+                            </a>
+                        </li>
                         <li class="nav-item ">
                             <a class="nav-link active"
                                href="{% if user.is_authenticated %}javascript:void(0);{% else %}/login/{% endif %}"
@@ -102,7 +107,7 @@
                                 <div id="submenu-1" class="collapse submenu" style="">
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/accounts/profile/">Profile</a>
+                                            <a class="nav-link" href="/{% if user.is_employer %}employer{% else %}worker{% endif %}/profile/">Profile</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="/logout/">Signout</a>
@@ -122,6 +127,24 @@
     <div class="dashboard-wrapper">
         <div class="dashboard-ecommerce">
             <div class="container-fluid dashboard-content ">
+            <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="page-header" id="top">
+                <h2 class="pageheader-title">{% block page_header %}{% endblock %}</h2>
+                <p class="pageheader-text"></p>
+                <div class="page-breadcrumb">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            {% block breadcrumb %}
+                            {% endblock %}
+{#                            <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>#}
+{#                            <li class="breadcrumb-item active" aria-current="page">{{ user.username }}</li>#}
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
                 {% block body_content %}
                 {% endblock %}
             </div>
@@ -148,7 +171,7 @@
 <!-- chart c3 js -->
 <script src="{% static 'vendor/charts/c3charts/c3.min.js' %}"></script>
 <script src="{% static 'vendor/charts/c3charts/d3-5.4.0.min.js' %}"></script>
-<script src="{% static 'vendor/charts/c3charts/C3chartjs.js' %}"></script>
+{#<script src="{% static 'vendor/charts/c3charts/C3chartjs.js' %}"></script>#}
 <script src="{% static 'js/dashboard-ecommerce.js' %}"></script>
 <script src='{% static "js/tinymce.min.js" %}'></script>
 {% block custom_js %}

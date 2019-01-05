@@ -1,6 +1,7 @@
 /**/migrations
 !/**/migrations/__init__.py
 /.idea
+/log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

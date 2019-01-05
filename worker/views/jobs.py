@@ -1,7 +1,7 @@
 from django.views import View
 from django.shortcuts import redirect, render
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Count, Sum, Q
 from employer.forms import AddJobForm
 from employer.models import Job
 from employer.models import Survey as PyanoSurvey
@@ -35,7 +35,7 @@ class JobDetailView(View):
                     context['error'] = 'Project is not found.'
                 context['job'] = job
                 if job.has_survey:
-                    surveys = job.surveys.annotate(num_videos=Count('parent__videos')).all()
+                    surveys = job.surveys.annotate(credit=Sum('credits__amount')).all()
                     context['surveys'] = surveys
             except Exception as e:
                 context['error'] = 'Internal Server Error'

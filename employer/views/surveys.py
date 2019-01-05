@@ -1,10 +1,12 @@
 from django.views import View
 from django.shortcuts import redirect, render
 from django.conf import settings
+from django.db.models import Count, Q, Sum
 
 from survey.models import Survey, Video
 from employer.models import Survey as PyanoSurvey
 from employer.models import Video as PyanoVideo
+from employer.models import Credit
 from employer.forms import *
 
 import logging, os
@@ -37,8 +39,31 @@ class SurveyDetailView(View):
             context['error'] = 'No survey found'
             return render(request, template_name=self.template_name, context=context)
         context['survey'] = survey
-        context['videos'] = survey.parent.videos.all()
+        context['videos'] = survey.parent.videos.annotate(num_answers=Count('video__responses', filter=Q(video__responses__survey=survey.survey))).all()
 
+        return render(request, template_name=self.template_name, context=context)
+
+
+class DeleteSurveyView(View):
+    template_name = 'employer/survey/delete.html'
+
+    def get(self, request, *args, **kwarg):
+        if not request.user.is_authenticated:
+            return redirect(to='{}/login/?next=/survey/delete/?id={}'.format(settings.LOGTIN_URL,
+                                                                                 request.GET.get('id', None)))
+        id = request.GET.get('id', None)
+        context = {}
+        if id is None:
+            context['error'] = 'No ID'
+            return render(request, template_name=self.template_name, context=context)
+        surveys = PyanoSurvey.objects.filter(id=id).all()
+        if surveys.count() == 0:
+            context['error'] = 'No survey found'
+            return render(request, template_name=self.template_name, context=context)
+        else:
+            for survey in surveys:
+                survey.delete()
+                survey.survey.delete()
         return render(request, template_name=self.template_name, context=context)
 
 
@@ -78,8 +103,6 @@ class AddSurveyView(View):
         logger.info(nq)
         for i in range(nq):
             if request.POST.get('questions-{}-text'.format(i+1), '') != '' and \
-                (request.POST.get('questions-{}-type'.format(i + 1), '') not in ['text', 'short-text'] and \
-                     request.POST.get('questions-{}-choices'.format(i + 1), '') != '') and \
                     request.POST.get('questions-{}-type'.format(i + 1), '') != '':
                 question = Question()
                 question.category = None
@@ -95,5 +118,79 @@ class AddSurveyView(View):
                 question.choices = request.POST.get('questions-{}-choices'.format(i+1))
                 question.survey = instance
                 question.save()
+        # credits
+        credit = float(request.POST.get('credit', 0.0))
+        c = Credit()
+        c.amount = credit
+        c.job = survey
+        c.save()
         return render(request, self.template_name, context={})
+
+
+class EditSurveyView(View):
+    template_name = 'employer/survey/change.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to='{}/login/?next=/survey/edit/?id={}'.format(settings.LOGTIN_URL,request.GET.get('id', None)))
+        id = request.GET.get('id', None)
+        if id is None:
+            return redirect(to='/')
+        survey = PyanoSurvey.objects.filter(id=id).annotate(num_questions=Count('survey__questions')).first()
+        if survey is None:
+            return redirect(to='/')
+        form = AddSurveyForm()
+        QuestionsFormSet = inlineformset_factory(Survey, Question,
+                                                 fields=('text', 'type', 'order', 'required', 'choices'))
+        formset = QuestionsFormSet(instance=survey.survey)
+        credit = Credit.objects.filter(job=survey).first()
+        return render(request, template_name=self.template_name, context={'survey': survey, 'main_form': form,
+                                                                          'formset': formset, 'credit': credit})
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to='{}/login/?next=/survey/edit/?id={}'.format(settings.LOGTIN_URL, request.GET.get('id', None)))
+        id = request.GET.get('id', None)
+        if id is None:
+            return redirect(to='/')
+        # pyano
+        survey = PyanoSurvey.objects.filter(id=id).annotate(num_questions=Count('survey__questions')).first()
+        survey.guideline = request.POST.get('guideline', '')
+        survey.survey.name = request.POST.get('name', '')
+        survey.survey.need_logged_user = bool(request.POST.get('need_logged_user', True))
+        survey.survey.display_by_question = bool(request.POST.get('display_by_question', False))
+        survey.survey.randomize_questions = bool(request.POST.get('randomize_questions', True))
+        survey.survey.save()
+        survey.save()
+        # questions
+        QuestionsFormSet = inlineformset_factory(Survey, Question,
+                                                 fields=('text', 'type', 'order', 'required', 'choices'))
+        formset = QuestionsFormSet(request.POST, request.FILES, instance=survey.survey)
+        if formset.is_valid():
+            formset.save()
+        # nq = int(request.POST.get('num_of_questions'))
+        # nqm = survey.num_questions + 3
+        # for i in range(nqm, nq):
+        #     if request.POST.get('questions-{}-text'.format(i), '') != '' and \
+        #             request.POST.get('questions-{}-type'.format(i), '') != '':
+        #         question = Question()
+        #         question.category = None
+        #         question.text = request.POST.get('questions-{}-text'.format(i))
+        #         question.type = request.POST.get('questions-{}-type'.format(i))
+        #         order = request.POST.get('questions-{}-order'.format(i), None)
+        #         try:
+        #             order = int(order)
+        #         except:
+        #             order = 1
+        #         question.order = order
+        #         question.required = bool(request.POST.get('questions-{}-required'.format(i), True))
+        #         question.choices = request.POST.get('questions-{}-choices'.format(i))
+        #         question.survey = survey.survey
+        #         question.save()
+        # credits
+        credit = float(request.POST.get('credit', 0.0))
+        c = Credit.objects.filter(job=survey).first()
+        c.amount = credit
+        c.save()
+        return redirect(to='/job/list/')
 

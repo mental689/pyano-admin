@@ -67,26 +67,38 @@ class KeywordSearchView(View):
         for r in results:
             if 'id' in r and 'kind' in r['id'] and 'videoId' in r['id'] and r['id']['kind'] == "youtube#video":
                 videos.append(r)
-                sv = SurveyVideo()
-                sv.url = "https://youtube.com/watch?v={}".format(r['id']['videoId'])
-                sv.vid = r['id']['videoId']
-                sv.channelId = r['snippet']['channelId']
-                blocks = BlockedChannel.objects.filter(
-                    channelId=sv.channelId)  # videos from blocked channels won't be added in to our database again.
-                if blocks.count() > 0:
-                    continue
-                sv.type = 0
-                sv.start = 0
-                sv.end = 0
-                try:
-                    sv.save()
-                    v = PyanoVideo()
-                    v.video = sv
-                    v.parent = job
-                    v.save()
-                except Exception as e:
-                    logger.error(e)
-                    continue
+                sv = SurveyVideo.objects.filter(vid=r['id']['videoId']).first()
+                if sv is None:
+                    sv = SurveyVideo()
+                    sv.url = "https://youtube.com/watch?v={}".format(r['id']['videoId'])
+                    sv.vid = r['id']['videoId']
+                    sv.channelId = r['snippet']['channelId']
+                    blocks = BlockedChannel.objects.filter(
+                        channelId=sv.channelId)  # videos from blocked channels won't be added in to our database again.
+                    if blocks.count() > 0:
+                        continue
+                    sv.type = 0
+                    sv.start = 0
+                    sv.end = 0
+                    try:
+                        sv.save()
+                        v = PyanoVideo()
+                        v.video = sv
+                        v.parent = job
+                        v.save()
+                    except Exception as e:
+                        logger.error(e)
+                        continue
+                else:
+                    # Just add this video to new job
+                    try:
+                        v = PyanoVideo()
+                        v.video = sv
+                        v.parent = job
+                        v.save()
+                    except Exception as e: # possible errors occur when UNIQUE constraints ('video' and 'parent' fields together) are not satisfied.
+                        logger.error(e)
+                        continue
         return videos
 
     def get(self, request, *args, **kwargs):
@@ -106,7 +118,7 @@ class KeywordSearchView(View):
         projectId = request.GET.get('projectId', None)
         if projectId is not None:
             try:
-                job = Job.objects.filter(id=projectId).first()
+                job = Job.objects.filter(id=projectId, is_completed=False).first()
                 if job is None:
                     context['error'] = 'No project found!'
                 context['job'] = job
@@ -134,7 +146,7 @@ class KeywordSearchView(View):
         logger.info(projectId)
         if projectId is not None:
             try:
-                job = Job.objects.filter(id=projectId).first()
+                job = Job.objects.filter(id=projectId, is_completed=False).first()
                 if job is None:
                     context['error'] = 'No project found!'
                     return JsonResponse(context)

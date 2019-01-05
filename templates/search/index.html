@@ -138,7 +138,7 @@
                     $('#videos').empty();
                     var html = '<div class="card"><h5 class="card-header">Searched videos: found ' + data.videos.length + ' results</h5>' +
                         '<div class="card-body">';
-                    for (var i = 0; i < data.videos.length; ++i) {
+                    for (var i = 0; i < Math.min(10,data.videos.length); ++i) {
                         var v = data.videos[i];
                         html += ('<iframe width="280" height="157" src="https://www.youtube.com/embed/' + v.id.videoId + '" frameborder="0"' +
                             '                    allow="autoplay; encrypted-media"' +

@@ -8,7 +8,7 @@ import logging
 
 
 class ProfileView(View):
-    template_name = 'employer/profile.html'
+    template_name = 'common/profile.html'
 
     def get(self,request, *args, **kwargs):
         return render(request, template_name=self.template_name, context={})
@@ -32,11 +32,15 @@ class AddEmployerView(View):
             form.Meta.model.is_annotator = False
             form.Meta.model.is_reviewer = False
             form.Meta.model.is_employer = True
-            form.save()
+            if form.is_valid():
+                form.save()
+            employer = Employer()
+            employer.user = form.instance
+            employer.save()
             context['status'] = 200
         except Exception as e:
             logging.error(e)
             context['status'] = 400
             context['error'] = 'Internal Server Error'
             return render(request, template_name=self.template_name, context=context)
-        return redirect(to='/accounts/profile')
+        return redirect(to='/login/')

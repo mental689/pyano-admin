@@ -5,20 +5,15 @@
 {% endblock %}
 
 {% block body_content %}
-    Welcome!
-    {% if user.is_authenticated %}
-        {% if user.is_employer %}
-            <a href="mailto:{{ user.email }}">{{ user.username }}</a>
-        {% elif user.is_reviewer or user.is_annotator %}
-            You are a worker. Please visit workers' page.
-        {% else %}
-        {% endif %}
-    {% else %}
-    {% endif %}
+    <div class="card">
+    <div class="card-body">
+        {{ content|safe }}
+    </div>
+    </div>
 {% endblock %}
 
 {% block custom_sidebar %}
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and user.is_employer%}
     <li class="nav-item ">
         <a class="nav-link active"
            href="javascript:void(0);"

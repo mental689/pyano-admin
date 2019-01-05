@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'search.apps.SearchConfig',
     'bootstrapform',
     'survey',
-    'tinymce'
+    'tinymce',
+    'django_countries',
 ]
 
 MIDDLEWARE = [

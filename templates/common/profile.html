@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block page_header %}
+    {{ user.username }} ({{ user.get_full_name }})
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ user.username }}</li>
+{% endblock %}
+
+{% block body_content %}
+    {% if user.is_annotator %}
+    <div class="row">
+        <!-- ============================================================== -->
+        <!-- sales  -->
+        <!-- ============================================================== -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
+            <div class="card border-3 border-top border-top-primary">
+                <div class="card-body">
+                    <h5 class="text-muted">Searches</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">{{ this_month_searches.all|length }}</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right text-success font-weight-bold">
+                        {% if up_searches > 0 %}
+                            <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
+                                class="fa fa-fw fa-arrow-up">
+                        {% else %}
+                            <span class="icon-circle-small icon-box-xs text-danger bg-danger-light bg-danger-light "><i
+                                class="fa fa-fw fa-arrow-down">
+                        {% endif %}
+                        </i></span><span class="ml-1">{{ up_searches }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end sales  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- new customer  -->
+        <!-- ============================================================== -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
+            <div class="card border-3 border-top border-top-primary">
+                <div class="card-body">
+                    <h5 class="text-muted">Answered surveys</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">{{ this_month_survey_answers.all|length }}</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right text-success font-weight-bold">
+                        {% if up_answers > 0 %}
+                            <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
+                                class="fa fa-fw fa-arrow-up">
+                        {% else %}
+                            <span class="icon-circle-small icon-box-xs text-danger bg-danger-light bg-danger-light "><i
+                                class="fa fa-fw fa-arrow-down">
+                        {% endif %}
+                        </i></span><span class="ml-1">{{ up_answers }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end new customer  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- visitor  -->
+        <!-- ============================================================== -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
+            <div class="card border-3 border-top border-top-primary">
+                <div class="card-body">
+                    <h5 class="text-muted">Space-time tasks</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">{{ this_month_vatics.all|length }}</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right text-success font-weight-bold">
+                        {% if up_vatic > 0 %}
+                            <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
+                                class="fa fa-fw fa-arrow-up">
+                        {% else %}
+                            <span class="icon-circle-small icon-box-xs text-danger bg-danger-light bg-danger-light "><i
+                                class="fa fa-fw fa-arrow-down">
+                        {% endif %}
+                        </i></span><span class="ml-1">{{ up_vatics }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end visitor  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- total orders  -->
+        <!-- ============================================================== -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
+            <div class="card border-3 border-top border-top-primary">
+                <div class="card-body">
+                    <h5 class="text-muted">Total Earning</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">1340</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right text-danger font-weight-bold">
+                        <span class="icon-circle-small icon-box-xs text-danger bg-danger-light bg-danger-light "><i
+                                class="fa fa-fw fa-arrow-down"></i></span><span class="ml-1">4%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end total orders  -->
+        <!-- ============================================================== -->
+    </div>
+    {% endif %}
+    <div class="card">
+        <h5 class="card-header">Basic information</h5>
+    </div>
+{% endblock %}
+
+{% block custom_sidebar %}
+    {% if user.is_authenticated and user.is_employer %}
+        <li class="nav-item ">
+            <a class="nav-link active"
+               href="javascript:void(0);"
+               data-toggle="collapse" aria-expanded="false"
+               data-target="#submenu-assets" aria-controls="submenu-assets"><i
+                    class="fa fa-fw fa-home"></i>Assets <span
+                    class="badge badge-success">6</span></a>
+            <div id="submenu-assets" class="collapse submenu" style="">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/topic/list/">Topics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/job/list/">Jobs</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    {% else %}
+        <li class="nav-item ">
+            <a class="nav-link active"
+               href="javascript:void(0);"
+               data-toggle="collapse" aria-expanded="false"
+               data-target="#submenu-assets" aria-controls="submenu-assets"><i
+                    class="fa fa-fw fa-boxes"></i>Assets <span
+                    class="badge badge-success">6</span></a>
+            <div id="submenu-assets" class="collapse submenu" style="">
+                {% if user.is_annotator %}
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/worker/jobs/">Available jobs</a>
+                        </li>
+                    </ul>
+                {% else %}
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/invitation/list/">Available invitations</a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </li>
+    {% endif %}
+{% endblock %}
