@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'worker.apps.WorkerConfig',
     'vatic.apps.VaticConfig',
     'search.apps.SearchConfig',
+    'comment.apps.CommentConfig',
     'bootstrapform',
     'survey',
     'tinymce',
