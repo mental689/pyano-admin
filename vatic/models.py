@@ -176,8 +176,19 @@ class Job(models.Model):
         return self.paths
 
 
+class Solution(models.Model):
+    submitter = models.ForeignKey(Annotator, on_delete=models.CASCADE, related_name='solutions')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='solutions')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('submitter', 'job')
+
+
 class Path(models.Model):
-    job = models.ForeignKey(Job, related_name='paths', on_delete=models.CASCADE)
+    # job = models.ForeignKey(Job, related_name='paths', on_delete=models.CASCADE)
+    solution = models.ForeignKey(Solution, on_delete=models.CASCADE, related_name='paths', null=True)
     label = models.ForeignKey(Label, related_name='paths', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
