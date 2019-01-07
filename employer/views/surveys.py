@@ -14,15 +14,7 @@ from employer.models import Credit
 from employer.models import Survey as PyanoSurvey
 from worker.models import Reviewer, SurveyAssignment
 
-LOG_FILE = "./log/survey_{}.log".format(time())
-if not os.path.exists("./log"):
-    os.makedirs("./log")
-formatter = logging.Formatter(fmt="[%(asctime)s]\t[%(levelname)s]\t[%(message)s]")
-logger = logging.getLogger("survey")
-logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler(LOG_FILE)
-file_handler.setFormatter(fmt=formatter)
-logger.addHandler(hdlr=file_handler)
+logger = logging.getLogger(__name__)
 
 
 class SurveyDetailView(View):
@@ -242,7 +234,7 @@ class InviteReviewerView(View):
             try:
                 assignment.save()
             except Exception as e:
-                logger.error(e)
+                logger.debug(e)
         return JsonResponse({'message': 'The reviewer {} was successfully invited to your project.'.format(reviewer.user.get_full_name())})
 
 

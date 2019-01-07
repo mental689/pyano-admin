@@ -1,13 +1,13 @@
-from django.views import View
-from django.shortcuts import redirect, render
-from django.conf import settings
-from django.db.models import Count, Sum, Q
-from employer.forms import AddJobForm
-from employer.models import Job
-from employer.models import Survey as PyanoSurvey
-from search.models import KeywordSearch, QBESearch
-
 import logging
+
+from django.conf import settings
+from django.db.models import Sum
+from django.shortcuts import redirect, render
+from django.views import View
+
+from employer.models import Job
+
+logger = logging.getLogger(__name__)
 
 
 class ListJobView(View):
@@ -38,6 +38,7 @@ class JobDetailView(View):
                     surveys = job.surveys.annotate(credit=Sum('credits__amount')).all()
                     context['surveys'] = surveys
             except Exception as e:
+                logger.debug(e)
                 context['error'] = 'Internal Server Error'
         else:
             context['error'] = 'No ID.'

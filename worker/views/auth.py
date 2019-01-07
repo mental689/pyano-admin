@@ -1,27 +1,17 @@
-from django.contrib.auth import login
 from django.shortcuts import redirect, render
-from django.views.generic import CreateView, View
-from django.utils.timezone import now, timedelta
-from django.conf import settings
-from worker.models import *
-from worker.forms import *
-from search.models import *
-from survey import models as survey_models
-from vatic.models import Assignment
-from common.forms import AddWorkerForm
+import logging
+
+from django.shortcuts import redirect, render
+from django.views.generic import View
 from django_comments_xtd.models import Comment
-import logging, os
-from time import time
-import datetime
-LOG_FILE = "./log/worker_auth_{}.log".format(time())
-if not os.path.exists("./log"):
-    os.makedirs("./log")
-formatter = logging.Formatter(fmt="[%(asctime)s]\t[%(levelname)s]\t[%(message)s]")
-logger = logging.getLogger("youtube")
-logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler(LOG_FILE)
-file_handler.setFormatter(fmt=formatter)
-logger.addHandler(hdlr=file_handler)
+from survey import models as survey_models
+
+from common.forms import AddWorkerForm
+from search.models import *
+from vatic.models import Assignment
+from worker.models import *
+
+logger = logging.getLogger(__name__)
 
 
 class ProfileView(View):
@@ -114,6 +104,7 @@ class AddWorkerView(View):
                 context['error'] = 'Your information is invalid'
                 return render(request, template_name=self.template_name, context=context)
         except Exception as e:
+            logger.debug(e)
             context['error'] = 'Internal Server Error! Failed to register your information. {}'.format(e)
             return render(request, template_name=self.template_name, context=context)
         return redirect(to='/login/')

@@ -7,6 +7,9 @@ from survey.models import Response, Video, Survey, Answer
 from employer.models import Survey as PyanoSurvey
 from worker.models import SurveyAssignment
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class SurveyReviewView(View):
     template_name = 'survey/review.html'

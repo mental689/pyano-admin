@@ -5,6 +5,7 @@ from employer.models import *
 from employer.forms import *
 from common.forms import AddUserForm
 import logging
+logger = logging.getLogger(__name__)
 
 
 class ProfileView(View):
@@ -37,10 +38,8 @@ class AddEmployerView(View):
             employer = Employer()
             employer.user = form.instance
             employer.save()
-            context['status'] = 200
         except Exception as e:
-            logging.error(e)
-            context['status'] = 400
+            logger.debug(e)
             context['error'] = 'Internal Server Error'
             return render(request, template_name=self.template_name, context=context)
         return redirect(to='/login/')

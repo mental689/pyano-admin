@@ -1,11 +1,11 @@
-from django.views import View
-from django.shortcuts import redirect, render
-from django.conf import settings
-from employer.forms import AddTopicForm
-from common.models import SystemSetting
-
 import logging
 
+from django.shortcuts import render
+from django.views import View
+
+from common.models import SystemSetting
+
+logger = logging.getLogger(__name__)
 
 class IndexView(View):
     template_name = 'employer/index.html'

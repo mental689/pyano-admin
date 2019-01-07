@@ -153,3 +153,24 @@ STATICFILES_DIRS = [
 
 # Custom models
 AUTH_USER_MODEL = "common.PyanoUser"
+
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '{}/log/debug.log'.format(BASE_DIR),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

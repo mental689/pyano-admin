@@ -6,6 +6,7 @@ from employer.models import Topic, Job, Employer
 from django.db.models import Count
 
 import logging
+logger = logging.getLogger(__name__)
 
 
 class AddTopicView(View):
@@ -26,10 +27,8 @@ class AddTopicView(View):
             form = AddTopicForm(request.POST)
             form.instance.owner = owner
             form.save()
-            context['status'] = 200
         except Exception as e:
-            logging.error(e)
-            context['status'] = 400
+            logging.debug(e)
             context['error'] = 'Internal Server Error'
             render(request, template_name=self.template_name, context=context)
         return redirect(to='/topic/list/')
@@ -66,10 +65,8 @@ class ChangeTopicView(View):
             if desc is not None:
                 topic.description = desc
             topic.save()
-            context['status'] = 200
         except Exception as e:
-            logging.error(e)
-            context['status'] = 400
+            logging.debug(e)
             context['error'] = 'Internal Server Error while saving topic'
             render(request, template_name=self.template_name, context=context)
         return redirect(to='/topic/list/')

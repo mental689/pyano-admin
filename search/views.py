@@ -87,7 +87,7 @@ class KeywordSearchView(View):
                         v.parent = job
                         v.save()
                     except Exception as e:
-                        logger.error(e)
+                        logger.debug(e)
                         continue
                 else:
                     # Just add this video to new job
@@ -97,7 +97,7 @@ class KeywordSearchView(View):
                         v.parent = job
                         v.save()
                     except Exception as e: # possible errors occur when UNIQUE constraints ('video' and 'parent' fields together) are not satisfied.
-                        logger.error(e)
+                        logger.debug(e)
                         continue
         return videos
 
@@ -123,6 +123,7 @@ class KeywordSearchView(View):
                     context['error'] = 'No project found!'
                 context['job'] = job
             except Exception as e:
+                logger.debug(e)
                 context['error'] = "Internal Server Error"
         else:
             context['error'] = 'No project found!'
@@ -167,7 +168,7 @@ class KeywordSearchView(View):
                 context['videos'] = results
             except Exception as e:
                 context['error'] = "Internal Server Error"
-                logger.error(e)
+                logger.debug(e)
         else:
             context['error'] = 'No project found!'
         return JsonResponse(context)

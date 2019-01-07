@@ -5,15 +5,8 @@ import os
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-LOG_FILE = "./log/youtube_{}.log".format(time())
-if not os.path.exists("./log"):
-    os.makedirs("./log")
-formatter = logging.Formatter(fmt="[%(asctime)s]\t[%(levelname)s]\t[%(message)s]")
-logger = logging.getLogger("youtube")
-logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler(LOG_FILE)
-file_handler.setFormatter(fmt=formatter)
-logger.addHandler(hdlr=file_handler)
+import logging
+logger = logging.getLogger(__name__)
 
 
 def download_youtube_video(youtube_ids, download_caption=False, download_audio=False, output_folder=None):
@@ -57,7 +50,7 @@ def download_youtube_video(youtube_ids, download_caption=False, download_audio=F
         try:
             ydl.download(url_list=url_list)
         except Exception as e:
-            logger.error(e)
+            logger.debug(e)
             return
     return output_folder
 
@@ -76,7 +69,7 @@ def get_video_details(youtube, video_id):
     try:
         videos = youtube.videos()
     except Exception as e:
-        logger.error(e)
+        logger.debug(e)
         return None
     try:
         results = videos.list(
@@ -92,7 +85,7 @@ def get_video_details(youtube, video_id):
         else:
             return None
     except HttpError as e:
-        logger.error(e)
+        logger.debug(e)
         return None
 
 
@@ -104,7 +97,7 @@ def search_youtube(youtube, q, download_cc_only=True, download_high_quality=True
     try:
         searcher = youtube.search()
     except Exception as e:
-        logger.error(e)
+        logger.debug(e)
         return []
     # first request
     videos = []
@@ -127,8 +120,8 @@ def search_youtube(youtube, q, download_cc_only=True, download_high_quality=True
             # topicId=freebase_topic_id,
         ).execute()
     except HttpError as e:
-        logger.error("Error while downloading first response ...")
-        logger.error(e)
+        logger.debug("Error while downloading first response ...")
+        logger.debug(e)
         return videos
     logger.debug("Found {} records ...".format(responses["pageInfo"]["totalResults"]))
     if check_in_details:
@@ -164,8 +157,8 @@ def search_youtube(youtube, q, download_cc_only=True, download_high_quality=True
                 # topicId=freebase_topic_id,
             ).execute()
         except HttpError as e:
-            logger.error("Error while downloading {}-th response ...".format(count))
-            logger.error(e)
+            logger.debug("Error while downloading {}-th response ...".format(count))
+            logger.debug(e)
             return videos
         if check_in_details:
             for r in responses["items"]:
@@ -188,7 +181,7 @@ def search_qbe(youtube, vid, check_in_details=False, hd_only=False):
     try:
         searcher = youtube.search()
     except Exception as e:
-        logger.error(e)
+        logger.debug(e)
         return []
     # first request
     videos = []
@@ -201,8 +194,8 @@ def search_qbe(youtube, vid, check_in_details=False, hd_only=False):
             part="id,snippet",
         ).execute()
     except HttpError as e:
-        logger.error("Error while downloading first response ...")
-        logger.error(e)
+        logger.debug("Error while downloading first response ...")
+        logger.debug(e)
         return videos
     logger.debug("Found {} records ...".format(responses["pageInfo"]["totalResults"]))
     if check_in_details:
@@ -236,8 +229,8 @@ def search_qbe(youtube, vid, check_in_details=False, hd_only=False):
                 part="id,snippet",
             ).execute()
         except HttpError as e:
-            logger.error("Error while downloading {}-th response ...".format(count))
-            logger.error(e)
+            logger.debug("Error while downloading {}-th response ...".format(count))
+            logger.debug(e)
             return videos
         if check_in_details:
             for r in responses["items"]:

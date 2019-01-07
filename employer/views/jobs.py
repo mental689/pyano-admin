@@ -11,17 +11,9 @@ from search.models import KeywordSearch, QBESearch
 from survey.models import Survey
 
 import logging, os
+logger = logging.getLogger(__name__)
 from time import time
 import datetime
-LOG_FILE = "./log/employer_jobs_{}.log".format(time())
-if not os.path.exists("./log"):
-    os.makedirs("./log")
-formatter = logging.Formatter(fmt="[%(asctime)s]\t[%(levelname)s]\t[%(message)s]")
-logger = logging.getLogger("youtube")
-logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler(LOG_FILE)
-file_handler.setFormatter(fmt=formatter)
-logger.addHandler(hdlr=file_handler)
 
 
 def daterange(start_date, end_date):
@@ -54,10 +46,8 @@ class AddJobView(View):
             form = AddJobForm(request.POST)
             form.Meta.model.is_completed = False
             form.save()
-            context['status'] = 200
         except Exception as e:
-            logging.error(e)
-            context['status'] = 400
+            logging.debug(e)
             context['error'] = 'Internal Server Error'
             render(request, template_name=self.template_name, context=context)
         return redirect(to='/job/list/')
@@ -158,10 +148,8 @@ class ChangeJobView(View):
             job.allow_invitation = bool(request.POST.get('invitation', True))
             job.guideline = request.POST.get('guideline', '')
             job.save()
-            context['status'] = 200
         except Exception as e:
-            logging.error(e)
-            context['status'] = 400
+            logger.debug(e)
             context['error'] = 'Internal Server Error while saving topic'
             render(request, template_name=self.template_name, context=context)
         return redirect(to='/job/list/')

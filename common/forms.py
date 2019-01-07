@@ -1,14 +1,10 @@
+import logging
+
 from django import forms
-from django.forms import ModelForm
+from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
-from django.utils.translation import gettext_lazy as _
-from django.core.validators import EmailValidator
-from django.contrib.auth.password_validation import *
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from common.models import *
-
-import logging
 
 
 class AddUserForm(UserCreationForm):
