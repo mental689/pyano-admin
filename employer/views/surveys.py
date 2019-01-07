@@ -1,16 +1,19 @@
-from django.views import View
-from django.shortcuts import redirect, render
-from django.conf import settings
-from django.db.models import Count, Q, Sum
-
-from survey.models import Survey, Video
-from employer.models import Survey as PyanoSurvey
-from employer.models import Video as PyanoVideo
-from employer.models import Credit
-from employer.forms import *
-
-import logging, os
+import logging
+import os
+import uuid
 from time import time
+
+from django.conf import settings
+from django.db.models import Count, Q
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.views import View
+
+from employer.forms import *
+from employer.models import Credit
+from employer.models import Survey as PyanoSurvey
+from worker.models import Reviewer, SurveyAssignment
+
 LOG_FILE = "./log/survey_{}.log".format(time())
 if not os.path.exists("./log"):
     os.makedirs("./log")
@@ -27,7 +30,7 @@ class SurveyDetailView(View):
 
     def get(self, request, *args, **kwarg):
         if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/survey/add/?id={}'.format(settings.LOGTIN_URL,
+            return redirect(to='{}/login/?next=/survey/add/?id={}'.format(settings.LOGIN_URL,
                                                                                  request.GET.get('id', None)))
         id = request.GET.get('id', None)
         context = {}
@@ -193,4 +196,53 @@ class EditSurveyView(View):
         c.amount = credit
         c.save()
         return redirect(to='/job/list/')
+
+
+class InviteReviewerView(View):
+    template_name = 'employer/invite_reviewer.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_employer:
+            return redirect(to="/")
+        id = request.GET.get('id', None)
+        context = {}
+        if id is None:
+            context['error'] = 'No ID'
+            return render(request, template_name=self.template_name, context=context)
+        survey = PyanoSurvey.objects.filter(id=id).first()
+        if survey is None:
+            context['error'] = 'No survey found'
+            return render(request, template_name=self.template_name, context=context)
+        context['survey'] = survey
+        reviewers = Reviewer.objects.filter(~Q(assignments__job=survey.survey)) # who are not assigned to this job
+        # reviewers = reviewers.annotate(submitted_comments=Count('pyanousers_comments'))
+        context['reviewers'] = reviewers
+        return render(request, template_name=self.template_name, context=context)
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_employer:
+            return redirect(to="/")
+        rid = request.POST.get('rid', None)
+        sid = request.POST.get('sid', None)
+        if rid is None or sid is None:
+            return JsonResponse({'error': 'Reviewer ID or Survey ID is not presented.'})
+        survey = PyanoSurvey.objects.filter(id=sid).first()
+        if survey is None:
+            return JsonResponse({'error': 'No survey is found.'})
+        videos = survey.parent.videos.all()
+        reviewer = Reviewer.objects.filter(user__id=rid).first()
+        if reviewer is None:
+            return JsonResponse({'error': 'Cannot find the reviewer.'})
+        for video in videos:
+            assignment = SurveyAssignment()
+            assignment.reviewer = reviewer
+            assignment.job = survey.survey
+            assignment.video = video.video
+            assignment.uuid = uuid.uuid4()
+            try:
+                assignment.save()
+            except Exception as e:
+                logger.error(e)
+        return JsonResponse({'message': 'The reviewer {} was successfully invited to your project.'.format(reviewer.user.get_full_name())})
+
 

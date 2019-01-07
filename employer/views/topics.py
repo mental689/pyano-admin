@@ -2,7 +2,7 @@ from django.views import View
 from django.shortcuts import redirect, render
 from django.conf import settings
 from employer.forms import AddTopicForm
-from employer.models import Topic, Job
+from employer.models import Topic, Job, Employer
 from django.db.models import Count
 
 import logging
@@ -22,8 +22,9 @@ class AddTopicView(View):
             redirect(to='{}/login/?next=/topic/add/'.format(settings.LOGIN_URL))
         context = {}
         try:
+            owner = Employer.objects.filter(user=request.user).first()
             form = AddTopicForm(request.POST)
-            form.Meta.model.owner = request.user
+            form.instance.owner = owner
             form.save()
             context['status'] = 200
         except Exception as e:

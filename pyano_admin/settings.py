@@ -27,6 +27,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SITE_ID = 1
+
+COMMENTS_APP = 'django_comments_xtd'
+
+COMMENTS_XTD_MAX_THREAD_LEVEL = 8  # default is 0
+COMMENTS_XTD_LIST_ORDER = ('-thread_id', 'order')  # default is ('thread_id', 'order')
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = "587"
+EMAIL_HOST_USER = "annotator.department@gmail.com"
+EMAIL_HOST_PASSWORD = ""
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "Annotator Department <annotator.department@gmail.com>"
 
 # Application definition
 
@@ -37,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'common.apps.CommonConfig',
     'employer.apps.EmployerConfig',
     'worker.apps.WorkerConfig',
@@ -47,6 +61,8 @@ INSTALLED_APPS = [
     'survey',
     'tinymce',
     'django_countries',
+    'django_comments_xtd',
+    'django_comments',
 ]
 
 MIDDLEWARE = [

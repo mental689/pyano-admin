@@ -6,9 +6,11 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
 {% endblock %}
 
+{% block page_header %}
+    {{ job.name }}
+{% endblock %}
+
 {% block body_content %}
-    <h3 class="header">Administration homepage</h3>
-    <h1>{{ job.name }}</h1>
     {% if job.has_keyword_search is True %}
         <div class="card">
             <h5 class="card-header">Keyword search tasks</h5>

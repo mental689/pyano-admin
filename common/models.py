@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.validators import EmailValidator, RegexValidator
+from django.utils.timezone import now, timedelta
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import *
 from django_countries.fields import CountryField
@@ -40,6 +41,12 @@ class PyanoUser(AbstractUser):
     is_annotator = models.BooleanField(default=False, help_text=_('Whether to apply as an annotator.'))
     # other information
     affiliation = models.CharField(max_length=255, help_text=_('Optional. Affiliation'), blank=True)
+    SEX = (
+        (1, 'Male'),
+        (2, 'Female'),
+        (3, 'Rather not to say')
+    )
+    sex = models.IntegerField(choices=SEX, blank=False, default=3, help_text=_('Sex'))
     # JOB fields from https://career.berkeley.edu/InfoLab/CareerFields
     CARRER_FIELDS = (
         (1, 'Architecture, Planning & Environmental Design'),
@@ -64,6 +71,12 @@ class PyanoUser(AbstractUser):
     # country_code = models.IntegerField(help_text=_('country code'), blank=False, default=1)
     country = CountryField(blank=False, default='US', help_text=_('Required. Country'), null=False)
     birthday = models.DateField(null=True, help_text=_('Required. Birthday'))
+
+    def get_age(self):
+        if self.birthday is not None:
+            return int((now().date()-self.birthday).days/365)
+        else:
+            return "-"
 
 
 class SystemSetting(models.Model):

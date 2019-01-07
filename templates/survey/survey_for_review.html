@@ -1,0 +1,90 @@
+{% extends 'survey/base.html' %}
+{% load comments %}
+{% load comments_xtd %}
+{% load i18n %}
+{% load survey_extras %}
+{% load static %}
+
+{% block title %} {{ survey.name }} {% endblock title %}
+
+{% block extrajs %}
+    {{ response_form.media }}
+{% endblock %}
+
+{% block body %}
+    <h1> {{ survey.name }} </h1>
+    <div class="survey-description">{{ survey.description|safe }} </div>
+    <div>
+    {% csrf_token %}
+    <div><h3>Video content</h3>
+        {% if video.type == 0 %}
+            <iframe width="560" height="315"
+                    src="https://www.youtube.com/embed/{{ video.vid }}/?mute=1&start={{ video.start }}&end={{ video.end }}&showinfo=0&controls=0"
+                    frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        {% elif video.type == 1 %}
+            <iframe src="https://drive.google.com/file/d/{{ video.vid }}/preview" width="640" height="480"></iframe>
+        {% else %}
+            Please follow the URL <a href="{{ video.url }}">here</a> to watch the video content.
+        {% endif %}
+        <input type="hidden" id="videoID" name="videoID" value="{{ video.id }}">
+    </div>
+    {% for category in categories %}
+        <h3> {{ category }} </h3>
+        <p> {{ category.description }} </p>
+        <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a
+                        data-toggle="collapse"
+                        data-parent="#accordion"
+                        href="#collapse{{ category.slugify }}">
+                    {% trans "Answer this part" %}
+                </a></h3>
+            </div>
+            <div class="category-container">
+                <div id="collapse{{ category.slugify }}" class="panel-collapse collapse
+				        {{ response_form|collapse_form:category }}">
+                    <div class="panel-body">
+                        {% include "survey/question.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <h3> {% trans "Answers from annotators" %} </h3>
+        {% for response in responses %}
+            <h4>#{{ response.id }} {{ response.user.username }}</h4>
+            {% for answer in response.answers.all %}
+                <p><b>Question:</b> {{ answer.question.text }}</p>
+                <p><b>Answer:</b> {{ answer.body }}</p>
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+{% if user.is_reviewer or user.is_employer %}
+    {% get_comment_count for survey as comment_count %}
+    <h3> {% trans "Comments from experts" %} </h3>
+    <div class="py-4 text-center">
+        &nbsp;&sdot;&nbsp;
+        {{ comment_count }} comment{{ comment_count|pluralize }}
+        ha{{ comment_count|pluralize:"s,ve" }} been posted.
+    </div>
+    {% if comment_count %}
+        <ul class="media-list">
+            {% render_xtdcomment_tree for survey %}
+        </ul>
+    {% endif %}
+    <div class="card card-block mb-5">
+        <div class="card-body">
+            <h4 class="card-title text-center pb-3">Post your comment (which will be visible for only reviewers and staffs of this project)</h4>
+            {% render_comment_form for survey %}
+        </div>
+    </div>
+{% endif %}
+    {% if user.is_employer %}
+        <h3> {% trans "For project owners" %} </h3>
+        <form action="/vatic/download/" method="post">
+        <input type="hidden" value="{{ video.id }}" name="videoID">
+        <input type="submit" value="Download this video" class="btn btn-primary">
+        </form>
+    {% endif %}
+{% endblock %}

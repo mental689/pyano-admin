@@ -3,3 +3,4 @@ git+https://github.com/mental689/django-survey.git
 Cython
 django-tinymce4-lite
 django-countries
+django-comments-xtd

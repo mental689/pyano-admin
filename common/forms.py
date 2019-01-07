@@ -15,7 +15,7 @@ class AddUserForm(UserCreationForm):
 
     class Meta:
         model = PyanoUser
-        fields = ['username', 'first_name', 'last_name', 'email', 'affiliation',
+        fields = ['username', 'first_name', 'last_name', 'email', 'sex', 'affiliation',
                   'phone', 'location', 'country', 'job_name', 'birthday']
         widgets = {
             'birthday': forms.DateInput(attrs={'class': 'datepicker'}),
@@ -41,7 +41,8 @@ class AddWorkerForm(UserCreationForm):
 
     class Meta:
         model = PyanoUser
-        fields = ['username', 'email', 'first_name', 'last_name', 'birthday','is_reviewer', 'is_annotator', 'job_name',
+        fields = ['username', 'email', 'first_name', 'last_name', 'sex',
+                  'birthday','is_reviewer', 'is_annotator', 'job_name',
                   'affiliation', 'phone', 'country', 'location']
         widgets = {
             'birthday': forms.DateInput(attrs={'class': 'datepicker'}),
@@ -56,7 +57,7 @@ class AddWorkerForm(UserCreationForm):
         user.affiliation = self.cleaned_data.get('affiliation')
         user.phone = self.cleaned_data.get('phone')
         user.location = self.cleaned_data.get('location')
-        user.country = int(self.cleaned_data.get('country'))
+        user.country = self.cleaned_data.get('country')
         user.job_name = int(self.cleaned_data.get('job_name'))
         user.birthday = self.cleaned_data.get('birthday')
         try:

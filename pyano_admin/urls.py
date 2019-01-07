@@ -25,5 +25,6 @@ urlpatterns = [
     path('vatic/', include('vatic.urls')),
     path('search/', include('search.urls')),
     url(r'^tinymce/', include('tinymce.urls')),
-    url(r'^survey/', include('survey.urls'))
+    url(r'^survey/', include('survey.urls')),
+    url(r'^comments/', include('django_comments_xtd.urls')),
 ]

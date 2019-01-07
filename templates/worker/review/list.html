@@ -1,0 +1,55 @@
+{% extends 'worker/index.html' %}
+{% load static %}
+
+{% block custom_css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+{% endblock %}
+
+{% block page_header %}
+    Assignments and progresses
+{% endblock %}
+
+{% block body_content %}
+    <div class="card">
+        <h5 class="card-header">Surveys</h5>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered first" id="surveys">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>From</th>
+                        <th>Video</th>
+                        <th>URL</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for survey in surveys %}
+                        <tr>
+                            <td>{{ survey.id }}</td>
+                            <td>{{ survey.job.name }}</td>
+                            <td>{{ survey.created_at }}</td>
+                            <td>{{ survey.video.vid }}</td>
+                            <td>
+                                <a href="/worker/survey/review/{{ survey.job.id }}/{{ survey.video.id }}/">
+                                    /survey/review/{{ survey.job.id }}/{{ survey.video.id }}/</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#surveys').DataTable();
+        });
+    </script>
+{% endblock %}

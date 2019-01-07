@@ -260,6 +260,10 @@ class Box(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = 'box'
+        verbose_name_plural = 'boxes'
+
     def getbox(self):
         return vision.Box(self.xtl, self.ytl, self.xbr, self.ybr,
                           self.frame, self.outside, self.occluded, 0)
@@ -294,15 +298,3 @@ class Assignment(models.Model):
 
     class Meta:
         unique_together = ('worker', 'job')
-
-
-class Bid(models.Model):
-    candidate = models.ForeignKey(Annotator, on_delete=models.CASCADE, related_name='bids')
-    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='bids')
-    approved = models.BooleanField(default=False)
-    approved_by = models.ForeignKey(Employer, on_delete=models.CASCADE, related_name='approved_bids', null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        unique_together = ('candidate', 'job')

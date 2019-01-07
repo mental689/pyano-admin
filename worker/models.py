@@ -10,13 +10,19 @@ from survey.models import Video, Survey
 class Reviewer(models.Model):
     user = models.OneToOneField(PyanoUser, on_delete=models.CASCADE, primary_key=True)
 
+    def __str__(self):
+        return self.user.get_full_name()
+
 
 class Annotator(models.Model):
     user = models.OneToOneField(PyanoUser, on_delete=models.CASCADE, primary_key=True)
 
+    def __str__(self):
+        return self.user.get_full_name()
+
 
 class SurveyAssignment(models.Model):
-    annotator = models.ForeignKey(Annotator, on_delete=models.CASCADE)
+    reviewer = models.ForeignKey(Reviewer, on_delete=models.CASCADE, null=True, related_name='assignments')
     job = models.ForeignKey(Survey, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     uuid = models.CharField(max_length=255, null=True, unique=False)
@@ -24,6 +30,6 @@ class SurveyAssignment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('annotator', 'job', 'video')
+        unique_together = ('reviewer', 'job', 'video')
 
 

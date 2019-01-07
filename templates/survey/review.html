@@ -14,7 +14,7 @@
 {% block body_content %}
     {% if not error %}
         <div class="card">
-            <h5 class="card-header">Guideline</h5>
+            <h5 class="card-header">Guideline for Annotators</h5>
             <div class="card-body">
                 {{ survey.guideline|safe }}
             </div>
@@ -27,7 +27,7 @@
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Link</th>
+                            <th>Review link</th>
                             <th>Answers</th>
                         </tr>
                         </thead>
@@ -36,7 +36,8 @@
                             <tr>
                                 <td>{{ video.video.id }}</td>
                                 <td>
-                                    <a href="/survey/{{ survey.survey.id }}/?videoID={{ video.video.id }}">/survey/{{ survey.survey.id }}/?videoID={{ video.video.id }}</a>
+                                    <a href="/worker/survey/review/{{ survey.survey.id }}/{{ video.video.id }}/" target="_blank">
+                                        /worker/survey/review/{{ survey.survey.id }}/{{ video.video.id }}/</a>
                                 </td>
                                 <td>{{ video.num_answers }}</td>
                             </tr>
@@ -46,15 +47,6 @@
                 </div>
             </div>
         </div>
-        {% if user.is_employer %}
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                <a href="/survey/invite/?id={{ survey.id }}" class="btn btn-success"><i class="fa fa-plus-circle"></i>
-                    Invite a reviewer
-                    for this job</a>
-                <a href="/worker/survey/review/{{ survey.id }}/" class="btn btn-success"><i class="fa fa-people-carry"></i>
-                    Preview review page for this job</a>
-            </div>
-        {% endif %}
     {% else %}
         <div class="card">
             <h5 class="card-header">Errors</h5>

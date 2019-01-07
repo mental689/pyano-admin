@@ -9,6 +9,9 @@ import survey.models as survey_models
 class Employer(models.Model):
     user = models.OneToOneField(PyanoUser, on_delete=models.CASCADE, primary_key=True)
 
+    def __str__(self):
+        return self.user.get_full_name()
+
 
 class Topic(models.Model):
     """
