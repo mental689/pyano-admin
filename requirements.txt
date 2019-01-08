@@ -4,3 +4,4 @@ Cython
 django-tinymce4-lite
 django-countries
 django-comments-xtd
+cleanerversion

@@ -123,15 +123,6 @@
                         </tbody>
                     </table>
                 </div>
-{#                <div class="row">#}
-{#                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">#}
-{#                        <div class="card-body">#}
-                            <a href="/survey/add/?projectId={{ job.id }}" class="btn btn-success"><i
-                                    class="fa fa-plus-circle"></i> Add a
-                                survey</a>
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
             </div>
         </div>
     {% endif %}
@@ -140,29 +131,6 @@
         <div class="card">
             <h5 class="card-header">Space-time annotation tasks</h5>
             <div class="card-body"></div>
-        </div>
-    {% endif %}
-
-    {% if user.is_employer %}
-        <div class="card">
-            <h5 class="card-header">Publishing options (for project owners)</h5>
-            <div class="card-body">
-                <form action="/dataset/">
-                    <input type="hidden" value="{{ job.id }}" name="id">
-                    <div class="form-group">
-                        <label for="inputText3" class="col-form-label">Name</label>
-                        <input id="inputText3" type="text" class="form-control" name="name">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleFormControlTextarea1">Description</label>
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
-                                  name="description"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" value="Publish this dataset" class="btn btn-primary">
-                    </div>
-                </form>
-            </div>
         </div>
     {% endif %}
 {% endblock %}

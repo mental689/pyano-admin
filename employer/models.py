@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from tinymce.models import HTMLField
+from versions.models import Versionable
+from versions.fields import VersionedForeignKey
 
 from common.models import *
 import survey.models as survey_models
@@ -95,6 +97,14 @@ class Video(models.Model):
 
     def get_aboslute_url(self):
         return '/worker/survey/review/1/{}/'.format(self.video.id)
+
+
+class Dataset(Versionable):
+    job = VersionedForeignKey(Job, on_delete=models.CASCADE, related_name='datasets')
+    name = models.CharField(max_length=255, default='')
+    description = models.TextField(default='')
+    current_json = models.TextField(default='')
+
 
 
 

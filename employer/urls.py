@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth import forms as auth_forms
 
 from employer.views.auth import ProfileView, AddEmployerView
-from employer.views.common import IndexView
+from employer.views.common import IndexView, PublishDatasetView
 from employer.views.topics import AddTopicView, TopicListView, TopicDetailView, ChangeTopicView
 from employer.views.jobs import AddJobView, ListJobView, DetailJobView, ChangeJobView
 from employer.views.surveys import AddSurveyView, SurveyDetailView, DeleteSurveyView, EditSurveyView, InviteReviewerView
@@ -28,4 +28,5 @@ urlpatterns = [
     path('survey/delete/', DeleteSurveyView.as_view(), name='delete_survey'),
     path('survey/edit/', EditSurveyView.as_view(), name='edit_survey'),
     path('survey/invite/', InviteReviewerView.as_view(), name='invite_reviewer'),
+    path('dataset/', PublishDatasetView.as_view(), name='public_dataset')
 ]

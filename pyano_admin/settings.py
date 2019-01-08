@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     'django_countries',
     'django_comments_xtd',
     'django_comments',
+    'versions',
+    'versions_tests',
 ]
 
 MIDDLEWARE = [
