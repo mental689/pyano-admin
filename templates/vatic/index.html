@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html5>
+<html>
+<head>
+
+    <title>vatic</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vatic/turkic.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vatic/vatic.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.min.css' %}">
+
+    <script src="{% static 'js/vatic/turkic.js' %}"></script>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/jquery.cookie.js' %}"></script>
+    <script src="{% static 'js/vatic/jquery-migrate-1.2.1.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'js/vatic/videoplayer.js' %}"></script>
+    <script src="{% static 'js/vatic/preload.js' %}"></script>
+    <script src="{% static 'js/vatic/objectui.js' %}"></script>
+    <script src="{% static 'js/vatic/ui.js' %}"></script>
+    <script src="{% static 'js/vatic/instructions.js' %}"></script>
+    <script src="{% static 'js/vatic/job.js' %}"></script>
+    <script src="{% static 'js/vatic/tracks.js' %}"></script>
+    <script src="{% static 'js/vatic/bootstrap.js' %}"></script>
+</head>
+<body>
+
+<div id="container">
+    {% csrf_token %}
+</div>
+</body>
+</html>

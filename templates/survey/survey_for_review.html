@@ -60,31 +60,54 @@
             {% endfor %}
         {% endfor %}
     {% endfor %}
-{% if user.is_reviewer or user.is_employer %}
-    {% get_comment_count for survey as comment_count %}
-    <h3> {% trans "Comments from experts" %} </h3>
-    <div class="py-4 text-center">
-        &nbsp;&sdot;&nbsp;
-        {{ comment_count }} comment{{ comment_count|pluralize }}
-        ha{{ comment_count|pluralize:"s,ve" }} been posted.
-    </div>
-    {% if comment_count %}
-        <ul class="media-list">
-            {% render_xtdcomment_tree for survey %}
-        </ul>
-    {% endif %}
-    <div class="card card-block mb-5">
-        <div class="card-body">
-            <h4 class="card-title text-center pb-3">Post your comment (which will be visible for only reviewers and staffs of this project)</h4>
-            {% render_comment_form for survey %}
+    {% if user.is_reviewer or user.is_employer %}
+        {% get_comment_count for video.pyano_video as comment_count %}
+        <h3> {% trans "Comments from experts" %} </h3>
+        <div class="py-4 text-center">
+            &nbsp;&sdot;&nbsp;
+            {{ comment_count }} comment{{ comment_count|pluralize }}
+            ha{{ comment_count|pluralize:"s,ve" }} been posted.
         </div>
-    </div>
-{% endif %}
+        {% if comment_count %}
+            <ul class="media-list">
+                {% render_xtdcomment_tree for video.pyano_video %}
+            </ul>
+        {% endif %}
+        <div class="card card-block mb-5">
+            <div class="card-body">
+                <h4 class="card-title text-center pb-3">Post your comment (which will be visible for only reviewers and
+                    staffs of this project)</h4>
+                {% render_comment_form for video.pyano_video %}
+            </div>
+        </div>
+    {% endif %}
     {% if user.is_employer %}
         <h3> {% trans "For project owners" %} </h3>
         <form action="/vatic/download/" method="post">
-        <input type="hidden" value="{{ video.id }}" name="videoID">
-        <input type="submit" value="Download this video" class="btn btn-primary">
+            <div class="form-group">
+                <label for="id_length">Length of each segment:</label>
+                <input type="number" name="length" id="id_length" value="300">
+            </div>
+            <div class="form-group">
+                <input type="checkbox" name="resize" checked id="id_resize">
+                <label for="id_resize">Resize the video</label>
+            </div>
+            <div class="form-group">
+                <label for="id_width">Width:</label>
+                <input type="number" name="length" id="id_width" value="720">
+                <label for="id_height">Height:</label>
+                <input type="number" name="length" id="id_height" value="480">
+            </div>
+            <div class="row form-group">
+                <div class="offset-md-1 col-md-10">
+                    <label for="id_labels">Label choices:</label>
+                    <textarea name="labels" id="id_labels" value=""
+                              placeholder="Put your list of labels here, ~ for attributes and separate labels by comma."
+                              class="form-control" required></textarea>
+                </div>
+            </div>
+            <input type="hidden" value="{{ video.id }}" name="videoID">
+            <input type="submit" value="Download this video" class="btn btn-primary">
         </form>
     {% endif %}
 {% endblock %}

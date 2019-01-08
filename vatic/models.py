@@ -105,7 +105,7 @@ class JobGroup(models.Model):
     title = models.CharField(max_length=250, null=False)
     description = models.CharField(max_length=250, null=False)
     duration = models.IntegerField(null=False)
-    cost = models.ForeignKey(Credit, related_name='groups', on_delete=models.CASCADE)
+    cost = models.FloatField(default=15.0)
     keywords = models.CharField(max_length=250, null=False)
     height = models.IntegerField(null=False, default=650)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,7 +1,5 @@
 import logging
-import os
 import uuid
-from time import time
 
 from django.conf import settings
 from django.db.models import Count, Q

@@ -1,0 +1,13 @@
+{% extends 'survey/base.html' %}
+{% load i18n %}
+
+{% block title %} {% trans "Download completed" %}{% endblock title %}
+
+{% block body %}
+    {% if not error %}
+<h1>{% trans "Download completed successfully." %}</h1>
+    {% else %}
+<p> {% trans "Sorry!" %} "{{ error }}". </p>
+    {% endif %}
+<p> <a href="{% url "survey-list" %}">{% trans "Back to survey list" %}</a> </p>
+{% endblock %}

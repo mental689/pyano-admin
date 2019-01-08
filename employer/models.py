@@ -82,7 +82,7 @@ class Credit(models.Model):
 
 
 class Video(models.Model):
-    video = models.OneToOneField(survey_models.Video, on_delete=models.CASCADE)
+    video = models.OneToOneField(survey_models.Video, on_delete=models.CASCADE, related_name='pyano_video')
     parent = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='videos')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -92,6 +92,9 @@ class Video(models.Model):
 
     def __str__(self):
         return self.video.vid
+
+    def get_aboslute_url(self):
+        return '/worker/survey/review/1/{}/'.format(self.video.id)
 
 
 

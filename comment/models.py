@@ -2,6 +2,7 @@ from django.db import models
 from tinymce.models import HTMLField
 from worker.models import *
 from vatic.models import *
+from survey.models import *
 
 # Create your models here.
 
@@ -23,3 +24,4 @@ class Comment(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='comments')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
