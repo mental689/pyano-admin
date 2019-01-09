@@ -65,6 +65,19 @@
                                 </tr>
                             {% endfor %}
                         {% endif %}
+                        {% if job.has_vatic %}
+                            {% for vatic in vatics %}
+                                <tr>
+                                    <td>{{ vatic }}</td>
+                                    <td>
+                                        <a href="/vatic/group/detail/?id={{ vatic.id }}">/vatic/group/detail/?id={{ vatic.id }}</a>
+                                    </td>
+                                    <td>Free participation (No invitation needed)</td>
+                                    <td>{{ vatic.jobs.all|length }}</td>
+                                    <td>{{ vatic.cost }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
                         </tbody>
                     </table>
                 </div>

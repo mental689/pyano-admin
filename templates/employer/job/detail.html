@@ -139,7 +139,38 @@
     {% if job.has_vatic is True %}
         <div class="card">
             <h5 class="card-header">Space-time annotation tasks</h5>
-            <div class="card-body"></div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered first" id="vatics">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Group</th>
+                            <th>Created at</th>
+                            <th>Price</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for task in tasks.vatics %}
+                            <tr>
+                                <td>{{ task.id }}</td>
+                                <td><a href="/vatic/group/detail/?id={{ task.id }}">{{ task.title }}</a></td>
+                                <td>{{ task.created_at }}</td>
+                                <td>{{ task.cost }}</td>
+                                <td>
+                                    <a href="/survey/edit/?id={{ task.id }}"><i class="fa fa-edit"></i></a>
+                                    <a href="/survey/delete/?id={{ task.id }}"><i class="fa fa-cut"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="/vatic/group/add/" class="btn btn-success"><i
+                                    class="fa fa-plus-circle"></i> Add a
+                                job group</a>
+            </div>
         </div>
     {% endif %}
 
@@ -183,6 +214,7 @@
         $(document).ready(function () {
             $('#searches').DataTable();
             $('#surveys').DataTable();
+            $('#vatics').DataTable();
 
             if ($('#c3chart_pie').length) {
                 var chart = c3.generate({

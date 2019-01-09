@@ -3,10 +3,12 @@ import logging
 import vision
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 from survey import models as surveys
 from vision.track.interpolation import LinearFill
 
 from employer.models import Employer, Credit
+from employer.models import Job as PyanoJob
 from vatic.tools.qa import tolerable
 from worker.models import Annotator
 
@@ -28,6 +30,9 @@ class Video(models.Model):
     blowradius = models.IntegerField(default=5)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.pyano_video.vid
 
     @staticmethod
     def getframepath(frame, base=None):
@@ -65,6 +70,9 @@ class Label(models.Model):
     video = models.ForeignKey(Video, related_name='labels', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.text
 
 
 class Attribute(models.Model):
@@ -104,12 +112,16 @@ class Segment(models.Model):
 class JobGroup(models.Model):
     title = models.CharField(max_length=250, null=False)
     description = models.CharField(max_length=250, null=False)
+    parent = models.ForeignKey(PyanoJob, on_delete=models.CASCADE, related_name='groups', null=True)
     duration = models.IntegerField(null=False)
     cost = models.FloatField(default=15.0)
     keywords = models.CharField(max_length=250, null=False)
     height = models.IntegerField(null=False, default=650)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
 
 
 class Job(models.Model):
@@ -128,11 +140,17 @@ class Job(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.uuid
+
     class Meta:
         unique_together = ('segment', 'group')
 
     def getpage(self):
         return "?id={0}".format(self.id)
+
+    def get_absolute_url(self):
+        return "/vatic/job/?id={}".format(self.id)
 
     def markastraining(self):
         """
@@ -172,9 +190,6 @@ class Job(models.Model):
             return 0
         return self.group.cost.point + self.bonus
 
-    def __iter__(self):
-        return self.paths
-
 
 class Solution(models.Model):
     submitter = models.ForeignKey(Annotator, on_delete=models.CASCADE, related_name='solutions')
@@ -184,6 +199,9 @@ class Solution(models.Model):
 
     class Meta:
         unique_together = ('submitter', 'job')
+
+    def __iter__(self):
+        return self.paths
 
 
 class Path(models.Model):

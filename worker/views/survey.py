@@ -6,6 +6,7 @@ from survey.models import Response, Video, Survey, Answer
 
 from employer.models import Survey as PyanoSurvey
 from worker.models import SurveyAssignment
+from vatic.models import JobGroup
 
 import logging
 logger = logging.getLogger(__name__)
@@ -58,5 +59,6 @@ class SurveyVideoReviewView(View):
                 return redirect(to="/") # just redirect to homepage
         responses = Response.objects.filter(survey=survey, video=video)
         context['responses'] = responses
+        context['groups'] = JobGroup.objects.all()
         return render(request, template_name=self.template_name, context=context)
 

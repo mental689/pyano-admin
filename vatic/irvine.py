@@ -23,11 +23,14 @@ class VATICJobView(View):  # equal to getjob in VATIC
         if job is not None:
             logger.debug("Found job {0}".format(job.id))
             # find if a solution is assigned to this user and this job
-            solution = Solution.objects.filter(job=job, submitter=request.user).first()
+            solution = Solution.objects.filter(job=job, submitter__user=request.user).first()
             if solution is None:
                 solution = Solution()
                 solution.job = job
-                solution.submitter = request.user
+                annotator = Annotator.objects.filter(user=request.user).first()
+                if annotator is None:
+                    return JsonResponse({'error': 'No annotator is found.'})
+                solution.submitter = annotator
                 try:
                     solution.save()
                 except Exception as e:
@@ -79,7 +82,7 @@ class VATICBoxesForJobView(View):  # getboxesforjob
         if not request.user.is_authenticated:
             return JsonResponse({'error': 'No permission.'})
         id = request.GET.get('id')
-        solution = Solution.objects.filter(id=id).first()
+        solution = Solution.objects.filter(job__id=id, submitter__user=request.user).first()
         result = []
         if solution is not None:
             for path in solution.paths.all():
@@ -147,11 +150,11 @@ class VATICSaveJobView(View):  # savejob
             return JsonResponse({'error': 'Login is required.'})
         id = request.POST.get('id')
         tracks = json.loads(request.POST.get('tracks'))
-        solution = Solution.objects.filter(id=id).first()
+        solution = Solution.objects.filter(job__id=id, submitter__user=request.user).first()
         if solution is not None:
-            assignment = Assignment.objects.filter(worker=request.user, job=solution.job).first()
-            if assignment is None:
-                return JsonResponse({'error': 'User is not assigned for this job.'})
+            # assignment = Assignment.objects.filter(worker=request.user, job=solution.job).first()
+            # if assignment is None:
+            #     return JsonResponse({'error': 'User is not assigned for this job.'})
             if solution.job.completed:
                 return JsonResponse({'error': 'Job is completed. You cannot submit after a job is finalized.'})
             for path in solution.paths.all():

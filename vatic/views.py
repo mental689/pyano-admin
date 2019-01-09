@@ -5,6 +5,7 @@ from django.views import View
 from django.db.models import Count, Q, Sum
 
 from vatic.models import *
+from vatic.forms import *
 from search.youtube import download_youtube_video
 from vatic.video import *
 import json
@@ -46,6 +47,7 @@ class VATICDownloadView(View):
         height = int(request.POST.get('height', 480))
         noresize = not bool(request.POST.get('resize', True))
         labels = request.POST.get('labels', '')
+        groupId = int(request.POST.get('group', 1))
         videoID = request.POST.get('videoID', None)
         if videoID is None:
             return render(request, template_name=self.template_name, context={'error': 'videoID is required.'})
@@ -60,7 +62,8 @@ class VATICDownloadView(View):
             logger.debug(e)
             return render(request, template_name=self.template_name, context={'error': 'Download error.'})
         try:
-            extractor = Extractor(video_path='{}/{}.mp4'.format(DOWNLOAD_DIR, video.vid),
+            files = glob(DOWNLOAD_DIR+'/' + video.vid + '.*')
+            extractor = Extractor(video_path=files[0],
                               output_path=os.path.join(FRAME_DIR, '{}'.format(video.vid)),
                               width=width, height=height, no_resize=noresize)
             extractor()
@@ -68,15 +71,63 @@ class VATICDownloadView(View):
             logger.debug(e)
             return render(request, template_name=self.template_name, context={'error': 'Frame extraction error.'})
         try:
-            loader = Loader(location='{}/{}.mp4'.format(DOWNLOAD_DIR, video.vid),
-                        labels=labels, pyano_video_id=videoID, length=length)
-            loader()
+            loader = Loader(location=os.path.join(FRAME_DIR, '{}'.format(video.vid)),
+                        labels=labels.split(','), pyano_video_id=videoID, length=length)
+            group = JobGroup.objects.filter(id=groupId).first()
+            loader(group=group)
         except Exception as e:
             logger.debug(e)
-            return render(request, template_name=self.template_name, context={'error': 'Segment loading error.'})
+            return render(request, template_name=self.template_name, context={'error': 'Segment loading error. {}'.format(e)})
         return render(request, template_name=self.template_name, context={})
 
 
+class AddJobGroupView(View):
+    template_name = 'vatic/jobgroup/add.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to='{}/?next=/vatic/group/add/'.format(settings.LOGIN_URL))
+        if not request.user.is_employer:
+            return render(request, template_name=self.template_name, context={'status': 400})
+        form = AddJobGroupForm()
+        return render(request, template_name=self.template_name, context={'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = AddJobGroupForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return render(request, template_name=self.template_name, context={'status': 200})
+
+
+class DetailJobGroupView(View):
+    template_name = 'vatic/jobgroup/detail.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to='{}/?next=/vatic/group/detail/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
+        id = request.GET.get('id', None)
+        if id is None:
+            return render(request, template_name=self.template_name, context={'status': 400})
+        group = JobGroup.objects.filter(id=id).first()
+        if group is None:
+            return render(request, template_name=self.template_name, context={'status': 400})
+        jobs = group.jobs.all()
+        return render(request, template_name=self.template_name, context={'jobs': jobs, 'group': group})
+
+
+class JobView(View):
+    template_name = 'vatic/index.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to="{}?next=/vatic/job/?id={}".format(settings.LOGIN_URL, request.GET.get('id',None)))
+        id = request.GET.get('id',None)
+        if id is None:
+            return redirect(to='/')
+        job = Job.objects.filter(id=id).first()
+        if job is None:
+            return redirect(to='/')
+        return render(request, template_name=self.template_name, context={'job':job, 'id': id})
 
 
 

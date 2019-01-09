@@ -37,6 +37,9 @@ class JobDetailView(View):
                 if job.has_survey:
                     surveys = job.surveys.annotate(credit=Sum('credits__amount')).all()
                     context['surveys'] = surveys
+                if job.has_vatic:
+                    vatics = job.groups.all()
+                    context['vatics'] = vatics
             except Exception as e:
                 logger.debug(e)
                 context['error'] = 'Internal Server Error'

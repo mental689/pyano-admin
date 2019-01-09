@@ -106,6 +106,8 @@ class DetailJobView(View):
                 users = PyanoUser.objects.all().annotate(c=Count('responses')).values('username', 'c').order_by('-c')[:5]
 
                 tasks['users_surveys'] = users
+            if job.has_vatic:
+                tasks['vatics'] = job.groups.all()
         return render(request, template_name=self.template_name, context={'job': job, 'tasks': tasks})
 
 

@@ -1,0 +1,63 @@
+{% extends 'employer/index.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block custom_css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+{% endblock %}
+
+{% block page_header %}
+    {{ group.title }}
+{% endblock %}
+
+{% block body_content %}
+    {% if not status %}
+        <div class="card">
+            <h5 class="card-header">Available jobs</h5>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered first" id="vatics">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Link</th>
+                            <th>Created at</th>
+                            <th>Price</th>
+                            <th>Per-object bonus</th>
+                            <th>Completion bonus</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for job in jobs %}
+                            <tr>
+                                <td>{{ job.id }}</td>
+                                <td><a href="{{ job.get_absolute_url }}" target="_blank">{{ job.get_absolute_url }}</a></td>
+                                <td>{{ job.created_at }}</td>
+                                <td>
+                                    {{ group.cost }}
+                                </td>
+                            <td>{{ job.segment.video.perobjectbonus }}</td>
+                            <td>{{ job.segment.video.completionbonus }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% elif status == 400 %}
+        <div class="alert alert-danger" role="alert">
+                You cannot access this page.
+            </div>
+    {% endif %}
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#vatics').DataTable();
+        });
+    </script>
+{% endblock %}

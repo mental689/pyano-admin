@@ -18,7 +18,7 @@ function Job(data)
     {
         folder1 = parseInt(Math.floor(i / 100));
         folder2 = parseInt(Math.floor(i / 10000));
-        return "static/frames/" + me.slug +
+        return "/static/frames/" + me.slug +
             "/" + folder2 + "/" + folder1 + "/" + parseInt(i) + ".jpg";
     }
 }

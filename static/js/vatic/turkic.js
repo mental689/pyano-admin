@@ -424,7 +424,7 @@ function eventlog_save(callback)
 
 function server_geturl(action, parameters)
 {
-    var url = "vatic/" + action + "/?";
+    var url = "/vatic/" + action + "/?";
     for (var x in parameters)
     {
         url += x + "=" + parameters[x] + "&";

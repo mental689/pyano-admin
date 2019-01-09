@@ -1,0 +1,31 @@
+{% extends 'employer/index.html' %}
+
+{% block page_header %}
+    Add a new job group
+{% endblock %}
+{% block body_content %}
+    {% if error %}
+        {{ error }}
+    {% else %}
+        {% if form %}
+            <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </div>
+        {% elif status == 200 %}
+            <div class="alert alert-success" role="alert">
+                The job group was successfully added.
+            </div>
+            {% else %}
+            <div class="alert alert-danger" role="alert">
+                You cannot access this page.
+            </div>
+        {% endif %}
+    </form>
+    {% endif %}
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}
