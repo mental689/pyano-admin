@@ -6,6 +6,7 @@ from django.db.models import Count, Q, Sum
 
 if "pinax.notifications" in settings.INSTALLED_APPS:
     from pinax.notifications import models as notification
+    from pinax.notifications.views import NoticeSettingsView
 else:
     notification = None
 
@@ -135,6 +136,15 @@ class JobView(View):
         return render(request, template_name=self.template_name, context={'job':job, 'id': id})
 
 
+if notification:
+    class VATICJobNoticeSettingsView(NoticeSettingsView):
+        job = None
+
+        @property
+        def scoping(self):
+            return self.request.job
+
+
 class InvitationView(View):
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -149,8 +159,7 @@ class InvitationView(View):
         users = [annotator.user for annotator in annotators]
         if notification:
             try:
-
-                notification.send(users, 'vatic_job_invite', {'from_user': request.user})
+                notification.send(users, 'vatic_job_invite', {'from_user': request.user}, scoping=job)
             except Exception as e:
                 logger.debug(e)
                 return JsonResponse({'error': 'Internal Server Error: {}'.format(e)})
