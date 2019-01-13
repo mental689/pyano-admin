@@ -111,7 +111,7 @@ class DetailJobGroupView(View):
         group = JobGroup.objects.filter(id=id).first()
         if group is None:
             return render(request, template_name=self.template_name, context={'status': 400})
-        jobs = group.jobs.all()
+        jobs = group.jobs.annotate(num_paths=Count('solutions__paths'))
         return render(request, template_name=self.template_name, context={'jobs': jobs, 'group': group})
 
 

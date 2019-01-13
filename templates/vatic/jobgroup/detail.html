@@ -25,6 +25,7 @@
                             <th>Price</th>
                             <th>Per-object bonus</th>
                             <th>Completion bonus</th>
+                            <th>Tracks</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -38,6 +39,7 @@
                                 </td>
                             <td>{{ job.segment.video.perobjectbonus }}</td>
                             <td>{{ job.segment.video.completionbonus }}</td>
+                            <td>{{ job.num_paths }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
