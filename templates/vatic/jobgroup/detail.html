@@ -25,6 +25,11 @@
                             <th>Price</th>
                             <th>Per-object bonus</th>
                             <th>Completion bonus</th>
+                            <th>Tracks</th>
+                            <th>Solutions</th>
+                            {% if user.is_employer %}
+                            <th>Invite</th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tbody>
@@ -38,6 +43,11 @@
                                 </td>
                             <td>{{ job.segment.video.perobjectbonus }}</td>
                             <td>{{ job.segment.video.completionbonus }}</td>
+                            <td>{{ job.num_paths }}</td>
+                            <td>{{ job.solutions.count }}</td>
+                                {% if user.is_employer %}
+                            <th><button class="btn btn-primary" onclick="invite({{ job.id }});" id="invite_btn_{{ job.id }}">Invite annotators</button> </th>
+                            {% endif %}
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -59,5 +69,27 @@
         $(document).ready(function () {
             $('#vatics').DataTable();
         });
+
+        function invite(job_id) {
+            var posting = $.post(
+                '/vatic/invite/',
+                {
+                    'id': job_id,
+                    'csrfmiddlewaretoken': $.cookie("csrftoken"),
+                }
+            );
+            posting.done(function (data) {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    $('#invite_btn_'+job_id).prop('disabled', true);
+                    if (data.msg) {
+                        alert(data.msg);
+                    }
+                }
+            }).fail(function () {
+                alert('There were server errors.');
+            });
+        }
     </script>
 {% endblock %}

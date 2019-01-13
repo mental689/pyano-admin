@@ -7,7 +7,7 @@ services:
     build: .
     command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/pyano_admin:/common:/comment:/employer:/worker:/search:/vatic:/static:/templates
+      - .:/pyano
     ports:
       - "8000:8000"
     depends_on:
