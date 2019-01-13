@@ -52,7 +52,7 @@ class Job(models.Model):
 
 
 class Survey(models.Model):
-    survey = models.OneToOneField(survey_models.Survey, on_delete=models.CASCADE, unique=True)
+    survey = models.OneToOneField(survey_models.Survey, on_delete=models.CASCADE, unique=True, related_name='pyano_survey')
     parent = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='surveys')
     guideline = HTMLField(default='')
     created_at = models.DateTimeField(auto_now_add=True)
