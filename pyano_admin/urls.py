@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^survey/', include('survey.urls')),
     url(r'^comments/', include('django_comments_xtd.urls')),
+    url(r"^notifications/", include("pinax.notifications.urls", namespace="pinax_notifications")),
 ]

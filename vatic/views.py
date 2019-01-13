@@ -4,6 +4,11 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.db.models import Count, Q, Sum
 
+if "pinax.notifications" in settings.INSTALLED_APPS:
+    from pinax.notifications import models as notification
+else:
+    notification = None
+
 from vatic.models import *
 from vatic.forms import *
 from search.youtube import download_youtube_video
@@ -128,6 +133,31 @@ class JobView(View):
         if job is None:
             return redirect(to='/')
         return render(request, template_name=self.template_name, context={'job':job, 'id': id})
+
+
+class InvitationView(View):
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Login is required.'})
+        id = request.POST.get('id', None)
+        if id is None:
+            return JsonResponse({'error': 'No ID is provided.'})
+        job = Job.objects.filter(id=id, group__parent__topic__owner__user=request.user).first()
+        if job is None:
+            return JsonResponse({'error': 'Jobs of this user are not found.'})
+        annotators = Annotator.objects.all() # all annotators who has not been assigned to this job
+        users = [annotator.user for annotator in annotators]
+        if notification:
+            try:
+
+                notification.send(users, 'vatic_job_invite', {'from_user': request.user})
+            except Exception as e:
+                logger.debug(e)
+                return JsonResponse({'error': 'Internal Server Error: {}'.format(e)})
+        else:
+            return JsonResponse({'error': 'Cannot connect to notification app.'})
+        return JsonResponse({'msg': 'Invited {} annotators to the job.'.format(len(users))})
+
 
 
 
