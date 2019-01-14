@@ -24,13 +24,13 @@ pool = multiprocessing.Pool(24)
 root = os.path.dirname(os.path.abspath(__file__))
 
 for _ in range(1):
-    print "Given frames are:", ", ".join(str(x.frame) for x in given)
-    print "Simulating with {0} clicks".format(len(given))
+    print("Given frames are:", ", ".join(str(x.frame) for x in given))
+    print("Simulating with {0} clicks".format(len(given)))
     askingfor = alearn.pick(g, given, pool = pool, skip = 1,
                             bgskip = 10, bgsize = 5e3, plot = "tmp/",
                             errortube = 100000)
-    print "Requested frame {0}".format(askingfor)
-    print "Visualizing path with {0} clicks".format(len(given))
+    print("Requested frame {0}".format(askingfor))
+    print("Visualizing path with {0} clicks".format(len(given)))
     
     vit = visualize.highlight_path(g, interpolation.LinearFill(given))
     base = "{0}/visualize/{1}/clicks{2}/wants{3}".format(root, id,

@@ -12,7 +12,7 @@ Usage is simple:
 The only dependencies are Tkinter and PIL (it does not depend on pyvision).
 """
 
-from Tkinter import *
+from tkinter import *
 from PIL import Image
 from PIL import ImageTk
 
@@ -22,7 +22,7 @@ except ImportError:
     pass
 else:
     def getbox(image, frame = None):
-        print "get box"
+        print("get box")
         if frame:
             box = vision.Box(*getcoords(image[frame]))
             box.frame = frame
@@ -94,6 +94,6 @@ class Drawer(object):
 if __name__ == "__main__":
     import sys
     if len(sys.argv) != 2:
-        print "usage: python drawer.py /path/to/image.jpg"
+        print("usage: python drawer.py /path/to/image.jpg")
     else:
-        print getcoords(Image.open(sys.argv[1]))
+        print(getcoords(Image.open(sys.argv[1])))

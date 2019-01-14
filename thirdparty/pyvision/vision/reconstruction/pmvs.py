@@ -125,7 +125,7 @@ def read_projections(root, start = 0):
                 raise RuntimeError("expceted CONTOUR header")
             read = lambda x: [float(y) for y in x.readline().strip().split()]
             m = numpy.array([read(data), read(data), read(data)])
-            frame = frames.next()
+            frame = next(frames)
             frame -= start
             projections[frame] = Projection(m, frame)
     return projections
@@ -159,7 +159,7 @@ class RealWorldMap(object):
                 logger.debug("Built maps for {0} of {1} patches".format(num, len(self.patches)))
 
             resp = {}
-            for _, projection in self.projections.items():
+            for _, projection in list(self.projections.items()):
                 inimage = patch.project(projection)
                 if projection.id not in self.imagetree:
                     self.imagetree[projection.id] = []
@@ -173,7 +173,7 @@ class RealWorldMap(object):
         logger.debug("Done building maps for {0} patches".format(len(self.patches)))
 
         logger.debug("Building image KD tree")
-        for key, imagecoords in self.imagetree.items():
+        for key, imagecoords in list(self.imagetree.items()):
             self.imagetree[key] = KDTree(imagecoords)
 
     def realtoimages(self, coords):
@@ -187,7 +187,7 @@ class RealWorldMap(object):
         for nearestindex in nearestindices:
             nearest = self.realtree.data[nearestindex]
             points = self.realmapping[tuple(nearest)]
-            for k, v in points.iteritems():
+            for k, v in points.items():
                 if k not in resp:
                     resp[k] = []
                 resp[k].append(v)
@@ -209,18 +209,18 @@ if __name__ == "__main__":
     patches, projections = read("/csail/vision-videolabelme/databases/"
                                 "video_adapt/demos/bottle_table/bundler/pmvs")
 
-    print get_patch_bounds(patches)
+    print(get_patch_bounds(patches))
 
     mapping = RealWorldMap(patches, projections)
 
     patch = patches[0]
-    print "REAL ="
-    print patch.realcoords
-    print ""
-    a, b = mapping.realtoimages(patch.realcoords).items()[0]
-    print "PROJECTION ="
-    print b
-    print ""
-    print "REAL (again) ="
+    print("REAL =")
+    print(patch.realcoords)
+    print("")
+    a, b = list(mapping.realtoimages(patch.realcoords).items())[0]
+    print("PROJECTION =")
+    print(b)
+    print("")
+    print("REAL (again) =")
     r = mapping.imagetoreal(a, b)
-    print r
+    print(r)

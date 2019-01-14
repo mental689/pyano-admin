@@ -88,7 +88,7 @@ def highlight_paths(images, paths, colors = colors, width = defaultwidth,
     logger.info("Visualize {0} paths".format(len(paths)))
 
     boxmap = {}
-    paths = zip(paths, itertools.cycle(colors))
+    paths = list(zip(paths, itertools.cycle(colors)))
 
     for path, color in paths:
         for box in path:

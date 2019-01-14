@@ -22,7 +22,7 @@ iter = frameiterator("/scratch/virat/frames/{0}".format(name))
 label, path = data[9]
 id = 9
 
-print "Processing {0} {1}".format(label, id)
+print("Processing {0} {1}".format(label, id))
 
 start = min(x.frame for x in path if not x.lost)
 stop  = max(x.frame for x in path if not x.lost)
@@ -32,15 +32,15 @@ stop  = max(x.frame for x in path if not x.lost)
 start = 200
 stop = 1500
 
-print "start = {0} and stop = {1}".format(start, stop)
+print("start = {0} and stop = {1}".format(start, stop))
 
 pathdict = dict((x.frame, x) for x in path)
 
 given = [pathdict[start], pathdict[stop]]
 
 for _ in range(20):
-    print "Given frames are:", ", ".join(str(x.frame) for x in given)
-    print "Simulating with {0} clicks".format(len(given))
+    print("Given frames are:", ", ".join(str(x.frame) for x in given))
+    print("Simulating with {0} clicks".format(len(given)))
     base = "{0}/visualize/{1}/clicks{2}/tmp".format(root, id, len(given))
     try:
         os.makedirs(base)
@@ -49,8 +49,8 @@ for _ in range(20):
     askingfor = alearn.pick(iter, given, pool = pool, skip = 1,
                             bgskip = 3, bgsize = 5e5, errortube = 100000,
                             plot = base)
-    print "Requested frame {0}".format(askingfor)
-    print "Visualizing path with {0} clicks".format(len(given))
+    print("Requested frame {0}".format(askingfor))
+    print("Visualizing path with {0} clicks".format(len(given)))
     
     vit = visualize.highlight_path(iter, interpolation.LinearFill(given))
     base = "{0}/visualize/{1}/clicks{2}/wants{3}".format(root, id,

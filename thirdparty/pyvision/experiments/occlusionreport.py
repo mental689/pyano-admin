@@ -12,17 +12,17 @@ ranges = {
     "Total Occlusion": ([(375, 390), (420, 455)], "red"),
 }
 
-for label, data in ranges.items():
+for label, data in list(ranges.items()):
     for start, stop in data[0]:
-        use = dict(x for x in loaded.items() if start <= x[0] <= stop)
-        use = use.items()
+        use = dict(x for x in list(loaded.items()) if start <= x[0] <= stop)
+        use = list(use.items())
         use.sort()
         keys = [x[0] for x in use]
         values = [x[1] for x in use]
         plot(keys, values, color = data[1], linewidth=4, label = label)
         label = "_nolegend_"
 
-diamondx, diamondy = max(((x[1], x[0]) for x in loaded.items()))
+diamondx, diamondy = max(((x[1], x[0]) for x in list(loaded.items())))
 plot(diamondy, diamondx, "k*", label = "Requested Frame", markersize = 10)
 
 xlabel("Frame")

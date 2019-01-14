@@ -1,4 +1,4 @@
-import cStringIO
+import io
 
 def red(value, lower, upper):
     red = int((value - lower) / (upper - lower) * 255)
@@ -14,7 +14,7 @@ def filterupper(value, lower, upper):
     return value < upper
 
 def write(outfile, data, colormap = red, condition = filtertrue, bounds = None):
-    f = cStringIO.StringIO()
+    f = io.StringIO()
     lower = data.min()
     upper = data.max()
     count = 0

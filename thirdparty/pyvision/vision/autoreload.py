@@ -6,6 +6,7 @@
 # Author: Andrew Owens
 import os, sys, traceback
 import IPython.core.ipapi
+import importlib
 
 def relative_module(m):
     return hasattr(m, '__file__') \
@@ -18,18 +19,18 @@ def reload_all():
     # ability to send reload_all() to my ipython shell after making
     # changes. 
     excludes = set(['__main__', 'autoreload'])
-    for name, m in sys.modules.iteritems():
+    for name, m in sys.modules.items():
         if m and relative_module(m) and (name not in excludes):
-            reload(m)
+            importlib.reload(m)
 
 def ipython_autoreload_hook(self):
     try:
         reload_all()
     except:
         traceback.print_exc()
-        print 'Reload error. Modules not reloaded'
+        print('Reload error. Modules not reloaded')
 
 def enable():
-    print 'autoreload enabled'
+    print('autoreload enabled')
     ip = IPython.core.ipapi.get()
     ip.set_hook('pre_run_code_hook', ipython_autoreload_hook)

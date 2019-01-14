@@ -4,7 +4,7 @@ f = ffmpeg.extract("/csail/vision-videolabelme/databases/video_adapt/demos/bottl
 fps = None, size = (100, 100))
 i = iter(f)
 
-print len(f)
+print(len(f))
 
 for t in f:
-    print t.size
+    print(t.size)

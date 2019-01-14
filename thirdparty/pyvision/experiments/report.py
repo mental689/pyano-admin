@@ -1,6 +1,6 @@
 from vision.reporting.track import *
 import multiprocessing
-import cPickle as pickle
+import pickle as pickle
 from pprint import pprint
 
 file = "virat-sample-allfeat-1pair"
@@ -25,7 +25,7 @@ data = build(data, cpfs, engines, pool = pool)
 
 #visualizepaths(data, "tmp/")
 
-print "saving to data"
+print("saving to data")
 pickle.dump(data, open("{0}.pkl".format(file), "w"))
 
 plotperformance(data, PercentOverlap(0.3))

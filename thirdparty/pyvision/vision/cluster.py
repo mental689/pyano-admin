@@ -1,6 +1,6 @@
 from multiprocessing import Process, cpu_count
 from multiprocessing.managers import BaseManager
-import Queue
+import queue
 
 port = 4242
 authkey = 'pyvision'
@@ -45,7 +45,7 @@ def imap(it):
         yield answer(i)
 
 def map(it):
-    return list(imap(it))
+    return list(map(it))
 
 class Worker(Process):
     def __init__(self, callable):
@@ -64,8 +64,8 @@ def handler(callable):
         worker.join()
 
 def start_server():
-    problems = Queue.Queue()
-    solutions = Queue.Queue()
+    problems = queue.Queue()
+    solutions = queue.Queue()
     QueueManager.register('get_problems', callable = lambda: problems)
     QueueManager.register('get_solutions', callable = lambda: solutions)
     m = QueueManager(address=('', port), authkey = authkey)
@@ -74,5 +74,5 @@ def start_server():
 
 
 if __name__ == "__main__":
-    print "Started server."
+    print("Started server.")
     start_server()

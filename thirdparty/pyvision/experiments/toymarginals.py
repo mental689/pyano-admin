@@ -36,4 +36,4 @@ frame, score, path, m = marginals.pick([b[0], b[-1]], g, pool = pool,
 
 #visualize.save(visualize.highlight_paths(g, [path, b], width = 3, colors = ["red", "green"]), lambda x: "tmp/path{0}.jpg".format(x))
 
-print "frame {0} with score {1}".format(frame, score)
+print("frame {0} with score {1}".format(frame, score))

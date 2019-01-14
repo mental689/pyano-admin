@@ -1,6 +1,6 @@
 from vision.reporting.track import *
 import multiprocessing
-import cPickle as pickle
+import pickle as pickle
 
 import logging
 logging.basicConfig(level = logging.INFO, format = "%(message)s")

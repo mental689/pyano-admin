@@ -34,7 +34,7 @@ prior.build(detections)
 
 import pylab, numpy, Image
 for frame, nd in prior.scoreall():
-    print frame
+    print(frame)
     pylab.subplot(221)
     pylab.set_cmap("gray")
     pylab.title("min={0}, max={1}".format(nd.min(), nd.max()))

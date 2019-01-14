@@ -45,18 +45,18 @@ y = int((y) / hr)
 result = Box(x, y, x + b.width, y + b.height, stop)
 
 f = features.rgbmean(frames[b.frame].crop(b[0:4]))
-print f, numpy.dot(f.transpose(), model.rgbweights())
+print(f, numpy.dot(f.transpose(), model.rgbweights()))
 f = features.rgbmean(frames[result.frame].crop(result[0:4]))
-print f, numpy.dot(f.transpose(), model.rgbweights())
+print(f, numpy.dot(f.transpose(), model.rgbweights()))
 
 savematlab(open("weight.mat", "w"), {"w": model.hogweights()}, oned_as="row")
 
 #numpy.set_printoptions(threshold='nan')
-print model.hogweights().shape
-print model.rgbweights()
+print(model.hogweights().shape)
+print(model.rgbweights())
 
-print "Given", b
-print "Predicted", result
+print("Given", b)
+print("Predicted", result)
 
 pylab.figure(1)
 pylab.subplot(221)

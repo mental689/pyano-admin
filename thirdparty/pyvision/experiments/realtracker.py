@@ -34,7 +34,7 @@ detections = vision.detectionreader.exemplarsvm(detfile)
 detections = list(detections)
 detections.sort(key = lambda x: -x.score)
 
-print detections[0]
+print(detections[0])
 
 realprior = ThreeD(video, patches, projections).build(detections)
 predicted = vision.track.dp.fill([detections[0]], video, last = detections[0].frame + 1000, pool = pool, hogbin = 4, pairwisecost = 0.01, c = 0.1, realprior = realprior)

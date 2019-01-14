@@ -64,4 +64,4 @@ pickle.dump(marginals, open("occlusion.pkl", "w"))
 
 visualize.save(visualize.highlight_paths(g, [path]), lambda x: "tmp/path{0}.jpg".format(x))
 
-print "frame {0} with score {1}".format(frame, score)
+print("frame {0} with score {1}".format(frame, score))

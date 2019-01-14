@@ -68,7 +68,7 @@ class FixedRateEngine(Engine):
         Child classes should implement predict().
         """
         result = {}
-        numframes = sum(x[-1].frame - x[0].frame for x in gtruths.values())
+        numframes = sum(x[-1].frame - x[0].frame for x in list(gtruths.values()))
         logger.info("Total of {0} frames".format(numframes))
         for cpf in cpfs:
             clicks = int(cpf * numframes)
@@ -77,7 +77,7 @@ class FixedRateEngine(Engine):
             logger.info("CPF {0} has {1} clicks".format(cpf, clicks))
 
             schedule = {}
-            for id, gtruth in gtruths.items():
+            for id, gtruth in list(gtruths.items()):
                 gtruth.sort(key = lambda x: x.frame)
                 pathclicks = clicks 
                 pathclicks *= float(gtruth[-1].frame - gtruth[0].frame)
@@ -85,15 +85,15 @@ class FixedRateEngine(Engine):
                 pathclicks = int(floor(pathclicks))
                 schedule[id] = max(pathclicks, 1)
                 usedclicks += schedule[id]
-            for id, _ in zip(itertools.cycle(gtruths.keys()),
-                             range(clicks - usedclicks)):
+            for id, _ in zip(itertools.cycle(list(gtruths.keys())),
+                             list(range(clicks - usedclicks))):
                 schedule[id] += 1
 
-            for id, clicksinschedule in schedule.items():
+            for id, clicksinschedule in list(schedule.items()):
                 logger.info("ID {0} has {1} clicks for {2} frames".format(id,
                     clicksinschedule, len(gtruths[id])))
 
-            for id, gtruth in gtruths.items():
+            for id, gtruth in list(gtruths.items()):
                 skip = int(ceil(float(gtruth[-1].frame - gtruth[0].frame) / schedule[id]))
                 given = gtruth[::skip]
                 given = given[:schedule[id]]
@@ -170,12 +170,12 @@ class ActiveLearnDPEngine(Engine):
     def __call__(self, video, gtruths, cpfs, pool = None):
         result = {}
         pathdict = {}
-        for id, gtruth in gtruths.items():
+        for id, gtruth in list(gtruths.items()):
             gtruth.sort(key = lambda x: x.frame)
             pathdict[id] = dict((x.frame, x) for x in gtruth)
 
         requests = {}
-        for id, gtruth in gtruths.items():
+        for id, gtruth in list(gtruths.items()):
             frame, score, predicted, _ = marginals.pick([gtruth[0]], video, 
                                          last = gtruth[-1].frame,
                                          pool = pool,
@@ -193,13 +193,13 @@ class ActiveLearnDPEngine(Engine):
 
         logger.info("Used {0} clicks!".format(usedclicks))
 
-        numframes = sum(x[-1].frame - x[0].frame for x in gtruths.values())
+        numframes = sum(x[-1].frame - x[0].frame for x in list(gtruths.values()))
         reqclicks = [(int(numframes * x), x) for x in cpfs]
         reqclicks.sort()
 
         for clicks, cpf in reqclicks:
             for _ in range(clicks - usedclicks):
-                id = max((y[0], x) for x, y in requests.items())[1]
+                id = max((y[0], x) for x, y in list(requests.items()))[1]
 
                 givens = list(requests[id][3])
                 givens.append(pathdict[id][requests[id][1]])
@@ -222,7 +222,7 @@ class ActiveLearnDPEngine(Engine):
                 logger.info("Used {0} clicks with {1} total in this cpf!"
                             .format(usedclicks, clicks))
 
-            for id, (_, _, path, _) in requests.iteritems():
+            for id, (_, _, path, _) in requests.items():
                 result[id][cpf] = path
         return result
 
@@ -329,11 +329,11 @@ def merge(datas):
     merged = {}
     strmapping = {}
     for data in datas:
-        for engine, predictions in data.iteritems():
+        for engine, predictions in data.items():
             if str(engine) not in strmapping:
                 strmapping[str(engine)] = engine
                 merged[engine] = []
-            print strmapping
+            print(strmapping)
             merged[strmapping[str(engine)]].extend(predictions)
     return merged
 
@@ -350,8 +350,8 @@ def build(data, cpfs, engines, pool = None):
                 path[1].sort(key = lambda x: x.frame)
             paths = [x[1] for x in paths]
 
-            keys = range(len(paths))
-            paths = dict(zip(keys, paths))
+            keys = list(range(len(paths)))
+            paths = dict(list(zip(keys, paths)))
 
             predictions = engine(video, paths, cpfs, pool)
 
@@ -364,12 +364,12 @@ def scoreperformance(data, scorer):
     Plots a performance curve for the data with the specified engines.
     """
     results = {}
-    for engine, predictions in data.iteritems():
+    for engine, predictions in data.items():
         logger.info("Plotting and scoring tracks for {0}".format(str(engine)))
         scores = {}
         lengths = {}
         for prediction, groundtruth, video in predictions:
-            for cpf, path in prediction.iteritems():
+            for cpf, path in prediction.items():
                 if cpf not in scores:
                     scores[cpf] = 0
                     lengths[cpf] = 0
@@ -386,12 +386,12 @@ def scoreperformance(data, scorer):
         for cpf in scores:
             scores[cpf] = scores[cpf] / float(lengths[cpf])
 
-        results[engine] = zip(*sorted(scores.items()))
+        results[engine] = list(zip(*sorted(scores.items())))
     return results
 
 def plotperformance(data, scorer, only = []):
     fig = pylab.figure()
-    for engine, (x, y) in scoreperformance(data, scorer).items():
+    for engine, (x, y) in list(scoreperformance(data, scorer).items()):
         if only and str(engine) not in only:
             continue
         pylab.plot(x, y, "{0}.-".format(engine.color()), label = str(engine),
@@ -403,10 +403,10 @@ def plotperformance(data, scorer, only = []):
 
 def plotcorrect(data, scorer, threshold = 0):
     fig = pylab.figure()
-    for engine, predictions in data.iteritems():
+    for engine, predictions in data.items():
         counter = {}
         for prediction, groundtruth, video in predictions:
-            for cpf, path in prediction.iteritems():
+            for cpf, path in prediction.items():
                 if cpf not in counter:
                     counter[cpf] = 0
 
@@ -418,7 +418,7 @@ def plotcorrect(data, scorer, threshold = 0):
                     if score <= threshold:
                         counter[cpf] += 1
 
-        x, y = zip(*sorted(counter.items()))
+        x, y = list(zip(*sorted(counter.items())))
         pylab.plot(x, y, "{0}.-".format(engine.color()), label = str(engine),
                    linewidth = 4)
     pylab.ylabel("Number of completely correct tracks ({0}, threshold = {1})".format(str(scorer), threshold))
@@ -432,7 +432,7 @@ def plotsurface(input, scorer, left, right,
     data = scoreperformance(input, scorer)
 
     # find left and right
-    for potential in data.keys():
+    for potential in list(data.keys()):
         if str(potential) == left:
             left = potential
         elif str(potential) == right:
@@ -456,9 +456,9 @@ def plotsurface(input, scorer, left, right,
     plt.show()
 
 def visualizepaths(data, dir):
-    for engine, predictions in data.iteritems():
+    for engine, predictions in data.items():
         for id, (prediction, groundtruth, video) in enumerate(predictions):
-            for cpf, path in prediction.iteritems():
+            for cpf, path in prediction.items():
                 logger.info("Visualizing engine {0} path {1} cpf {2}"
                             .format(str(engine), id, cpf))
                 filepath = "{0}/{1}/{2}/{3}".format(dir, str(engine), id, cpf)

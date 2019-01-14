@@ -1,12 +1,12 @@
-import httplib
-import urllib
+import http.client
+import urllib.request, urllib.parse, urllib.error
 import random
 import time
 import Image
 import os
 from xml.etree import ElementTree
 import logging
-import StringIO
+import io
 
 all_extras = ("description,license,date_upload,date_taken,owner_name,"
 "icon_server,original_format,last_update,geo,tags,machine_tags,o_dims,"
@@ -38,8 +38,8 @@ class Photo(object):
         This does not write to local storage. To do so, use the save() method
         on the returned image.
         """
-        data = urllib.urlopen(self.remoteurl).read()
-        s = StringIO.StringIO(data)
+        data = urllib.request.urlopen(self.remoteurl).read()
+        s = io.StringIO(data)
         return Image.open(s)
 
     def __hash__(self):
@@ -81,10 +81,10 @@ def request(method, parameters = {}):
     if len(keys) == 0:
         raise RuntimeError("No Flickr API keys defined")
     apikey = random.choice(keys)
-    parameters = urllib.urlencode(parameters)
+    parameters = urllib.parse.urlencode(parameters)
     url = "/services/rest?method={0}&format=rest&api_key={1}&{2}"
     url = url.format(method, apikey, parameters)
-    conn = httplib.HTTPConnection("api.flickr.com")
+    conn = http.client.HTTPConnection("api.flickr.com")
     conn.request("GET", url)
     response = conn.getresponse().read()
     response = ElementTree.fromstring(response)

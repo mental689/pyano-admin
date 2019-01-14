@@ -4,12 +4,12 @@ cluster.setup('quickstep')
 
 start = 1000000000
 length = 10000
-jobs = range(start, start + length)
+jobs = list(range(start, start + length))
 
-print "asking"
+print("asking")
 for job in jobs:
     cluster.ask(job, job)
 
-print "answering"
+print("answering")
 for job in jobs:
-    print job, cluster.answer(job)
+    print(job, cluster.answer(job))

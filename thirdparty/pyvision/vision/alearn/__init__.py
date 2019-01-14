@@ -1,1 +1,1 @@
-import .linear
+import linear
