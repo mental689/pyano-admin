@@ -64,7 +64,9 @@ INSTALLED_APPS = [
     'django_comments_xtd',
     'django_comments',
     'versions',
-    'versions_tests',
+    # 'versions_tests',
+    'pinax.notifications',
+    'pinax.templates',
 ]
 
 MIDDLEWARE = [
