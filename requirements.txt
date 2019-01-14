@@ -1,9 +1,15 @@
+# Pyano dependencies
 Django>=2.0
-git+https://github.com/mental689/django-survey.git
+git+https://github.com/mental689/django-survey.git # for surveys
 Cython
-django-tinymce4-lite
+django-tinymce4-lite # for editor
 django-countries
 django-comments-xtd # for comments
 cleanerversion # for versioning
 pinax-notifications # for notifications, annotators will be notified when owners invited them to a job.
 pinax-templates
+youtube-dl # for download youtube videos
+
+# Pyvision dependencies
+Pillow # for image
+munkres # for Hungarian matching algorithm
