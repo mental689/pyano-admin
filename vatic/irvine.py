@@ -24,10 +24,11 @@ class VATICJobView(View):  # equal to getjob in VATIC
             logger.debug("Found job {0}".format(job.id))
             # find if a solution is assigned to this user and this job
             solution = Solution.objects.filter(job=job, submitter__user=request.user).first()
-            if solution is None:
+            annotator = Annotator.objects.filter(user=request.user).first()
+            employer = Employer.objects.filter(user=request.user).first()
+            if solution is None and employer is None:
                 solution = Solution()
                 solution.job = job
-                annotator = Annotator.objects.filter(user=request.user).first()
                 if annotator is None:
                     return JsonResponse({'error': 'No annotator is found.'})
                 solution.submitter = annotator
@@ -69,7 +70,7 @@ class VATICJobView(View):  # equal to getjob in VATIC
                       "completion": video.completionbonus,
                       "blowradius": video.blowradius,
                       "jobid": job.id,
-                      "solutionid": solution.id,
+                      # "solutionid": solution.id,
                       "training": int(training),
                       "labels": labels,
                       "attributes": attributes}
@@ -82,14 +83,25 @@ class VATICBoxesForJobView(View):  # getboxesforjob
         if not request.user.is_authenticated:
             return JsonResponse({'error': 'No permission.'})
         id = request.GET.get('id')
-        solution = Solution.objects.filter(job__id=id, submitter__user=request.user).first()
+        employer = Employer.objects.filter(user=request.user).first()
         result = []
-        if solution is not None:
-            for path in solution.paths.all():
-                attrs = [(x.attribute.id, x.frame, x.value) for x in path.attributes.all()]
-                result.append({"label": path.label.id,
-                               "boxes": [tuple(x) for x in path.getboxes()],
-                               "attributes": attrs})
+        if employer is None:
+            solution = Solution.objects.filter(job__id=id, submitter__user=request.user).first()
+            if solution is not None:
+                for path in solution.paths.all():
+                    attrs = [(x.attribute.id, x.frame, x.value) for x in path.attributes.all()]
+                    result.append({"label": path.label.id,
+                                   "boxes": [tuple(x) for x in path.getboxes()],
+                                   "attributes": attrs})
+        else:
+            # Owners of a project can see all solutions
+            solutions = Solution.objects.filter(job__id=id).all()
+            for solution in solutions:
+                for path in solution.paths.all():
+                    attrs = [(x.attribute.id, x.frame, x.value) for x in path.attributes.all()]
+                    result.append({"label": path.label.id,
+                                   "boxes": [tuple(x) for x in path.getboxes()],
+                                   "attributes": attrs})
         return JsonResponse({'result': result})
 
 
@@ -151,6 +163,9 @@ class VATICSaveJobView(View):  # savejob
         id = request.POST.get('id')
         tracks = json.loads(request.POST.get('tracks'))
         solution = Solution.objects.filter(job__id=id, submitter__user=request.user).first()
+        annotator = Annotator.objects.filter(user=request.user).first()
+        if annotator is None:
+            return JsonResponse({'error': 'No annotator is found.'}) # Only annotators can do the jobs.
         if solution is not None:
             # assignment = Assignment.objects.filter(worker=request.user, job=solution.job).first()
             # if assignment is None:

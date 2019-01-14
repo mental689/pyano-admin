@@ -4,11 +4,12 @@ import logging
 from django.shortcuts import redirect, render
 from django.views.generic import View
 from django_comments_xtd.models import Comment
+from django.db.models import Count, Sum, Q, Avg
 from survey import models as survey_models
 
 from common.forms import AddWorkerForm
 from search.models import *
-from vatic.models import Assignment
+from vatic.models import Solution
 from worker.models import *
 
 logger = logging.getLogger(__name__)
@@ -34,21 +35,22 @@ class ProfileView(View):
             else:
                 context['up_searches'] = (this_month_searches.count() - last_month_searches.count()) / last_month_searches.count() * 100
             this_month_suvery_answers = survey_models.Response.objects.filter(created__gte=now()-timedelta(+30),
-                                                                              user=request.user)
+                                                                              user=request.user).annotate(earning=Sum('survey__pyano_survey__credits__amount'))
             last_month_survey_answers = survey_models.Response.objects.filter(created__gte=now() - timedelta(+60),
                                                                               created__lt=now()-timedelta(+30),
-                                                                              user=request.user)
+                                                                              user=request.user).annotate(earning=Sum('survey__pyano_survey__credits__amount'))
             context['this_month_suvery_answers'] = this_month_suvery_answers
             context['last_month_survey_answers'] = last_month_survey_answers
+            context['this_month_earning'] = sum([response.earning for response in this_month_suvery_answers])
             if last_month_survey_answers.count() != 0:
                 context['up_answers'] = (this_month_suvery_answers.count()-last_month_survey_answers.count())/last_month_survey_answers.count() * 100
             else:
                 context['up_answers'] = 'Last month data is NA'
-            this_month_vatics = Assignment.objects.filter(created_at__gte=now() - timedelta(+30),
-                                                          job__completed=True, worker__user=request.user)
-            last_month_vatics = Assignment.objects.filter(created_at__gte=now() - timedelta(+60),
-                                                          created_at__lt=now() - timedelta(+30),
-                                                          job__completed=True, worker__user=request.user)
+            this_month_vatics = Solution.objects.filter(created_at__gte=now() - timedelta(+30),
+                                                        submitter__user=request.user)
+            last_month_vatics = Solution.objects.filter(created_at__gte=now() - timedelta(+60),
+                                                        created_at__lt=now() - timedelta(+30),
+                                                        submitter__user=request.user)
             context['this_month_vatics'] = this_month_vatics
             context['last_month_vatics'] = last_month_vatics
             if last_month_vatics.count() != 0:

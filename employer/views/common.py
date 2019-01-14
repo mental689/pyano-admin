@@ -2,7 +2,7 @@ import logging
 
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncDate
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 
 from employer.models import *
@@ -16,6 +16,8 @@ class IndexView(View):
     template_name = 'employer/index.html'
 
     def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to='/login/')
         welcome_msg = SystemSetting.objects.filter(key='site_explaination').first().value
         return render(request, template_name=self.template_name, context={'content': welcome_msg})
 

@@ -3,5 +3,7 @@ git+https://github.com/mental689/django-survey.git
 Cython
 django-tinymce4-lite
 django-countries
-django-comments-xtd
-cleanerversion
+django-comments-xtd # for comments
+cleanerversion # for versioning
+pinax-notifications # for notifications, annotators will be notified when owners invited them to a job.
+pinax-templates

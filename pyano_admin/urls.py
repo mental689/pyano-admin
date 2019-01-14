@@ -18,6 +18,12 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls import url
 
+if 'pinax.notifications' in settings.INSTALLED_APPS:
+    from pinax.notifications import models as notification
+    from vatic.views import VATICJobNoticeSettingsView
+else:
+    notification = None
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('employer.urls')),
@@ -27,4 +33,10 @@ urlpatterns = [
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^survey/', include('survey.urls')),
     url(r'^comments/', include('django_comments_xtd.urls')),
+    url(r"^notifications/", include("pinax.notifications.urls", namespace="pinax_notifications")),
 ]
+
+if notification:
+    urlpatterns.extend([
+        url(r"^notifications/settings/$", VATICJobNoticeSettingsView.as_view(), name="notification_notice_settings"),
+    ])

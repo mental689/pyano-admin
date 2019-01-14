@@ -1,7 +1,15 @@
 {% extends 'pyano.html' %}
+{% load static %}
 
 {% block page_header %}
     Profile
+{% endblock %}
+
+{% block custom_css %}
+    <style>
+    .easyPaginateNav a {padding:5px;}
+    .easyPaginateNav a.current {font-weight:bold;text-decoration:underline;}
+    </style>
 {% endblock %}
 
 {% block breadcrumb %}
@@ -171,7 +179,7 @@
                     <div class="card-body">
                         <h5 class="text-muted">Total Earning</h5>
                         <div class="metric-value d-inline-block">
-                            <h1 class="mb-1">1340</h1>
+                            <h1 class="mb-1">{{ this_month_earning }}P</h1>
                         </div>
                         <div class="metric-label d-inline-block float-right text-danger font-weight-bold">
                         <span class="icon-circle-small icon-box-xs text-danger bg-danger-light bg-danger-light "><i
@@ -183,6 +191,58 @@
             <!-- ============================================================== -->
             <!-- end total orders  -->
             <!-- ============================================================== -->
+        </div>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="card">
+                    <h5 class="card-header">Searches You made</h5>
+                    <div class="card-body">
+                        <div class="list-group" id="searches">
+                            {% for tms in this_month_searches %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="/search/ks/outcome/?id={{ tms.id }}">{{ tms.keyword }}</a>
+                                    <span class="badge badge-primary badge-pill">{{ tms.created_at }}</span>
+                                </li>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="card">
+                    <h5 class="card-header">Surveys You Answered</h5>
+                    <div class="card-body">
+                        <div class="list-group" id="surveys">
+                            {% for tmsa in this_month_suvery_answers %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="/survey/{{ tmsa.survey.id }}/?videoID={{ tmsa.video.id }}">{{ tmsa.survey.name }}-{{ tmsa.video.vid }}</a>
+                                    <span class="badge badge-primary badge-pill">{{ tmsa.created }}</span>
+                                </li>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="card">
+                    <h5 class="card-header">Your Solutions in Space-Time Tasks</h5>
+                    <div class="card-body">
+                        <div class="list-group" id="vatics">
+                            {% for tmv in this_month_vatics %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="/vatic/job/?id={{ tmv.job.id }}">{{ tmv.job.group.title }} - Job ID: {{ tmv.job.id }}</a>
+                                    <span class="badge {% if tmv.paths.count == 0 %}badge-danger{% else %}badge-primary{% endif %} badge-pill">
+                                        {% if tmv.paths.count == 0 %}You haven't created anything.{% else %}You created {{ tmv.paths.count }} tracks.{% endif %}</span>
+                                </li>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     {% elif user.is_reviewer %}
         <div class="row">
@@ -236,28 +296,29 @@
             </div>
         </li>
     {% else %}
-        <li class="nav-item ">
-            <a class="nav-link active"
-               href="javascript:void(0);"
-               data-toggle="collapse" aria-expanded="false"
-               data-target="#submenu-assets" aria-controls="submenu-assets"><i
-                    class="fa fa-fw fa-boxes"></i>Assets <span
-                    class="badge badge-success">6</span></a>
-            <div id="submenu-assets" class="collapse submenu" style="">
-                {% if user.is_annotator %}
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/worker/jobs/">Available jobs</a>
-                        </li>
-                    </ul>
-                {% else %}
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/invitation/list/">Available invitations</a>
-                        </li>
-                    </ul>
-                {% endif %}
-            </div>
-        </li>
     {% endif %}
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript" charset="utf8"
+            src="{% static 'js/jquery.easyPaginate.js' %}"></script>
+    <script>
+    $(document).ready(function () {
+        $('#searches').easyPaginate({
+            paginateElement: 'li',
+            elementsPerPage: 5,
+            effect: 'default'
+        });
+        $('#surveys').easyPaginate({
+            paginateElement: 'li',
+            elementsPerPage: 5,
+            effect: 'default'
+        });
+        $('#vatics').easyPaginate({
+            paginateElement: 'li',
+            elementsPerPage: 5,
+            effect: 'default'
+        });
+    });
+    </script>
 {% endblock %}
