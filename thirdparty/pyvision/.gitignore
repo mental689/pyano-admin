@@ -1,0 +1,7 @@
+build
+dist
+MANIFEST
+pyvision.egg-info
+*.so
+*.pyc
+*.html
