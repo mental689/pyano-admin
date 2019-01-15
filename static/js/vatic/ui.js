@@ -112,6 +112,12 @@ function ui_setup(job)
         $("#submitbutton").html("Save Work");
     }
 
+    // alert(window.location.href);
+    
+    if (window.location.href.includes("review")) {
+        $("#submitbutton").remove();
+    }
+
     return screen;
 }
 

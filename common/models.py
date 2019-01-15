@@ -77,6 +77,12 @@ class PyanoUser(AbstractUser):
             return int((now().date()-self.birthday).days/365)
         else:
             return "-"
+        
+    def get_full_name(self):
+        if self.is_reviewer:
+            return "Reviewer {}".format(self.id) # Reviewer name is not revealed.
+        else:
+            return super(PyanoUser, self).get_full_name()
 
 
 class SystemSetting(models.Model):

@@ -26,7 +26,8 @@ class VATICJobView(View):  # equal to getjob in VATIC
             solution = Solution.objects.filter(job=job, submitter__user=request.user).first()
             annotator = Annotator.objects.filter(user=request.user).first()
             employer = Employer.objects.filter(user=request.user).first()
-            if solution is None and employer is None:
+            reviewer = Reviewer.objects.filter(user=request.user, vatic_assignments__job=job).first() # assigned reviewers
+            if solution is None and employer is None and reviewer is None:
                 solution = Solution()
                 solution.job = job
                 if annotator is None:
@@ -81,11 +82,12 @@ class VATICJobView(View):  # equal to getjob in VATIC
 class VATICBoxesForJobView(View):  # getboxesforjob
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return JsonResponse({'error': 'No permission.'})
+            return JsonResponse({'error': 'Login is required.'})
         id = request.GET.get('id')
         employer = Employer.objects.filter(user=request.user).first()
+        reviewer = Reviewer.objects.filter(user=request.user, vatic_assignments__job__id=id).first()
         result = []
-        if employer is None:
+        if employer is None and reviewer is None:
             solution = Solution.objects.filter(job__id=id, submitter__user=request.user).first()
             if solution is not None:
                 for path in solution.paths.all():
