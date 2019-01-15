@@ -18,7 +18,7 @@ SCORES = (
 
 
 class Comment(models.Model):
-    reviewer = models.ForeignKey(Reviewer, on_delete=models.CASCADE, related_name='comments')
+    reviewer = models.ForeignKey(Employer, on_delete=models.CASCADE, related_name='comments')
     score = models.IntegerField(choices=SCORES, default=4)
     comment = HTMLField()
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='comments')

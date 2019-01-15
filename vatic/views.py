@@ -11,9 +11,12 @@ else:
     notification = None
 
 from vatic.models import *
+from vatic import models as vatic_models
 from vatic.forms import *
+from comment.forms import CommentForm
 from search.youtube import download_youtube_video
 from vatic.video import *
+from worker.models import *
 import json
 from glob import glob
 import uuid
@@ -38,7 +41,7 @@ class VATICListView(View):
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect(to="{}?next=/vatic/list".format(settings.LOGIN_URL))
-        jobs = Job.objects.filter(completed=False).all()
+        jobs = vatic_models.Job.objects.filter(completed=False).all()
         return render(request, template_name=self.template_name, context={'jobs': jobs})
 
 
@@ -130,10 +133,33 @@ class JobView(View):
         id = request.GET.get('id',None)
         if id is None:
             return redirect(to='/')
-        job = Job.objects.filter(id=id).first()
+        job = vatic_models.Job.objects.filter(id=id).first()
         if job is None:
             return redirect(to='/')
         return render(request, template_name=self.template_name, context={'job':job, 'id': id})
+
+
+class ReviewJobView(View):
+    """
+    The view for reviewers and meta-reviewers of the job.
+    """
+    template_name = 'vatic/review.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to="{}?next=/vatic/review/?id={}".format(settings.LOGIN_URL, request.GET.get('id',None)))
+        id = request.GET.get('id',None)
+        if id is None:
+            return redirect(to='/')
+        job = vatic_models.Job.objects.filter(id=id).first()
+        if job is None:
+            return redirect(to='/')
+        reviewer = Reviewer.objects.filter(user=request.user).first()
+        employer = Employer.objects.filter(user=request.user).first()
+        if reviewer is None and employer is None:
+            return redirect(to='/')
+        form = CommentForm()
+        return render(request, template_name=self.template_name, context={'job':job, 'id': id, 'form': form})
 
 
 if notification:
@@ -152,7 +178,7 @@ class InvitationView(View):
         id = request.POST.get('id', None)
         if id is None:
             return JsonResponse({'error': 'No ID is provided.'})
-        job = Job.objects.filter(id=id, group__parent__topic__owner__user=request.user).first()
+        job = vatic_models.Job.objects.filter(id=id, group__parent__topic__owner__user=request.user).first()
         if job is None:
             return JsonResponse({'error': 'Jobs of this user are not found.'})
         annotators = Annotator.objects.all() # all annotators who has not been assigned to this job
@@ -166,6 +192,48 @@ class InvitationView(View):
         else:
             return JsonResponse({'error': 'Cannot connect to notification app.'})
         return JsonResponse({'msg': 'Invited {} annotators to the job.'.format(len(users))})
+
+
+class ReviewerInviteView(View):
+    template_name = 'vatic/invite_reviewer.html'
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to="{}/?next=/vatic/invite/?id={}".format(settings.LOGIN_URL, request.GET.get('id', None)))
+        context = {}
+        id = request.GET.get('id', None)
+        if id is None:
+            context['error'] = 'No ID is provided.'
+        else:
+            job = vatic_models.Job.objects.filter(id=id, group__parent__topic__owner__user=request.user).first()
+            if job is None:
+                context['error'] = 'No job is provided.'
+            else:
+                context['job'] = job
+                reviewers = Reviewer.objects.filter(~Q(vatic_assignments__job=job))
+                context['reviewers'] = reviewers
+        return render(request, template_name=self.template_name, context=context)
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Login is required.'})
+        uid = request.POST.get('rid', None)
+        jid = request.POST.get('jid', None)
+        if uid is None or jid is None:
+            return JsonResponse({'error': 'Your information is defective.'})
+        reviewer = Reviewer.objects.filter(user__id=uid).first()
+        job = vatic_models.Job.objects.filter(id=jid, group__parent__topic__owner__user=request.user).first()
+        if reviewer is None:
+            return JsonResponse({'error': 'Your reviewer information is not identified.'})
+        if job is None:
+            return JsonResponse({'error': 'Your job information is not identified.'})
+        assignment = Assignment.objects.filter(worker=reviewer, job=job).first()
+        if assignment is None:
+            assignment = Assignment(worker=reviewer, job=job, uuid=uuid.uuid4())
+            assignment.save()
+        return JsonResponse({})
+
+
 
 
 

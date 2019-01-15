@@ -10,7 +10,7 @@ from vision.track.interpolation import LinearFill
 from employer.models import Employer, Credit
 from employer.models import Job as PyanoJob
 from vatic.tools.qa import tolerable
-from worker.models import Annotator
+from worker.models import *
 
 
 # Create your models here.
@@ -319,7 +319,7 @@ class TrainingTest(models.Model):
 
 
 class Assignment(models.Model):
-    worker = models.ForeignKey(Annotator, on_delete=models.CASCADE, related_name='assignments')
+    worker = models.ForeignKey(Reviewer, on_delete=models.CASCADE, related_name='vatic_assignments')
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='assignments')
     uuid = models.CharField(max_length=255, null=True, unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -327,3 +327,6 @@ class Assignment(models.Model):
 
     class Meta:
         unique_together = ('worker', 'job')
+
+    def __str__(self):
+        return '{} - {}'.format(self.worker.user.get_full_name(), self.job.id)

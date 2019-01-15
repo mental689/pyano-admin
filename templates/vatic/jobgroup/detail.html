@@ -11,9 +11,29 @@
 {% endblock %}
 
 {% block body_content %}
-    {% if not status %}
+    {% if not error %}
         <div class="card">
             <h5 class="card-header">Available jobs</h5>
+            <h6 class="card-header">
+                <ul>
+                    <li>Click <i class="m-r-10 mdi mdi-account-multiple-plus"></i>to notify annotators that your jobs
+                        need workers.
+                        Only people who did not submit any solutions will be notified.
+                    </li>
+                    <li>
+                        Click <i class="m-r-10 mdi mdi-account-edit"></i> to go to the list of available reviewers.
+                    </li>
+                    {% if user.is_employer or user.is_reviewer %}
+                    <li>
+                        Click <i class="fa fa-people-carry"></i> to go to the review page.
+                    </li>
+                    {% endif %}
+                <li>
+                    <b>P:</b> Price, <b>PB</b>: Per-object bonus, <b>CB:</b> Completion bonus, <b>T</b>: Number of tracks annotators drawn in the video,
+                    <b>A:</b> Number of the annotators who are working in the video, <b>R:</b> Number of reviewers who are working in the video.
+                </li>
+                </ul>
+            </h6>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered first" id="vatics">
@@ -22,12 +42,14 @@
                             <th>ID</th>
                             <th>Link</th>
                             <th>Created at</th>
-                            <th>Price</th>
-                            <th>Per-object bonus</th>
-                            <th>Completion bonus</th>
-                            <th>Tracks</th>
+                            <th>P</th>
+                            <th>PB</th>
+                            <th>CB</th>
+                            <th>T</th>
+                            <th>A</th>
+                            <th>R</th>
                             {% if user.is_employer %}
-                            <th>Invite</th>
+                                <th></th>
                             {% endif %}
                         </tr>
                         </thead>
@@ -35,17 +57,28 @@
                         {% for job in jobs %}
                             <tr>
                                 <td>{{ job.id }}</td>
-                                <td><a href="{{ job.get_absolute_url }}" target="_blank">{{ job.get_absolute_url }}</a></td>
+                                <td><a href="{{ job.get_absolute_url }}" target="_blank">{{ job.get_absolute_url }}</a>
+                                </td>
                                 <td>{{ job.created_at }}</td>
                                 <td>
                                     {{ group.cost }}
                                 </td>
-                            <td>{{ job.segment.video.perobjectbonus }}</td>
-                            <td>{{ job.segment.video.completionbonus }}</td>
-                            <td>{{ job.num_paths }}</td>
+                                <td>{{ job.segment.video.perobjectbonus }}</td>
+                                <td>{{ job.segment.video.completionbonus }}</td>
+                                <td>{{ job.num_paths }}</td>
+                                <td>{{ job.solutions.count }}</td>
+                                <td>{{ job.assignments.count }}</td>
                                 {% if user.is_employer %}
-                            <th><button class="btn btn-primary" onclick="invite({{ job.id }});" id="invite_btn_{{ job.id }}">Invite annotators</button> </th>
-                            {% endif %}
+                                    <th><a href="javascript:void(0);" onclick="invite({{ job.id }});"
+                                           id="invite_btn_{{ job.id }}">
+                                        <i class="m-r-10 mdi mdi-account-multiple-plus"></i></a>
+                                        <a href="/vatic/invite/?id={{ job.id }}"><i
+                                                class="m-r-10 mdi mdi-account-edit"></i></a>
+                                    {% if user.is_employer or user.is_reviewer %}
+                                        <a href="/vatic/review/?id={{ job.id }}"><i class="fa fa-people-carry"></i></a>
+                                    {% endif %}
+                                    </th>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -53,10 +86,10 @@
                 </div>
             </div>
         </div>
-        {% elif status == 400 %}
+    {% else %}
         <div class="alert alert-danger" role="alert">
-                You cannot access this page.
-            </div>
+            You cannot access this page due to {{ error }}.
+        </div>
     {% endif %}
 {% endblock %}
 
@@ -80,7 +113,7 @@
                 if (data.error) {
                     alert(data.error);
                 } else {
-                    $('#invite_btn_'+job_id).prop('disabled', true);
+                    $('#invite_btn_' + job_id).prop('disabled', true);
                     if (data.msg) {
                         alert(data.msg);
                     }

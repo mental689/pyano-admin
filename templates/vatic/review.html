@@ -32,11 +32,16 @@
             font-family: Arial;
             font-size: 14px !important;
         }
+        #meta_review_panel {
+            margin: 0 auto;
+            font-family: Arial;
+            font-size: 14px !important;
+        }
     </style>
 </head>
 <body>
 <div id="title" style="alignment: center">
-    <h1 align="center">VATIC Job Page</h1>
+    <h1 align="center">VATIC Review Page</h1>
 </div>
 <div id="container">
     {% csrf_token %}
@@ -58,6 +63,15 @@
     <h4 class="card-title text-center pb-3">Post your comment</h4>
     {% render_comment_form for job %}
 </div>
-
+{% if user.is_employer %}
+    <div id="meta_review_panel" style="width: 925px;">
+    <h4>For project owners</h4>
+    <form>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" class="btn btn-danger">
+    </form>
+    </div>
+{% endif %}
 </body>
 </html>
