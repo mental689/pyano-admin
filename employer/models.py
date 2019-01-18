@@ -95,7 +95,7 @@ class Video(models.Model):
     def __str__(self):
         return self.video.vid
 
-    def get_aboslute_url(self):
+    def get_absolute_url(self):
         return '/worker/survey/review/1/{}/'.format(self.video.id)
 
 

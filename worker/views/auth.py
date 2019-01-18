@@ -43,7 +43,7 @@ class ProfileView(View):
             context['last_month_survey_answers'] = last_month_survey_answers
             context['this_month_earning'] = sum([response.earning for response in this_month_suvery_answers])
             if last_month_survey_answers.count() != 0:
-                context['up_answers'] = (this_month_suvery_answers.count()-last_month_survey_answers.count())/last_month_survey_answers.count() * 100
+                context['up_answers'] = '{:.2f}'.format((this_month_suvery_answers.count()-last_month_survey_answers.count())/last_month_survey_answers.count() * 100)
             else:
                 context['up_answers'] = 'Last month data is NA'
             this_month_vatics = Solution.objects.filter(created_at__gte=now() - timedelta(+30),
