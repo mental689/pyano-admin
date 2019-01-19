@@ -65,13 +65,13 @@
     <h4 class="card-title text-center pb-3">Post your comment</h4>
     {% render_comment_form for job %}
 </div>
-{% if user.is_employer %}
+{% if user.is_employer and is_owner %}
     <div id="meta_review_panel" style="width: 925px;">
         <h4>For project owners</h4>
         {% if meta_comment %}
             You submitted a meta-review with score <b>{{ meta_comment.score }}</b>.
         {% else %}
-            <form>
+            <form method="post" action="/vatic/review/">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <input type="hidden" value="{{ job.id }}" name="id">
