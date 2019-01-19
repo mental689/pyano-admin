@@ -245,6 +245,7 @@
                                     <a href="/vatic/job/?id={{ tmv.job.id }}">{{ tmv.job.group.title }} - Job ID: {{ tmv.job.id }}</a>
                                     <span class="badge {% if tmv.paths.count == 0 %}badge-danger{% else %}badge-primary{% endif %} badge-pill">
                                         {% if tmv.paths.count == 0 %}You haven't created anything.{% else %}You created {{ tmv.paths.count }} tracks.{% endif %}</span>
+                                {% if tmv.job.completed %}<span class="badge badge-primary badge-pill">Completed</span>{% endif %}
                                 </li>
                             {% endfor %}
                         </div>
@@ -315,11 +316,13 @@
         $('#searches').easyPaginate({
             paginateElement: 'li',
             elementsPerPage: 5,
+            slideOffset: 10,
             effect: 'default'
         });
         $('#surveys').easyPaginate({
             paginateElement: 'li',
             elementsPerPage: 5,
+            slideOffset: 10,
             effect: 'default'
         });
         $('#vatics').easyPaginate({
