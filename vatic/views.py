@@ -191,13 +191,14 @@ class ReviewJobView(View):
             if form.is_valid():
                 form.instance.reviewer = employer
                 form.instance.job = job
-                if form.score > 5:
+                if form.instance.score > 5:
                     job.completed = True # accepted job is marked as completed. Weak-accepted works and below will be considered further.
                     job.save()
                 form.save()
         except Exception as e:
             logger.debug(e)
             print(e)
+            return JsonResponse({'error': '{}'.format(e)})
         return redirect(to="/vatic/review/?id={}".format(id))
 
 
