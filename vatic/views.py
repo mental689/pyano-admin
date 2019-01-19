@@ -14,6 +14,7 @@ from vatic.models import *
 from vatic import models as vatic_models
 from vatic.forms import *
 from comment.forms import CommentForm
+from comment.models import Comment
 from search.youtube import download_youtube_video
 from vatic.video import *
 from worker.models import *
@@ -159,7 +160,32 @@ class ReviewJobView(View):
         if reviewer is None and employer is None:
             return redirect(to='/')
         form = CommentForm()
-        return render(request, template_name=self.template_name, context={'job':job, 'id': id, 'form': form})
+        meta_comment = Comment.objects.filter(job=job).first()
+        return render(request, template_name=self.template_name, context={'job':job, 'id': id,
+                                                                          'form': form,
+                                                                          'meta_comment': meta_comment})
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to="{}?next=/vatic/review/?id={}".format(settings.LOGIN_URL, request.POST.get('id',None)))
+        id = request.POST.get('id', None)
+        if id is None:
+            return redirect(to='/')
+        job = vatic_models.Job.objects.filter(id=id).first()
+        if job is None:
+            return redirect(to="{}?next=/vatic/review/?id={}".format(settings.LOGIN_URL, id))
+        employer = Employer.objects.filter(user=request.user).first()
+        if employer is None:
+            return redirect(to="{}?next=/vatic/review/?id={}".format(settings.LOGIN_URL, id))
+        try:
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                form.instance.reviewer = employer
+                form.instance.job = job
+                form.save()
+        except Exception as e:
+            logger.debug(e)
+        return redirect(to="{}?next=/vatic/review/?id={}".format(settings.LOGIN_URL, id))
 
 
 if notification:
