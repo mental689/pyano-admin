@@ -14,6 +14,7 @@ from vatic.models import *
 from vatic import models as vatic_models
 from vatic.forms import *
 from comment.forms import CommentForm
+from comment.models import Comment
 from search.youtube import download_youtube_video
 from vatic.video import *
 from worker.models import *
@@ -120,7 +121,7 @@ class DetailJobGroupView(View):
         group = JobGroup.objects.filter(id=id).first()
         if group is None:
             return render(request, template_name=self.template_name, context={'status': 400})
-        jobs = group.jobs.annotate(num_paths=Count('solutions__paths'))
+        jobs = group.jobs.filter(completed=False).annotate(num_paths=Count('solutions__paths'))
         return render(request, template_name=self.template_name, context={'jobs': jobs, 'group': group})
 
 
@@ -151,15 +152,54 @@ class ReviewJobView(View):
         id = request.GET.get('id',None)
         if id is None:
             return redirect(to='/')
-        job = vatic_models.Job.objects.filter(id=id).first()
-        if job is None:
-            return redirect(to='/')
         reviewer = Reviewer.objects.filter(user=request.user).first()
         employer = Employer.objects.filter(user=request.user).first()
         if reviewer is None and employer is None:
+            # We want as many reviews as possible from reviewers/owners, so any reviewer can view this page.
             return redirect(to='/')
+        job = vatic_models.Job.objects.filter(id=id).first()
+        if job is None:
+            return redirect(to='/')
+        is_owner = True # whether if the job is owned by the owner.
+        if employer is not None:
+            job = vatic_models.Job.objects.filter(id=id, group__parent__topic__owner=employer).first()
+            if job is None:
+                is_owner = False
+        else:
+            is_owner = False
+        # logger.info(job.group.parent.topic.owner)
         form = CommentForm()
-        return render(request, template_name=self.template_name, context={'job':job, 'id': id, 'form': form})
+        meta_comment = Comment.objects.filter(job=job).first()
+        return render(request, template_name=self.template_name, context={'job':job, 'id': id,
+                                                                          'form': form, "is_owner": is_owner,
+                                                                          'meta_comment': meta_comment})
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(to="{}?next=/vatic/review/?id={}".format(settings.LOGIN_URL, request.POST.get('id',None)))
+        id = request.POST.get('id', None)
+        if id is None:
+            return redirect(to='/')
+        employer = Employer.objects.filter(user=request.user).first()
+        if employer is None:
+            return redirect(to="/")
+        job = vatic_models.Job.objects.filter(id=id, group__parent__topic__owner=employer).first()
+        if job is None:
+            return redirect(to='/')
+        try:
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                form.instance.reviewer = employer
+                form.instance.job = job
+                if form.instance.score > 5:
+                    job.completed = True # accepted job is marked as completed. Weak-accepted works and below will be considered further.
+                    job.save()
+                form.save()
+        except Exception as e:
+            logger.debug(e)
+            print(e)
+            return JsonResponse({'error': '{}'.format(e)})
+        return redirect(to="/vatic/review/?id={}".format(id))
 
 
 if notification:

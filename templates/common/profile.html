@@ -127,8 +127,8 @@
                         <div class="metric-value d-inline-block">
                             <h1 class="mb-1">{{ this_month_suvery_answers.count }}</h1>
                         </div>
-                        <div class="metric-label d-inline-block float-right text-success font-weight-bold">
-                            {% if up_answers > 0 %}
+                        <div class="metric-label d-inline-block float-right {% if '+' in up_answers %}text-success{% else %}text-danger{% endif %} font-weight-bold">
+                            {% if '+' in up_answers %}
                                 <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
                                     class="fa fa-fw fa-arrow-up">
                             {% else %}
@@ -154,8 +154,8 @@
                         <div class="metric-value d-inline-block">
                             <h1 class="mb-1">{{ this_month_vatics.count }}</h1>
                         </div>
-                        <div class="metric-label d-inline-block float-right text-success font-weight-bold">
-                            {% if up_vatic > 0 %}
+                        <div class="metric-label d-inline-block float-right {% if '+' in up_vatics %}text-success{% else %}text-danger{% endif %} font-weight-bold">
+                            {% if '+' in up_vatics %}
                                 <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
                                     class="fa fa-fw fa-arrow-up">
                             {% else %}
@@ -181,9 +181,17 @@
                         <div class="metric-value d-inline-block">
                             <h1 class="mb-1">{{ this_month_earning }}P</h1>
                         </div>
-                        <div class="metric-label d-inline-block float-right text-danger font-weight-bold">
-                        <span class="icon-circle-small icon-box-xs text-danger bg-danger-light bg-danger-light "><i
-                                class="fa fa-fw fa-arrow-down"></i></span><span class="ml-1">4%</span>
+                        <div class="metric-label d-inline-block float-right {% if '+' in up_earning %}text-success{% else %}text-danger{% endif %} font-weight-bold">
+                        {% if '+' in up_earning %}
+                                <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
+                                    class="fa fa-fw fa-arrow-up">
+                            {% else %}
+                                <span class="icon-circle-small icon-box-xs text-danger bg-danger-light bg-danger-light ">
+                                <i
+                                        class="fa fa-fw fa-arrow-down">
+                            {% endif %}
+
+                        </i></span><span class="ml-1">{{ up_earning }}%</span>
                         </div>
                     </div>
                 </div>
@@ -237,6 +245,7 @@
                                     <a href="/vatic/job/?id={{ tmv.job.id }}">{{ tmv.job.group.title }} - Job ID: {{ tmv.job.id }}</a>
                                     <span class="badge {% if tmv.paths.count == 0 %}badge-danger{% else %}badge-primary{% endif %} badge-pill">
                                         {% if tmv.paths.count == 0 %}You haven't created anything.{% else %}You created {{ tmv.paths.count }} tracks.{% endif %}</span>
+                                {% if tmv.job.completed %}<span class="badge badge-primary badge-pill">Completed</span>{% endif %}
                                 </li>
                             {% endfor %}
                         </div>
@@ -307,11 +316,13 @@
         $('#searches').easyPaginate({
             paginateElement: 'li',
             elementsPerPage: 5,
+            slideOffset: 10,
             effect: 'default'
         });
         $('#surveys').easyPaginate({
             paginateElement: 'li',
             elementsPerPage: 5,
+            slideOffset: 10,
             effect: 'default'
         });
         $('#vatics').easyPaginate({

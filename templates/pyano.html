@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}PYANO{% endblock %}</title>
+    <link rel="icon" type="image/ico" href="{% static 'images/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
     <link href="{% static 'vendor/fonts/circular-std/style.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -88,7 +89,7 @@
                             Menu
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="{% if user.is_annotator %}/worker/jobs/{% else %}/{% endif %}">
+                            <a class="nav-link active" href="{% if user.is_annotator %}/worker/jobs/{% elif user.is_reviewer %}/worker/invitation/list/{% else %}/{% endif %}">
                             <i class="fas fa-home"></i>Home
                             </a>
                         </li>

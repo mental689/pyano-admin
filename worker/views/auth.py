@@ -42,21 +42,29 @@ class ProfileView(View):
             context['this_month_suvery_answers'] = this_month_suvery_answers
             context['last_month_survey_answers'] = last_month_survey_answers
             context['this_month_earning'] = sum([response.earning for response in this_month_suvery_answers])
+            context['last_month_earning'] = sum([response.earning for response in last_month_survey_answers])
             if last_month_survey_answers.count() != 0:
-                context['up_answers'] = (this_month_suvery_answers.count()-last_month_survey_answers.count())/last_month_survey_answers.count() * 100
+                context['up_answers'] = '{:.2f}'.format((this_month_suvery_answers.count()-last_month_survey_answers.count())/last_month_survey_answers.count() * 100)
             else:
                 context['up_answers'] = 'Last month data is NA'
             this_month_vatics = Solution.objects.filter(created_at__gte=now() - timedelta(+30),
-                                                        submitter__user=request.user)
+                                                        submitter__user=request.user)#.annotate(earning=Sum('job__group__credits__amount'))
             last_month_vatics = Solution.objects.filter(created_at__gte=now() - timedelta(+60),
                                                         created_at__lt=now() - timedelta(+30),
-                                                        submitter__user=request.user)
+                                                        submitter__user=request.user)#.annotate(earning=Sum('job__group__credits__amount'))
             context['this_month_vatics'] = this_month_vatics
             context['last_month_vatics'] = last_month_vatics
+            context['this_month_earning'] += sum([va.job.group.cost if va.job.completed else 0 for va in this_month_vatics])
+            context['last_month_earning'] += sum(
+                [va.job.group.cost if va.job.completed else 0 for va in last_month_vatics])
             if last_month_vatics.count() != 0:
-                context['up_vatics'] = (this_month_vatics.count() - last_month_vatics.count()) / last_month_vatics.count() * 100
+                context['up_vatics'] = '{:.2f}'.format((this_month_vatics.count() - last_month_vatics.count()) / last_month_vatics.count() * 100)
             else:
                 context['up_vatics'] = 'Last month data is NA'
+            if context['last_month_earning'] != 0:
+                context['up_earning'] = '{:.2f}'.format((context['this_month_earning']-context['last_month_earning'])/context['last_month_earning']*100)
+            else:
+                context['up_earning'] = 'Last month data is NA'
         elif request.user.is_reviewer:
             this_month_comments = Comment.objects.filter(user=request.user,
                                                          is_removed=False,

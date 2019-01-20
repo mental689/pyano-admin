@@ -81,6 +81,10 @@ class PyanoUser(AbstractUser):
     def get_full_name(self):
         if self.is_reviewer:
             return "Reviewer {}".format(self.id) # Reviewer name is not revealed.
+        elif self.is_annotator:
+            return "Annotator {}".format(self.id) # Annotator name is masked, too.
+        # elif self.is_employer:
+        #     return "Staff {}".format(self.id) # Project staff name is masked.
         else:
             return super(PyanoUser, self).get_full_name()
 

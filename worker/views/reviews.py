@@ -10,6 +10,7 @@ from employer.models import Video as PyanoVideo
 from employer.models import Credit
 from employer.forms import *
 from worker.models import Reviewer, SurveyAssignment
+from vatic.models import Assignment
 from django_comments_xtd.models import Comment
 
 
@@ -20,6 +21,7 @@ class InvitationListView(View):
         if not request.user.is_authenticated or not request.user.is_reviewer:
             return redirect(to='/')
         assignments = SurveyAssignment.objects.filter(reviewer__user=request.user)
-        context = {'surveys': assignments}
+        vatics = Assignment.objects.filter(worker__user=request.user)
+        context = {'surveys': assignments, 'vatics': vatics}
         return render(request, template_name=self.template_name, context=context)
 

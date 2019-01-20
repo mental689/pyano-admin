@@ -72,10 +72,10 @@
                                     <th><a href="javascript:void(0);" onclick="invite({{ job.id }});"
                                            id="invite_btn_{{ job.id }}">
                                         <i class="m-r-10 mdi mdi-account-multiple-plus"></i></a>
-                                        <a href="/vatic/invite/?id={{ job.id }}"><i
+                                        <a href="/vatic/invite/?id={{ job.id }}" target="_blank"><i
                                                 class="m-r-10 mdi mdi-account-edit"></i></a>
                                     {% if user.is_employer or user.is_reviewer %}
-                                        <a href="/vatic/review/?id={{ job.id }}"><i class="fa fa-people-carry"></i></a>
+                                        <a href="/vatic/review/?id={{ job.id }}" target="_blank"><i class="fa fa-people-carry"></i></a>
                                     {% endif %}
                                     </th>
                                 {% endif %}
