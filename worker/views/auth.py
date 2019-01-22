@@ -90,11 +90,13 @@ class ProfileView(View):
             all_comments = Comment.objects.filter(user=request.user, is_removed=False, content_type__app_label__contains='vatic')
             object_pks = list(set([c.object_pk for c in all_comments]))
             this_month_author_responses = Comment.objects.filter(~Q(user=request.user),
+                                                                 user__is_annotator=True,
                                                                  is_removed=False,
                                                                  object_pk__in=object_pks,
                                                                  content_type__app_label__contains='vatic',
                                                                  submit_date__gte=now() - timedelta(+30))
             last_month_author_responses = Comment.objects.filter(~Q(user=request.user),
+                                                                 user__is_annotator=True,
                                                                  is_removed=False,
                                                                  object_pk__in=object_pks,
                                                                  content_type__app_label__contains='vatic',
