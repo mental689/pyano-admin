@@ -12,6 +12,8 @@ class ProfileView(View):
     template_name = 'common/profile.html'
 
     def get(self,request, *args, **kwargs):
+        if request.user.is_annotator or request.user.is_reviewer:
+            return redirect(to="/worker/profile/")
         return render(request, template_name=self.template_name, context={})
 
 
