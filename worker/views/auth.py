@@ -65,6 +65,18 @@ class ProfileView(View):
                 context['up_earning'] = '{:.2f}'.format((context['this_month_earning']-context['last_month_earning'])/context['last_month_earning']*100)
             else:
                 context['up_earning'] = 'Last month data is NA'
+            # Comments
+            this_month_comments = Comment.objects.filter(is_removed=False,
+                                                         content_type__app_label__contains='vatic',
+                                                         object_pk__in=[s.job.id for s in this_month_vatics],
+                                                         submit_date__gte=now() - timedelta(+30))
+            last_month_comments = Comment.objects.filter(is_removed=False,
+                                                         content_type__app_label__contains='vatic',
+                                                         object_pk__in=[s.job.id for s in last_month_vatics],
+                                                         submit_date__gte=now() - timedelta(+60),
+                                                         submit_date__lt=now() - timedelta(+30))
+            context['this_month_comments'] = this_month_comments
+            context['last_month_comments'] = last_month_comments
         elif request.user.is_reviewer:
             this_month_comments = Comment.objects.filter(user=request.user,
                                                          is_removed=False,
