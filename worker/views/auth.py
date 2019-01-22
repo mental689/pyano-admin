@@ -80,11 +80,11 @@ class ProfileView(View):
         elif request.user.is_reviewer:
             this_month_comments = Comment.objects.filter(user=request.user,
                                                          is_removed=False,
-                                                         content_type__app_label__contains='survey',
+                                                         content_type__app_label__contains='vatic',
                                                          submit_date__gte=now()-timedelta(+30))
             last_month_comments = Comment.objects.filter(user=request.user,
                                                          is_removed=False,
-                                                         content_type__app_label__contains='survey',
+                                                         content_type__app_label__contains='vatic',
                                                          submit_date__gte=now() - timedelta(+60),
                                                          submit_date__lt=now()-timedelta(+30))
             if last_month_comments.count() > 0:
