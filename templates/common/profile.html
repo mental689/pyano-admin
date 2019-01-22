@@ -318,8 +318,8 @@
                                 {% for c in this_month_comments %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         You said "{{ c.comment }}" in <a
-                                            href="{{ c.get_content_object_url }}"
-                                            target="_blank">{{ c.get_content_object_url }}</a>.
+                                            href="/vatic/review/?id={{ c.object_pk }}"
+                                            target="_blank">Job ID {{ c.object_pk }}</a>.
                                     </li>
                                 {% endfor %}
                             </div>
@@ -336,8 +336,8 @@
                                 {% for c in this_month_author_responses %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         {{ c.user.get_full_name }} responded that "{{ c.comment }}" in <a
-                                            href="{{ c.get_content_object_url }}"
-                                            target="_blank">{{ c.get_content_object_url }}</a>.
+                                            href="/vatic/review/?id={{ c.object_pk }}"
+                                            target="_blank">Job ID {{ c.object_pk }}</a>.
                                     </li>
                                 {% endfor %}
                             </div>
