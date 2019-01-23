@@ -4,6 +4,7 @@ from django.db.models import Count
 from django.db.models.functions import TruncDate
 from django.shortcuts import redirect, render
 from django.views.generic import View
+from django_comments_xtd.models import Comment
 from survey.models import Response
 
 from common.forms import AddUserForm
@@ -139,6 +140,12 @@ class ProfileView(View):
                 context['up_boxes'] = '{:.2f} %'.format(
                     100 * (this_month_boxes.count() - last_month_boxes.count()) / last_month_boxes.count()
                 )
+            # Comments
+            this_month_comments = Comment.objects.filter(
+                content_type__app_label__in=['vatic', 'survey'],
+                submit_date__gte=now()-timedelta(+30)
+            )
+            context['this_month_comments'] = this_month_comments
         return render(request, template_name=self.template_name, context=context)
 
 

@@ -16,6 +16,7 @@
             text-decoration: underline;
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
 {% endblock %}
 
 {% block breadcrumb %}
@@ -125,7 +126,8 @@
                         <h1 class="mb-1">{{ this_month_vatic_solutions.count }}</h1>
                     </div>
                     <div class="metric-label d-inline-block float-right {% if '+' in up_vatics %}text-success{% elif '-' in up_vatics %}text-danger{% else %}text-primary{% endif %} font-weight-bold">
-                        <span><i class="fa fa-fw {% if '+' in up_vatics %}fa-arrow-up{% elif '-' in up_vatics %}fa-arrow-down{% endif %}"></i></span><span>{{ up_vatics }}</span>
+                        <span><i
+                                class="fa fa-fw {% if '+' in up_vatics %}fa-arrow-up{% elif '-' in up_vatics %}fa-arrow-down{% endif %}"></i></span><span>{{ up_vatics }}</span>
                     </div>
                 </div>
                 <div id="sparkline-revenue2">
@@ -142,7 +144,8 @@
                         <h1 class="mb-1">{{ this_month_tracks.count }}</h1>
                     </div>
                     <div class="metric-label d-inline-block float-right {% if '+' in up_tracks %}text-success{% elif '-' in up_tracks %}text-danger{% else %}text-primary{% endif %} font-weight-bold">
-                        <span><i class="fa fa-fw {% if '+' in up_tracks %}fa-arrow-up{% elif '-' in up_tracks %}fa-arrow-down{% endif %}"></i></span><span>{{ up_tracks }}</span>
+                        <span><i
+                                class="fa fa-fw {% if '+' in up_tracks %}fa-arrow-up{% elif '-' in up_tracks %}fa-arrow-down{% endif %}"></i></span><span>{{ up_tracks }}</span>
                     </div>
                 </div>
                 <div id="sparkline-revenue3">
@@ -159,12 +162,49 @@
                         <h1 class="mb-1">{{ this_month_boxes.count }}</h1>
                     </div>
                     <div class="metric-label d-inline-block float-right {% if '+' in up_boxes %}text-success{% elif '-' in up_boxes %}text-danger{% else %}text-primary{% endif %} font-weight-bold">
-                        <span><i class="fa fa-fw {% if '+' in up_boxes %}fa-arrow-up{% elif '-' in up_boxes %}fa-arrow-down{% endif %}"></i></span><span>{{ up_boxes }}</span>
+                        <span><i
+                                class="fa fa-fw {% if '+' in up_boxes %}fa-arrow-up{% elif '-' in up_boxes %}fa-arrow-down{% endif %}"></i></span><span>{{ up_boxes }}</span>
                     </div>
                 </div>
                 <div id="sparkline-revenue4">
                     <canvas width="244" height="100"
                             style="display: inline-block; width: 244.266px; height: 100px; vertical-align: top;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <h5 class="card-header">Recent Comments</h5>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered first" id="comments">
+                            <thead class="bg-light">
+                            <tr class="border-0">
+                                <th class="border-0">#</th>
+                                <th class="border-0">User</th>
+                                <th class="border-0">Work type</th>
+                                <th class="border-0">Submitted at</th>
+                                <th class="border-0">Comment</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for comment in this_month_comments %}
+                            <tr>
+                                <td>
+                                    <a href="{{ comment.get_content_object_url }}" target="_blank">{{ comment.id }}</a>
+                                </td>
+                                <td>{{ comment.user.get_full_name }}</td>
+                                <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
+                                <td>{{ comment.submit_date }}</td>
+                                <td>{{ comment.comment }}</td>
+{#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -176,9 +216,11 @@
 
 {% block custom_js %}
     <script type="text/javascript" charset="utf8"
-            src="{% static 'js/jquery.easyPaginate.js' %}"></script>
+            src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
     <script>
         $(document).ready(function () {
+            $('#comments').DataTable();
             // ==============================================================
             // Revenue Cards
             // ==============================================================
