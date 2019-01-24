@@ -79,7 +79,7 @@ class DetailJobView(View):
         if not request.user.is_employer:
             return redirect(to="/")
         id = request.GET.get('id', None)
-        job = Job.objects.filter(id=id).first()
+        job = Job.objects.filter(id=id, topic__owner__user=request.user).first()
         tasks = {}
         if job is not None:
             if job.has_keyword_search:
@@ -182,6 +182,8 @@ class DetailJobView(View):
                 j2 = survey_models.Survey.objects.filter(pyano_survey__parent__topic__owner__user=request.user, id=comment.object_pk).first()
                 if j1 is not None or j2 is not None:
                     tasks['comments'].append(comment)
+        else:
+            return redirect(to="/")
         return render(request, template_name=self.template_name, context={'job': job, 'tasks': tasks})
 
 
