@@ -33,7 +33,8 @@
                     <div class="row">
                         <div class="col-xl-2 col-lg-4 col-md-4 col-sm-4 col-12">
                             <div class="text-center">
-                                <img src="{%  static  'images/avatar-1.jpg' %}" alt="User Avatar" class="rounded-circle user-avatar-xxl">
+                                <img src="{% static  'images/avatar-1.jpg' %}" alt="User Avatar"
+                                     class="rounded-circle user-avatar-xxl">
                             </div>
                         </div>
                         <div class="col-xl-10 col-lg-8 col-md-8 col-sm-8 col-12">
@@ -112,7 +113,7 @@
                         </div>
                         <div class="metric-label d-inline-block float-right {% if '-' in up_searches %}text-danger{% elif '%' in up_searches %}text-success{% else %}text-primary{% endif %} font-weight-bold">
                                 <span class="icon-circle-small icon-box-xs {% if '-' in up_searches %}text-danger{% elif '%' in up_searches %}text-success{% else %}text-primary{% endif %} bg-success-light"><i
-                                    class="fa fa-fw {% if '-' in up_searches %}fa-arrow-down{% elif '%' in up_searches %}fa-arrow-up{% endif %}">
+                                        class="fa fa-fw {% if '-' in up_searches %}fa-arrow-down{% elif '%' in up_searches %}fa-arrow-up{% endif %}">
                             </i></span><span class="ml-1">{{ up_searches }}</span>
                         </div>
                     </div>
@@ -133,7 +134,7 @@
                         </div>
                         <div class="metric-label d-inline-block float-right {% if '-' in up_answers %}text-danger{% elif '%' in up_answers %}text-success{% else %}text-primary{% endif %} font-weight-bold">
                                 <span class="icon-circle-small icon-box-xs {% if '-' in up_answers %}text-danger bg-danger-light{% elif '%' in up_answers %}text-success bg-success-light{% else %}text-primary{% endif %}"><i
-                                    class="fa fa-fw {% if '-' in up_answers %}fa-arrow-down{% elif '%' in up_answers %}fa-arrow-up{% endif %}">
+                                        class="fa fa-fw {% if '-' in up_answers %}fa-arrow-down{% elif '%' in up_answers %}fa-arrow-up{% endif %}">
                             </i></span><span class="ml-1">{{ up_answers }}</span>
                         </div>
                     </div>
@@ -154,7 +155,7 @@
                         </div>
                         <div class="metric-label d-inline-block float-right {% if '-' in up_vatics %}text-danger{% elif '%' in up_vatics %}text-success{% else %}text-primary{% endif %} font-weight-bold">
                                 <span class="icon-circle-small icon-box-xs {% if '-' in up_vatics %}text-danger bg-danger-light {% elif '%' in up_vatics %}text-success bg-success-light{% else %}text-primary{% endif %}"><i
-                                    class="fa fa-fw {% if '-' in up_vatics %}fa-arrow-down{% elif '%' in up_vatic %}fa-arrow-up{% endif %}">
+                                        class="fa fa-fw {% if '-' in up_vatics %}fa-arrow-down{% elif '%' in up_vatic %}fa-arrow-up{% endif %}">
                             </i></span><span class="ml-1">{{ up_vatics }}</span>
                         </div>
                     </div>
@@ -175,7 +176,7 @@
                         </div>
                         <div class="metric-label d-inline-block float-right {% if '-' in up_earning %}text-danger{% elif '%' in up_earning %}text-success{% else %}text-primary{% endif %} font-weight-bold">
                                 <span class="icon-circle-small icon-box-xs {% if '-' in up_earning %}text-danger bg-danger-light {% elif '%' in up_earning %}text-success bg-success-light{% else %}text-primary{% endif %}"><i
-                                    class="fa fa-fw {% if '-' in up_earning %}fa-arrow-down{% elif '%' in up_earning %}fa-arrow-up{% endif %}">
+                                        class="fa fa-fw {% if '-' in up_earning %}fa-arrow-down{% elif '%' in up_earning %}fa-arrow-up{% endif %}">
                             </i></span><span class="ml-1">{{ up_earning }}</span>
                         </div>
                     </div>
@@ -190,34 +191,34 @@
                 <div class="card">
                     <h5 class="card-header">Comments from Reviewers</h5>
                     <div class="card-body">
-                       <div class="table-responsive">
-                        <table class="table table-striped table-bordered first" id="comments">
-                            <thead class="bg-light">
-                            <tr class="border-0">
-                                <th class="border-0">#</th>
-                                <th class="border-0">User</th>
-                                <th class="border-0">Work type</th>
-                                <th class="border-0">Submitted at</th>
-                                <th class="border-0">Comment</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for comment in this_month_comments %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ comment.get_content_object_url }}"
-                                           target="_blank">{{ comment.id }}</a>
-                                    </td>
-                                    <td>{{ comment.user.get_full_name }}</td>
-                                    <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
-                                    <td>{{ comment.submit_date }}</td>
-                                    <td>{{ comment.comment }}</td>
-                                    {#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered first" id="comments">
+                                <thead class="bg-light">
+                                <tr class="border-0">
+                                    <th class="border-0">#</th>
+                                    <th class="border-0">User</th>
+                                    <th class="border-0">Work type</th>
+                                    <th class="border-0">Submitted at</th>
+                                    <th class="border-0">Comment</th>
                                 </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                {% for comment in this_month_comments %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ comment.get_content_object_url }}"
+                                               target="_blank">{{ comment.id }}</a>
+                                        </td>
+                                        <td>{{ comment.user.get_full_name }}</td>
+                                        <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
+                                        <td>{{ comment.submit_date }}</td>
+                                        <td>{{ comment.comment }}</td>
+                                        {#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -284,95 +285,93 @@
             <!-- ============================================================== -->
             <!-- sales  -->
             <!-- ============================================================== -->
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="card border-3 border-top border-top-primary">
                     <div class="card-body">
                         <h5 class="text-muted">Comments</h5>
                         <div class="metric-value d-inline-block">
                             <h1 class="mb-1">{{ this_month_comments.all|length }}</h1>
                         </div>
-                        <div class="metric-label d-inline-block float-right text-success font-weight-bold">
-                            {% if up_searches > 0 %}
-                                <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
-                                    class="fa fa-fw fa-arrow-up">
-                            {% else %}
-                                <span class="icon-circle-small icon-box-xs text-danger bg-danger-light bg-danger-light ">
-                                <i
-                                        class="fa fa-fw fa-arrow-down">
-                            {% endif %}
-                            </i></span><span class="ml-1">{{ up_comments }}%</span>
+                        <div class="metric-label d-inline-block float-right {% if '-' in up_comments %}text-danger{% elif '%' in up_comments %}text-success{% else %}text-primary{% endif %} font-weight-bold">
+                                <span class="icon-circle-small icon-box-xs {% if '-' in up_comments %}text-danger bg-danger-light{% elif '%' in up_comments %}text-success bg-success-light{% else %}text-primary{% endif %}"><i
+                                    class="fa fa-fw {% if '-' in up_comments %}fa-arrow-down{% elif '%' in up_comments %}fa-arrow-up{% endif %}">
+                            </i></span><span class="ml-1">{{ up_comments }}</span>
                         </div>
                     </div>
+                <div id="sparkline-revenue">
+                    <canvas width="244" height="100"
+                            style="display: inline-block; width: 244.266px; height: 100px; vertical-align: top;"></canvas>
+                </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <div class="card">
-                        <h5 class="card-header">Comments you gave</h5>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                        <table class="table table-striped table-bordered first" id="comments">
-                            <thead class="bg-light">
-                            <tr class="border-0">
-                                <th class="border-0">#</th>
-                                <th class="border-0">Work type</th>
-                                <th class="border-0">Submitted at</th>
-                                <th class="border-0">Comment</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for comment in this_month_comments %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ comment.get_content_object_url }}"
-                                           target="_blank">{{ comment.id }}</a>
-                                    </td>
-                                    <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
-                                    <td>{{ comment.submit_date }}</td>
-                                    <td>{{ comment.comment }}</td>
-                                    {#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
         <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <div class="card">
-                        <h5 class="card-header">Author responses to your comments</h5>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                        <table class="table table-striped table-bordered first" id="comments">
-                            <thead class="bg-light">
-                            <tr class="border-0">
-                                <th class="border-0">#</th>
-                                <th class="border-0">User</th>
-                                <th class="border-0">Work type</th>
-                                <th class="border-0">Submitted at</th>
-                                <th class="border-0">Comment</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for comment in this_month_author_responses %}
-                                <tr>
-                                    <td>
-                                        <a href="{{ comment.get_content_object_url }}"
-                                           target="_blank">{{ comment.id }}</a>
-                                    </td>
-                                    <td>{{ comment.user.get_full_name }}</td>
-                                    <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
-                                    <td>{{ comment.submit_date }}</td>
-                                    <td>{{ comment.comment }}</td>
-                                    {#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="card">
+                    <h5 class="card-header">Comments you gave</h5>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered first" id="comments">
+                                <thead class="bg-light">
+                                <tr class="border-0">
+                                    <th class="border-0">#</th>
+                                    <th class="border-0">Work type</th>
+                                    <th class="border-0">Submitted at</th>
+                                    <th class="border-0">Comment</th>
                                 </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {% for comment in this_month_comments %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ comment.get_content_object_url }}"
+                                               target="_blank">{{ comment.id }}</a>
+                                        </td>
+                                        <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
+                                        <td>{{ comment.submit_date }}</td>
+                                        <td>{{ comment.comment }}</td>
+                                        {#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="card">
+                    <h5 class="card-header">Author responses to your comments</h5>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered first" id="comments">
+                                <thead class="bg-light">
+                                <tr class="border-0">
+                                    <th class="border-0">#</th>
+                                    <th class="border-0">User</th>
+                                    <th class="border-0">Work type</th>
+                                    <th class="border-0">Submitted at</th>
+                                    <th class="border-0">Comment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for comment in this_month_author_responses %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ comment.get_content_object_url }}"
+                                               target="_blank">{{ comment.id }}</a>
+                                        </td>
+                                        <td>{{ comment.user.get_full_name }}</td>
+                                        <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
+                                        <td>{{ comment.submit_date }}</td>
+                                        <td>{{ comment.comment }}</td>
+                                        {#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -429,12 +428,25 @@
                 elementsPerPage: 5,
                 effect: 'default'
             });
-            $('#comments').DataTable({
-            });
+            $('#comments').DataTable({});
             $('#authors').easyPaginate({
                 paginateElement: 'li',
                 elementsPerPage: 5,
                 effect: 'default'
+            });
+            $("#sparkline-revenue").sparkline({{ this_month_comments_by_date }}, {
+                type: 'line',
+                width: '99.5%',
+                height: '100',
+                lineColor: '#5969ff',
+                fillColor: '#dbdeff',
+                lineWidth: 2,
+                spotColor: undefined,
+                minSpotColor: undefined,
+                maxSpotColor: undefined,
+                highlightSpotColor: undefined,
+                highlightLineColor: undefined,
+                resize: true
             });
         });
     </script>
