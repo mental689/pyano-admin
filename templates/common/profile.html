@@ -1,5 +1,6 @@
 {% extends 'pyano.html' %}
 {% load static %}
+{% load avatar_tags %}
 
 {% block page_header %}
     Profile
@@ -7,8 +8,14 @@
 
 {% block custom_css %}
     <style>
-    .easyPaginateNav a {padding:5px;}
-    .easyPaginateNav a.current {font-weight:bold;text-decoration:underline;}
+        .easyPaginateNav a {
+            padding: 5px;
+        }
+
+        .easyPaginateNav a.current {
+            font-weight: bold;
+            text-decoration: underline;
+        }
     </style>
 {% endblock %}
 
@@ -25,8 +32,9 @@
                     <div class="row">
                         <div class="col-xl-2 col-lg-4 col-md-4 col-sm-4 col-12">
                             <div class="text-center">
-                                <img src="/static/images/avatar-1.jpg" alt="User Avatar"
-                                     class="rounded-circle user-avatar-xxl">
+                                <a href="{% url 'avatar_change' %}">
+                                    <img src="/{% avatar_url user 80 %}" alt="{{ user.get_full_name }}"
+                                                                         class="rounded-circle user-avatar-xxl"></a>
                             </div>
                         </div>
                         <div class="col-xl-10 col-lg-8 col-md-8 col-sm-8 col-12">
@@ -41,7 +49,8 @@
                                         <i class="fa fa-fw fa-star"></i>
                                         <i class="fa fa-fw fa-star"></i>
                                         <i class="fa fa-fw fa-star"></i>
-                                        <p class="d-inline-block text-dark">{% if user.is_reviewer %}{{ num_comments }} Reviews{% endif %} </p>
+                                        <p class="d-inline-block text-dark">
+                                            {% if user.is_reviewer %}{{ num_comments }} Reviews{% endif %} </p>
                                     </div>
                                 </div>
                                 <!--  <div class="float-right"><a href="#" class="user-avatar-email text-secondary">www.henrybarbara.com</a></div> -->
@@ -50,20 +59,22 @@
                                         <span class="d-xl-inline-block d-block mb-2"><i
                                                 class="fa fa-map-marker-alt mr-2 text-primary "></i>{{ user.location }}, {{ user.country }}</span>
                                         <span class="mb-2 ml-xl-4 d-xl-inline-block d-block">Joined date: {{ user.date_joined }}  </span>
-                                        {% if user.sex != 3 %}<span class=" mb-2 d-xl-inline-block d-block ml-xl-4">{% if user.sex == 1 %}Male{% else %}Female{% endif %}
+                                        {% if user.sex != 3 %}
+                                            <span class=" mb-2 d-xl-inline-block d-block ml-xl-4">{% if user.sex == 1 %}
+                                                Male{% else %}Female{% endif %}
 	                                                                </span>{% endif %}
                                         <span class=" mb-2 d-xl-inline-block d-block ml-xl-4">{{ user.get_age }} Year Old </span>
                                     </p>
                                     <div class="mt-3">
                                         <a href="#" class="badge badge-light mr-1">{{ user.get_job_name_display }}</a>
                                         {% if user.is_employer %}
-                                        <a href="#" class="badge badge-light mr-1">Project owner</a>
+                                            <a href="#" class="badge badge-light mr-1">Project owner</a>
                                         {% endif %}
                                         {% if user.is_reviewer %}
-                                        <a href="#" class="badge badge-light mr-1">Project reviewer</a>
+                                            <a href="#" class="badge badge-light mr-1">Project reviewer</a>
                                         {% endif %}
                                         {% if user.is_annotator %}
-                                        <a href="#" class="badge badge-light mr-1">Annotator</a>
+                                            <a href="#" class="badge badge-light mr-1">Annotator</a>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -182,7 +193,7 @@
                             <h1 class="mb-1">{{ this_month_earning }}P</h1>
                         </div>
                         <div class="metric-label d-inline-block float-right {% if '+' in up_earning %}text-success{% else %}text-danger{% endif %} font-weight-bold">
-                        {% if '+' in up_earning %}
+                            {% if '+' in up_earning %}
                                 <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i
                                     class="fa fa-fw fa-arrow-up">
                             {% else %}
@@ -191,7 +202,7 @@
                                         class="fa fa-fw fa-arrow-down">
                             {% endif %}
 
-                        </i></span><span class="ml-1">{{ up_earning }}%</span>
+                            </i></span><span class="ml-1">{{ up_earning }}%</span>
                         </div>
                     </div>
                 </div>
@@ -218,7 +229,7 @@
             </div>
         </div>
         <div class="row">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="card">
                     <h5 class="card-header">Surveys You Answered</h5>
                     <div class="card-body">
@@ -242,10 +253,31 @@
                         <div class="list-group" id="vatics">
                             {% for tmv in this_month_vatics %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <a href="/vatic/job/?id={{ tmv.job.id }}">{{ tmv.job.group.title }} - Job ID: {{ tmv.job.id }}</a>
+                                    <a href="/vatic/job/?id={{ tmv.job.id }}">{{ tmv.job.group.title }} - Job
+                                        ID: {{ tmv.job.id }}</a>
                                     <span class="badge {% if tmv.paths.count == 0 %}badge-danger{% else %}badge-primary{% endif %} badge-pill">
-                                        {% if tmv.paths.count == 0 %}You haven't created anything.{% else %}You created {{ tmv.paths.count }} tracks.{% endif %}</span>
-                                {% if tmv.job.completed %}<span class="badge badge-primary badge-pill">Completed</span>{% endif %}
+                                        {% if tmv.paths.count == 0 %}You haven't created anything.{% else %}You created
+                                            {{ tmv.paths.count }} tracks.{% endif %}</span>
+                                    {% if tmv.job.completed %}
+                                        <span class="badge badge-primary badge-pill">Completed</span>{% endif %}
+                                </li>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="card">
+                    <h5 class="card-header">Comments from Reviewers</h5>
+                    <div class="card-body">
+                        <div class="list-group" id="comments">
+                            {% for c in this_month_comments %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ c.user.get_full_name }} said "{{ c.comment }}" in <a
+                                        href="{{ c.get_content_object_url }}"
+                                        target="_blank">{{ c.get_content_object_url }}</a>.
                                 </li>
                             {% endfor %}
                         </div>
@@ -279,7 +311,42 @@
                     </div>
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="card">
+                        <h5 class="card-header">Comments you gave</h5>
+                        <div class="card-body">
+                            <div class="list-group" id="comments">
+                                {% for c in this_month_comments %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        You said "{{ c.comment }}" in <a
+                                            href="/vatic/review/?id={{ c.object_pk }}"
+                                            target="_blank">Job ID {{ c.object_pk }}</a>.
+                                    </li>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="card">
+                        <h5 class="card-header">Author responses to your comments</h5>
+                        <div class="card-body">
+                            <div class="list-group" id="authors">
+                                {% for c in this_month_author_responses %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ c.user.get_full_name }} responded that "{{ c.comment }}" in <a
+                                            href="/vatic/review/?id={{ c.object_pk }}"
+                                            target="_blank">Job ID {{ c.object_pk }}</a>.
+                                    </li>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endif %}
 {% endblock %}
@@ -312,24 +379,34 @@
     <script type="text/javascript" charset="utf8"
             src="{% static 'js/jquery.easyPaginate.js' %}"></script>
     <script>
-    $(document).ready(function () {
-        $('#searches').easyPaginate({
-            paginateElement: 'li',
-            elementsPerPage: 5,
-            slideOffset: 10,
-            effect: 'default'
+        $(document).ready(function () {
+            $('#searches').easyPaginate({
+                paginateElement: 'li',
+                elementsPerPage: 5,
+                slideOffset: 10,
+                effect: 'default'
+            });
+            $('#surveys').easyPaginate({
+                paginateElement: 'li',
+                elementsPerPage: 5,
+                slideOffset: 10,
+                effect: 'default'
+            });
+            $('#vatics').easyPaginate({
+                paginateElement: 'li',
+                elementsPerPage: 5,
+                effect: 'default'
+            });
+            $('#comments').easyPaginate({
+                paginateElement: 'li',
+                elementsPerPage: 5,
+                effect: 'default'
+            });
+            $('#authors').easyPaginate({
+                paginateElement: 'li',
+                elementsPerPage: 5,
+                effect: 'default'
+            });
         });
-        $('#surveys').easyPaginate({
-            paginateElement: 'li',
-            elementsPerPage: 5,
-            slideOffset: 10,
-            effect: 'default'
-        });
-        $('#vatics').easyPaginate({
-            paginateElement: 'li',
-            elementsPerPage: 5,
-            effect: 'default'
-        });
-    });
     </script>
 {% endblock %}

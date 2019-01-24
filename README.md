@@ -1,6 +1,8 @@
 PYANO-admin
 ====
 
+![PYANO](./static/images/favicon.ico)
+
 ## Introduction
 
 This enhanced version of [PYANO framework](http://github.com/mental689/pyano) is to implement a `many-to-many` model to data collection and annotation process using PYANO.

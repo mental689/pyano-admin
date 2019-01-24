@@ -1,6 +1,7 @@
 {% extends 'employer/index.html' %}
 {% load static %}
 {% load i18n %}
+{% load avatar_tags %}
 
 {% block custom_css %}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
@@ -123,15 +124,15 @@
                         </tbody>
                     </table>
                 </div>
-{#                <div class="row">#}
-{#                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">#}
-{#                        <div class="card-body">#}
-                            <a href="/survey/add/?projectId={{ job.id }}" class="btn btn-success"><i
-                                    class="fa fa-plus-circle"></i> Add a
-                                survey</a>
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
+                {#                <div class="row">#}
+                {#                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">#}
+                {#                        <div class="card-body">#}
+                <a href="/survey/add/?projectId={{ job.id }}" class="btn btn-success"><i
+                        class="fa fa-plus-circle"></i> Add a
+                    survey</a>
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                </div>#}
             </div>
         </div>
     {% endif %}
@@ -140,6 +141,58 @@
         <div class="card">
             <h5 class="card-header">Space-time annotation tasks</h5>
             <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header">VATIC Solutions by day (1 month) </h5>
+                            <div class="card-body">
+                                <div id="c3chart_solutions"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header">VATIC Paths by day (1 month) </h5>
+                            <div class="card-body">
+                                <div id="c3chart_paths"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header">VATIC Boxes by day (1 month) </h5>
+                            <div class="card-body">
+                                <div id="c3chart_boxes"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header">Top participants by solutions </h5>
+                            <div class="card-body">
+                                <div id="c3pie_solutions"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header">Top participants by paths </h5>
+                            <div class="card-body">
+                                <div id="c3pie_paths"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header">Top participants by boxes </h5>
+                            <div class="card-body">
+                                <div id="c3pie_boxes"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered first" id="vatics">
                         <thead>
@@ -148,6 +201,10 @@
                             <th>Group</th>
                             <th>Created at</th>
                             <th>Price</th>
+                            <th>Jobs</th>
+                            <th>Solutions</th>
+                            {#                            <th>Paths</th>#}
+                            {#                            <th>Boxes</th>#}
                             <th></th>
                         </tr>
                         </thead>
@@ -158,6 +215,10 @@
                                 <td><a href="/vatic/group/detail/?id={{ task.id }}">{{ task.title }}</a></td>
                                 <td>{{ task.created_at }}</td>
                                 <td>{{ task.cost }}</td>
+                                <td>{{ task.jobs.count }}</td>
+                                <td>{{ task.num_solutions }}</td>
+                                {#                                <td>{{ task.num_tracks }}</td>#}
+                                {#                                <td>{{ task.num_boxes }}</td>#}
                                 <td>
                                     <a href="/survey/edit/?id={{ task.id }}"><i class="fa fa-edit"></i></a>
                                     <a href="/survey/delete/?id={{ task.id }}"><i class="fa fa-cut"></i></a>
@@ -168,11 +229,45 @@
                     </table>
                 </div>
                 <a href="/vatic/group/add/" class="btn btn-success"><i
-                                    class="fa fa-plus-circle"></i> Add a
-                                job group</a>
+                        class="fa fa-plus-circle"></i> Add a
+                    job group</a>
             </div>
         </div>
     {% endif %}
+
+    <div class="card">
+        <h5 class="card-header">Interactions between participants (reviewers/annotators) in your platform</h5>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered first" id="comments">
+                    <thead class="bg-light">
+                    <tr class="border-0">
+                        <th class="border-0">#</th>
+                        <th class="border-0">User</th>
+                        <th class="border-0">Work type</th>
+                        <th class="border-0">Submitted at</th>
+                        <th class="border-0">Comment</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for comment in tasks.comments %}
+                        <tr>
+                            <td>
+                                <a href="{{ comment.get_content_object_url }}"
+                                   target="_blank">{{ comment.id }}</a>
+                            </td>
+                            <td>{{ comment.user.get_full_name }}</td>
+                            <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
+                            <td>{{ comment.submit_date }}</td>
+                            <td>{{ comment.comment }}</td>
+                            {#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     {% if user.is_employer %}
         <div class="card">
@@ -215,6 +310,11 @@
             $('#searches').DataTable();
             $('#surveys').DataTable();
             $('#vatics').DataTable();
+            $('#comments').DataTable({
+                "autoWidth": false,
+                "lengthChange": false,
+                "pageLength": 5
+            });
 
             if ($('#c3chart_pie').length) {
                 var chart = c3.generate({
@@ -266,6 +366,101 @@
                             {#data2: '#ff407b'#}
                             {% for k in tasks.users_surveys %}
                                 '{{ k.username }}': getRandomColor(),
+                            {% endfor %}
+
+                        }
+                    },
+                    pie: {
+                        label: {
+                            format: function (value, ratio, id) {
+                                return d3.format('')(value);
+                            }
+                        }
+                    }
+                });
+            }
+            if ($('#c3pie_solutions').length) {
+                var chart = c3.generate({
+                    bindto: "#c3pie_solutions",
+                    data: {
+                        columns: [
+                            {% for k in tasks.vatics_users %}
+                                ['{{ k.user__username }}', {{ k.c }}],
+                            {% endfor %}
+                            {#['data1', 30],#}
+                            {#['data2', 50]#}
+                        ],
+                        type: 'pie',
+
+                        colors: {
+                            {#data1: '#5969ff',#}
+                            {#data2: '#ff407b'#}
+                            {% for k in tasks.vatics_users %}
+                                '{{ k.username }}': getRandomColor(),
+                            {% endfor %}
+
+                        }
+                    },
+                    pie: {
+                        label: {
+                            format: function (value, ratio, id) {
+                                return d3.format('')(value);
+                            }
+                        }
+                    }
+                });
+            }
+
+            if ($('#c3pie_paths').length) {
+                var chart = c3.generate({
+                    bindto: "#c3pie_paths",
+                    data: {
+                        columns: [
+                            {% for k in tasks.vatics_users_paths %}
+                                ['{{ k.user__username }}', {{ k.c }}],
+                            {% endfor %}
+                            {#['data1', 30],#}
+                            {#['data2', 50]#}
+                        ],
+                        type: 'pie',
+
+                        colors: {
+                            {#data1: '#5969ff',#}
+                            {#data2: '#ff407b'#}
+                            {% for k in tasks.vatics_users_paths %}
+                                '{{ k.user__username }}': getRandomColor(),
+                            {% endfor %}
+
+                        }
+                    },
+                    pie: {
+                        label: {
+                            format: function (value, ratio, id) {
+                                return d3.format('')(value);
+                            }
+                        }
+                    }
+                });
+            }
+
+            if ($('#c3pie_boxes').length) {
+                var chart = c3.generate({
+                    bindto: "#c3pie_boxes",
+                    data: {
+                        columns: [
+                            {% for k in tasks.vatics_users_boxes %}
+                                ['{{ k.user__username }}', {{ k.c }}],
+                            {% endfor %}
+                            {#['data1', 30],#}
+                            {#['data2', 50]#}
+                        ],
+                        type: 'pie',
+
+                        colors: {
+                            {#data1: '#5969ff',#}
+                            {#data2: '#ff407b'#}
+                            {% for k in tasks.vatics_users_boxes %}
+                                '{{ k.user__username }}': getRandomColor(),
                             {% endfor %}
 
                         }
@@ -357,7 +552,167 @@
                             {#data2: '#ff407b',#}
                             {#data3: '#64ced3'#}
                             {% for data in tasks.answers_by_date %}
-                                'Survey {{ data.id }}': '#5969ff',
+                                'Survey {{ data.id }}': getRandomColor(),
+                            {% endfor %}
+                        }
+                    },
+                    axis: {
+                        y: {
+                            show: true,
+                        },
+                        x: {
+                            show: true,
+                            type: 'timeseries',
+                            tick: {
+                                format: '%Y-%m-%d',
+                                rotate: 60
+                            }
+                        }
+                    },
+                    grid: {
+                        y: {
+                            lines: [{value: 0}]
+                        }
+                    }
+                });
+            }
+
+            var vatic_colors = {
+                {% for data in tasks.vatic_solution_by_date %}'{{ data.title }}': getRandomColor(),{% endfor %}
+            };
+
+            if ($('#c3chart_solutions').length) {
+                var chart = c3.generate({
+                    bindto: "#c3chart_solutions",
+
+                    data: {
+                        x: 'x',
+                        columns: [
+                            ['x', {% for k in tasks.vatic_solution_by_date.0.data %}'{{ k.day }}', {% endfor %}],
+                            {% for data in tasks.vatic_solution_by_date %}
+                                ['Job Group {{ data.title }}', {% for k in data.data %}{{ k.c }}, {% endfor %}],
+                            {% endfor %}
+                            {#['data1', 130, 200, 320, 400, 530, 750],#}
+                            {#['data2', -130, 10, 130, 200, 150, 250],#}
+                            {#['data3', -130, -50, -10, -200, -250, -150]#}
+                        ],
+                        type: 'bar',
+                        groups: [
+                            [{% for data in tasks.vatic_solution_by_date %}
+                                'Job Group {{ data.title }}',
+                            {% endfor %}]
+                        ],
+                        order: 'desc', // stack order by sum of values descendantly. this is default.
+                        //      order: 'asc'  // stack order by sum of values ascendantly.
+                        //      order: null   // stack order by data definition.
+
+                        colors: {
+                            {% for data in tasks.vatic_solution_by_date %}
+                                'Job Group {{ data.title }}': vatic_colors['{{ data.title }}'],
+                            {% endfor %}
+                        }
+                    },
+                    axis: {
+                        y: {
+                            show: true,
+                        },
+                        x: {
+                            show: true,
+                            type: 'timeseries',
+                            tick: {
+                                format: '%Y-%m-%d',
+                                rotate: 60
+                            }
+                        }
+                    },
+                    grid: {
+                        y: {
+                            lines: [{value: 0}]
+                        }
+                    }
+                });
+            }
+
+            if ($('#c3chart_paths').length) {
+                var chart = c3.generate({
+                    bindto: "#c3chart_paths",
+
+                    data: {
+                        x: 'x',
+                        columns: [
+                            ['x', {% for k in tasks.vatic_path_by_date.0.data %}'{{ k.day }}', {% endfor %}],
+                            {% for data in tasks.vatic_path_by_date %}
+                                ['Job Group {{ data.title }}', {% for k in data.data %}{{ k.c }}, {% endfor %}],
+                            {% endfor %}
+                            {#['data1', 130, 200, 320, 400, 530, 750],#}
+                            {#['data2', -130, 10, 130, 200, 150, 250],#}
+                            {#['data3', -130, -50, -10, -200, -250, -150]#}
+                        ],
+                        type: 'bar',
+                        groups: [
+                            [{% for data in tasks.vatic_path_by_date %}
+                                'Job Group {{ data.title }}',
+                            {% endfor %}]
+                        ],
+                        order: 'desc', // stack order by sum of values descendantly. this is default.
+                        //      order: 'asc'  // stack order by sum of values ascendantly.
+                        //      order: null   // stack order by data definition.
+
+                        colors: {
+                            {% for data in tasks.vatic_path_by_date %}
+                                'Job Group {{ data.title }}': vatic_colors['{{ data.title }}'],
+                            {% endfor %}
+                        }
+                    },
+                    axis: {
+                        y: {
+                            show: true,
+                        },
+                        x: {
+                            show: true,
+                            type: 'timeseries',
+                            tick: {
+                                format: '%Y-%m-%d',
+                                rotate: 60
+                            }
+                        }
+                    },
+                    grid: {
+                        y: {
+                            lines: [{value: 0}]
+                        }
+                    }
+                });
+            }
+
+            if ($('#c3chart_boxes').length) {
+                var chart = c3.generate({
+                    bindto: "#c3chart_boxes",
+
+                    data: {
+                        x: 'x',
+                        columns: [
+                            ['x', {% for k in tasks.vatic_box_by_date.0.data %}'{{ k.day }}', {% endfor %}],
+                            {% for data in tasks.vatic_box_by_date %}
+                                ['Job Group {{ data.title }}', {% for k in data.data %}{{ k.c }}, {% endfor %}],
+                            {% endfor %}
+                            {#['data1', 130, 200, 320, 400, 530, 750],#}
+                            {#['data2', -130, 10, 130, 200, 150, 250],#}
+                            {#['data3', -130, -50, -10, -200, -250, -150]#}
+                        ],
+                        type: 'bar',
+                        groups: [
+                            [{% for data in tasks.vatic_box_by_date %}
+                                'Job Group {{ data.title }}',
+                            {% endfor %}]
+                        ],
+                        order: 'desc', // stack order by sum of values descendantly. this is default.
+                        //      order: 'asc'  // stack order by sum of values ascendantly.
+                        //      order: null   // stack order by data definition.
+
+                        colors: {
+                            {% for data in tasks.vatic_box_by_date %}
+                                'Job Group {{ data.title }}': vatic_colors['{{ data.title }}'],
                             {% endfor %}
                         }
                     },

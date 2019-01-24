@@ -1,18 +1,23 @@
-from django.views import View
-from django.shortcuts import redirect, render
+import logging
+
 from django.conf import settings
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncDate
+from django.shortcuts import redirect, render
 from django.utils.timezone import now, timedelta
+from django.views import View
+
+from common.models import PyanoUser
 from employer.forms import AddJobForm
 from employer.models import Job, Topic
-from common.models import PyanoUser
 from search.models import KeywordSearch, QBESearch
-from survey.models import Survey
+from vatic.models import Solution, Path, Box
+from vatic import models as vatic_models
+from survey import models as survey_models
+from worker.models import Annotator
+from django_comments_xtd.models import Comment
 
-import logging, os
 logger = logging.getLogger(__name__)
-from time import time
 import datetime
 
 
@@ -74,10 +79,9 @@ class DetailJobView(View):
         if not request.user.is_employer:
             return redirect(to="/")
         id = request.GET.get('id', None)
-        job = None
-        if id is not None:
-            job = Job.objects.filter(id=id).first()
-            tasks = {}
+        job = Job.objects.filter(id=id, topic__owner__user=request.user).first()
+        tasks = {}
+        if job is not None:
             if job.has_keyword_search:
                 tasks['ks'] = KeywordSearch.objects.filter(parent=job)
                 ks_by_date = tasks['ks'].annotate(day=TruncDate('created_at')).values('day').annotate(
@@ -86,7 +90,7 @@ class DetailJobView(View):
                 for k in ks_by_date:
                     data[k['day']] = k['c']
                 tasks['ks_by_date'] = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0} for d in
-                                       daterange(start_date=now()-timedelta(+30), end_date=now()+timedelta(+1))]
+                                       daterange(start_date=now() - timedelta(+30), end_date=now() + timedelta(+1))]
                 tasks['ks_by_keywords'] = tasks['ks'].values('keyword').annotate(c=Count('id')).values('keyword',
                                                                                                        'c').order_by(
                     '-c')[:5]
@@ -96,18 +100,91 @@ class DetailJobView(View):
                 tasks['survey'] = job.surveys.annotate(credit=Sum('credits__amount')).all()
                 answers = []
                 for survey in tasks['survey']:
-                    answer = survey.survey.responses.annotate(day=TruncDate('created')).values('day').annotate(c=Count('id')).values('day', 'c')
+                    answer = survey.survey.responses.annotate(day=TruncDate('created')).values('day').annotate(
+                        c=Count('id')).values('day', 'c')
                     data = {}
                     for k in answer:
                         data[k['day']] = k['c']
-                    data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0} for d in daterange(start_date=now()-timedelta(+30), end_date=now()+timedelta(+1))]
+                    data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0} for d in
+                             daterange(start_date=now() - timedelta(+30), end_date=now() + timedelta(+1))]
                     answers.append({'id': survey.id, 'data': data2})
                 tasks['answers_by_date'] = answers
-                users = PyanoUser.objects.all().annotate(c=Count('responses')).values('username', 'c').order_by('-c')[:5]
+                users = PyanoUser.objects.all().annotate(c=Count('responses')).values('username', 'c').order_by('-c')[
+                        :5]
 
                 tasks['users_surveys'] = users
             if job.has_vatic:
-                tasks['vatics'] = job.groups.all()
+                tasks['vatics'] = job.groups.annotate(num_solutions=Count('jobs__solutions')).all()
+                solutions = []
+                paths = []
+                boxes = []
+                for group in tasks['vatics']:
+                    vatic_solution_by_date = Solution.objects.filter(
+                        job__group=group,
+                        created_at__gte=now() - timedelta(+30),  # last 30 days
+                    ).annotate(day=TruncDate('created_at')).values('day').annotate(c=Count('day')).values('day', 'c')
+                    data = {}
+                    for k in vatic_solution_by_date:
+                        data[k['day']] = k['c']
+                        data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0}
+                                 for d in
+                                 daterange(start_date=now() - timedelta(+30),
+                                           end_date=now() + timedelta(+1))]
+                    solutions.append({'id': group.id, 'data': data2, 'title': group.title})
+
+                    vatic_path_by_date = Path.objects.filter(
+                        solution__job__group=group,
+                        created_at__gte=now() - timedelta(+30)
+                    ).annotate(day=TruncDate('created_at')).values('day').annotate(c=Count('day')).values('day', 'c')
+                    data = {}
+                    for k in vatic_path_by_date:
+                        data[k['day']] = k['c']
+                        data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0}
+                                 for d in
+                                 daterange(start_date=now() - timedelta(+30),
+                                           end_date=now() + timedelta(+1))]
+                    paths.append({'id': group.id, 'data': data2, 'title': group.title})
+
+                    vatic_box_by_date = Box.objects.filter(
+                        path__solution__job__group=group,
+                        created_at__gte=now() - timedelta(+30)
+                    ).annotate(day=TruncDate('created_at')).values('day').annotate(c=Count('day')).values('day', 'c')
+                    data = {}
+                    for k in vatic_box_by_date:
+                        data[k['day']] = k['c']
+                        data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0}
+                                 for d in
+                                 daterange(start_date=now() - timedelta(+30),
+                                           end_date=now() + timedelta(+1))]
+                    boxes.append({'id': group.id, 'data': data2, 'title': group.title})
+                tasks['vatic_solution_by_date'] = solutions
+                tasks['vatic_path_by_date'] = paths
+                tasks['vatic_box_by_date'] = boxes
+
+                # Contributions of participants
+                users = Annotator.objects.all().annotate(c=Count('solutions')).values('user__username', 'c').order_by('-c')[
+                        :5]
+                users_2 = Annotator.objects.all().annotate(c=Count('solutions__paths')).values('user__username', 'c').order_by(
+                    '-c')[:5]
+                users_3 = Annotator.objects.all().annotate(c=Count('solutions__paths__boxes')).values('user__username',
+                                                                                               'c').order_by(
+                    '-c')[:5]
+                tasks['vatics_users'] = users
+                tasks['vatics_users_paths'] = users_2
+                tasks['vatics_users_boxes'] = users_3
+            # Comments
+            comments = Comment.objects.filter(
+                content_type__app_label__in=['vatic', 'survey'],
+                submit_date__gte=now()-timedelta(+30)
+            )
+            tasks['comments'] = []
+            for comment in comments:
+                j1 = vatic_models.Job.objects.filter(id=comment.object_pk, group__parent__topic__owner__user=request.user).first()
+                j2 = survey_models.Survey.objects.filter(pyano_survey__parent__topic__owner__user=request.user, id=comment.object_pk).first()
+                if j1 is not None or j2 is not None:
+                    tasks['comments'].append(comment)
+        else:
+            return redirect(to="/")
         return render(request, template_name=self.template_name, context={'job': job, 'tasks': tasks})
 
 

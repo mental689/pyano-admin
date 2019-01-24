@@ -152,10 +152,9 @@ class ReviewJobView(View):
         id = request.GET.get('id',None)
         if id is None:
             return redirect(to='/')
-        reviewer = Reviewer.objects.filter(user=request.user).first()
+        reviewer = Reviewer.objects.filter(user=request.user, vatic_assignments__job__id=id).first()
         employer = Employer.objects.filter(user=request.user).first()
         if reviewer is None and employer is None:
-            # We want as many reviews as possible from reviewers/owners, so any reviewer can view this page.
             return redirect(to='/')
         job = vatic_models.Job.objects.filter(id=id).first()
         if job is None:

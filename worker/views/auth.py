@@ -65,16 +65,43 @@ class ProfileView(View):
                 context['up_earning'] = '{:.2f}'.format((context['this_month_earning']-context['last_month_earning'])/context['last_month_earning']*100)
             else:
                 context['up_earning'] = 'Last month data is NA'
+            # Comments
+            this_month_comments = Comment.objects.filter(is_removed=False,
+                                                         content_type__app_label__contains='vatic',
+                                                         object_pk__in=[s.job.id for s in this_month_vatics],
+                                                         submit_date__gte=now() - timedelta(+30))
+            last_month_comments = Comment.objects.filter(is_removed=False,
+                                                         content_type__app_label__contains='vatic',
+                                                         object_pk__in=[s.job.id for s in last_month_vatics],
+                                                         submit_date__gte=now() - timedelta(+60),
+                                                         submit_date__lt=now() - timedelta(+30))
+            context['this_month_comments'] = this_month_comments
+            context['last_month_comments'] = last_month_comments
         elif request.user.is_reviewer:
             this_month_comments = Comment.objects.filter(user=request.user,
                                                          is_removed=False,
-                                                         content_type__app_label__contains='survey',
+                                                         content_type__app_label__contains='vatic',
                                                          submit_date__gte=now()-timedelta(+30))
             last_month_comments = Comment.objects.filter(user=request.user,
                                                          is_removed=False,
-                                                         content_type__app_label__contains='survey',
+                                                         content_type__app_label__contains='vatic',
                                                          submit_date__gte=now() - timedelta(+60),
                                                          submit_date__lt=now()-timedelta(+30))
+            all_comments = Comment.objects.filter(user=request.user, is_removed=False, content_type__app_label__contains='vatic')
+            object_pks = list(set([c.object_pk for c in all_comments]))
+            this_month_author_responses = Comment.objects.filter(~Q(user=request.user),
+                                                                 user__is_annotator=True,
+                                                                 is_removed=False,
+                                                                 object_pk__in=object_pks,
+                                                                 content_type__app_label__contains='vatic',
+                                                                 submit_date__gte=now() - timedelta(+30))
+            last_month_author_responses = Comment.objects.filter(~Q(user=request.user),
+                                                                 user__is_annotator=True,
+                                                                 is_removed=False,
+                                                                 object_pk__in=object_pks,
+                                                                 content_type__app_label__contains='vatic',
+                                                                 submit_date__gte=now() - timedelta(+60),
+                                                                 submit_date__lt=now() - timedelta(+30))
             if last_month_comments.count() > 0:
                 context['up_comments'] = (this_month_comments.count() - last_month_comments.count())/last_month_comments.count() * 100
             else:
@@ -82,6 +109,8 @@ class ProfileView(View):
             context['this_month_comments'] = this_month_comments
             context['last_month_comments'] = last_month_comments
             context['num_comments'] = Comment.objects.filter(user=request.user, is_removed=False).count()
+            context['this_month_author_responses'] = this_month_author_responses
+            context['last_month_author_responses'] = last_month_author_responses
         return render(request, template_name=self.template_name, context=context)
 
 

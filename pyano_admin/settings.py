@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     # 'versions_tests',
     'pinax.notifications',
     'pinax.templates',
+    'avatar',
 ]
 
 MIDDLEWARE = [
@@ -180,3 +181,5 @@ LOGGING = {
         },
     },
 }
+
+AVATAR_STORAGE_DIR = 'static/avatars/'

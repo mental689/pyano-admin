@@ -1,0 +1,330 @@
+{% extends 'common/profile.html' %}
+{% load static %}
+{% load avatar_tags %}
+
+{% block page_header %}
+    Profile
+{% endblock %}
+
+{% block custom_css %}
+    <style>
+        .easyPaginateNav a {
+            padding: 5px;
+        }
+
+        .easyPaginateNav a.current {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ user.username }}</li>
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card influencer-profile-data">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-2 col-lg-4 col-md-4 col-sm-4 col-12">
+                            <div class="text-center">
+                                <a href="{% url 'avatar_change' %}">
+                                    <img src="/{% avatar_url user 80 %}" alt="{{ user.get_full_name }}"
+                                         class="rounded-circle user-avatar-xxl"></a>
+                            </div>
+                        </div>
+                        <div class="col-xl-10 col-lg-8 col-md-8 col-sm-8 col-12">
+                            <div class="user-avatar-info">
+                                <div class="m-b-20">
+                                    <div class="user-avatar-name">
+                                        <h2 class="mb-1">{{ user.get_full_name }}</h2>
+                                    </div>
+                                    <div class="rating-star  d-inline-block">
+                                        <i class="fa fa-fw fa-star"></i>
+                                        <i class="fa fa-fw fa-star"></i>
+                                        <i class="fa fa-fw fa-star"></i>
+                                        <i class="fa fa-fw fa-star"></i>
+                                        <i class="fa fa-fw fa-star"></i>
+                                        <p class="d-inline-block text-dark">
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--  <div class="float-right"><a href="#" class="user-avatar-email text-secondary">www.henrybarbara.com</a></div> -->
+                                <div class="user-avatar-address">
+                                    <p class="border-bottom pb-3">
+                                        <span class="d-xl-inline-block d-block mb-2"><i
+                                                class="fa fa-map-marker-alt mr-2 text-primary "></i>{{ user.location }}, {{ user.country }}</span>
+                                        <span class="mb-2 ml-xl-4 d-xl-inline-block d-block">Joined date: {{ user.date_joined }}  </span>
+                                        {% if user.sex != 3 %}
+                                            <span class=" mb-2 d-xl-inline-block d-block ml-xl-4">{% if user.sex == 1 %}
+                                                Male{% else %}Female{% endif %}
+	                                                                </span>{% endif %}
+                                        <span class=" mb-2 d-xl-inline-block d-block ml-xl-4">{{ user.get_age }} Year Old </span>
+                                    </p>
+                                    <div class="mt-3">
+                                        <a href="#" class="badge badge-light mr-1">{{ user.get_job_name_display }}</a>
+                                        {% if user.is_employer %}
+                                            <a href="#" class="badge badge-light mr-1">Project owner</a>
+                                        {% endif %}
+                                        {% if user.is_reviewer %}
+                                            <a href="#" class="badge badge-light mr-1">Project reviewer</a>
+                                        {% endif %}
+                                        {% if user.is_annotator %}
+                                            <a href="#" class="badge badge-light mr-1">Annotator</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top user-social-box">
+                    <div class="user-social-media d-xl-inline-block"><span class="mr-2 twitter-color"> <i
+                            class="fab fa-twitter-square"></i></span><span>13,291</span></div>
+                    <div class="user-social-media d-xl-inline-block"><span class="mr-2  pinterest-color"> <i
+                            class="fab fa-pinterest-square"></i></span><span>84,019</span></div>
+                    <div class="user-social-media d-xl-inline-block"><span class="mr-2 instagram-color"> <i
+                            class="fab fa-instagram"></i></span><span>12,300</span></div>
+                    <div class="user-social-media d-xl-inline-block"><span class="mr-2  facebook-color"> <i
+                            class="fab fa-facebook-square "></i></span><span>92,920</span></div>
+                    <div class="user-social-media d-xl-inline-block "><span class="mr-2 medium-color"> <i
+                            class="fab fa-medium"></i></span><span>291</span></div>
+                    <div class="user-social-media d-xl-inline-block"><span class="mr-2 youtube-color"> <i
+                            class="fab fa-youtube"></i></span><span>1291</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">Total Searches</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">{{ this_month_searches.count }}</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right
+                    {% if '+' in up_searches %}text-success{% elif '-' in up_searches %}text-danger{% else %}text-primary{% endif %} font-weight-bold">
+                        <span><i
+                                class="fa fa-fw {% if '+' in up_searches %}fa-arrow-up{% elif '-' in up_searches %}fa-arrow-down{% endif %}"></i></span><span>{{ up_searches }}</span>
+                    </div>
+                </div>
+                <div id="sparkline-revenue0">
+                    <canvas width="244" height="100"
+                            style="display: inline-block; width: 244.266px; height: 100px; vertical-align: top;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">Total Survey Answers</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">{{ this_month_survey_answers.count }}</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right
+                    {% if '+' in up_answers %}text-success{% elif '-' in up_answers %}text-danger{% else %}text-primary{% endif %} font-weight-bold">
+                        <span><i
+                                class="fa fa-fw {% if '+' in up_answers %}fa-arrow-up{% elif '-' in up_answers %}fa-arrow-down{% endif %}"></i></span><span>{{ up_answers }}</span>
+                    </div>
+                </div>
+                <div id="sparkline-revenue">
+                    <canvas width="244" height="100"
+                            style="display: inline-block; width: 244.266px; height: 100px; vertical-align: top;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">Total VATIC Solutions</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">{{ this_month_vatic_solutions.count }}</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right {% if '+' in up_vatics %}text-success{% elif '-' in up_vatics %}text-danger{% else %}text-primary{% endif %} font-weight-bold">
+                        <span><i
+                                class="fa fa-fw {% if '+' in up_vatics %}fa-arrow-up{% elif '-' in up_vatics %}fa-arrow-down{% endif %}"></i></span><span>{{ up_vatics }}</span>
+                    </div>
+                </div>
+                <div id="sparkline-revenue2">
+                    <canvas width="244" height="100"
+                            style="display: inline-block; width: 244.266px; height: 100px; vertical-align: top;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">Total Tracks</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">{{ this_month_tracks.count }}</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right {% if '+' in up_tracks %}text-success{% elif '-' in up_tracks %}text-danger{% else %}text-primary{% endif %} font-weight-bold">
+                        <span><i
+                                class="fa fa-fw {% if '+' in up_tracks %}fa-arrow-up{% elif '-' in up_tracks %}fa-arrow-down{% endif %}"></i></span><span>{{ up_tracks }}</span>
+                    </div>
+                </div>
+                <div id="sparkline-revenue3">
+                    <canvas width="244" height="100"
+                            style="display: inline-block; width: 244.266px; height: 100px; vertical-align: top;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">Total Boxes</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">{{ this_month_boxes.count }}</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right {% if '+' in up_boxes %}text-success{% elif '-' in up_boxes %}text-danger{% else %}text-primary{% endif %} font-weight-bold">
+                        <span><i
+                                class="fa fa-fw {% if '+' in up_boxes %}fa-arrow-up{% elif '-' in up_boxes %}fa-arrow-down{% endif %}"></i></span><span>{{ up_boxes }}</span>
+                    </div>
+                </div>
+                <div id="sparkline-revenue4">
+                    <canvas width="244" height="100"
+                            style="display: inline-block; width: 244.266px; height: 100px; vertical-align: top;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <h5 class="card-header">Recent Comments</h5>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered first" id="comments">
+                            <thead class="bg-light">
+                            <tr class="border-0">
+                                <th class="border-0">#</th>
+                                <th class="border-0">User</th>
+                                <th class="border-0">Work type</th>
+                                <th class="border-0">Submitted at</th>
+                                <th class="border-0">Comment</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for comment in this_month_comments %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ comment.get_content_object_url }}"
+                                           target="_blank">{{ comment.id }}</a>
+                                    </td>
+                                    <td>{% avatar comment.user 65 class="img-circle img-responsive" id="user_avatar" %}</td>
+                                    <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
+                                    <td>{{ comment.submit_date }}</td>
+                                    <td>{{ comment.comment }}</td>
+                                    {#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block custom_sidebar %}
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#comments').DataTable();
+            // ==============================================================
+            // Revenue Cards
+            // ==============================================================
+            $("#sparkline-revenue").sparkline({{ this_month_by_date }}, {
+                type: 'line',
+                width: '99.5%',
+                height: '100',
+                lineColor: '#5969ff',
+                fillColor: '#dbdeff',
+                lineWidth: 2,
+                spotColor: undefined,
+                minSpotColor: undefined,
+                maxSpotColor: undefined,
+                highlightSpotColor: undefined,
+                highlightLineColor: undefined,
+                resize: true
+            });
+
+            $("#sparkline-revenue0").sparkline({{ this_month_searches_by_date }}, {
+                type: 'line',
+                width: '99.5%',
+                height: '100',
+                lineColor: '#59690f',
+                fillColor: '#dbde0f',
+                lineWidth: 2,
+                spotColor: undefined,
+                minSpotColor: undefined,
+                maxSpotColor: undefined,
+                highlightSpotColor: undefined,
+                highlightLineColor: undefined,
+                resize: true
+            });
+
+
+            $("#sparkline-revenue2").sparkline({{ this_month_vatic_by_date }}, {
+                type: 'line',
+                width: '99.5%',
+                height: '100',
+                lineColor: '#ff407b',
+                fillColor: '#ffdbe6',
+                lineWidth: 2,
+                spotColor: undefined,
+                minSpotColor: undefined,
+                maxSpotColor: undefined,
+                highlightSpotColor: undefined,
+                highlightLineColor: undefined,
+                resize: true
+            });
+
+
+            $("#sparkline-revenue3").sparkline({{ this_month_tracks_by_date }}, {
+                type: 'line',
+                width: '99.5%',
+                height: '100',
+                lineColor: '#25d5f2',
+                fillColor: '#dffaff',
+                lineWidth: 2,
+                spotColor: undefined,
+                minSpotColor: undefined,
+                maxSpotColor: undefined,
+                highlightSpotColor: undefined,
+                highlightLineColor: undefined,
+                resize: true
+            });
+
+
+            $("#sparkline-revenue4").sparkline({{ this_month_boxes_by_date }}, {
+                type: 'line',
+                width: '99.5%',
+                height: '100',
+                lineColor: '#fec957',
+                fillColor: '#fff2d5',
+                lineWidth: 2,
+                spotColor: undefined,
+                minSpotColor: undefined,
+                maxSpotColor: undefined,
+                highlightSpotColor: undefined,
+                highlightLineColor: undefined,
+                resize: true,
+            });
+        });
+    </script>
+{% endblock %}
