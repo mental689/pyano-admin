@@ -174,7 +174,8 @@ class DetailJobView(View):
                 tasks['vatics_users_boxes'] = users_3
             # Comments
             comments = Comment.objects.filter(
-                content_type__app_label__in=['vatic', 'survey']
+                content_type__app_label__in=['vatic', 'survey'],
+                submit_date__gte=now()-timedelta(+30)
             )
             tasks['comments'] = []
             for comment in comments:
