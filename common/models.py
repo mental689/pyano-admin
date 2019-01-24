@@ -78,12 +78,15 @@ class PyanoUser(AbstractUser):
             return "-"
         
     def get_full_name(self):
+        """
+        Override the get_full_name() function to ensure that only project owners and staffs can display their full names.
+        Basically, workers will not display their full names anywhere in this website.
+        :return:
+        """
         if self.is_reviewer:
             return "Reviewer {}".format(self.id) # Reviewer name is not revealed.
         elif self.is_annotator:
             return "Annotator {}".format(self.id) # Annotator name is masked, too.
-        # elif self.is_employer:
-        #     return "Staff {}".format(self.id) # Project staff name is masked.
         else:
             return super(PyanoUser, self).get_full_name()
 
