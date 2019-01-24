@@ -428,12 +428,14 @@
                 elementsPerPage: 5,
                 effect: 'default'
             });
+            {% if user.is_reviewer %}
             $('#comments').DataTable({});
             $('#authors').easyPaginate({
                 paginateElement: 'li',
                 elementsPerPage: 5,
                 effect: 'default'
             });
+
             $("#sparkline-revenue").sparkline({{ this_month_comments_by_date }}, {
                 type: 'line',
                 width: '99.5%',
@@ -448,6 +450,7 @@
                 highlightLineColor: undefined,
                 resize: true
             });
+            {% endif %}
         });
     </script>
 {% endblock %}
