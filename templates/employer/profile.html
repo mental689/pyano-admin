@@ -197,8 +197,7 @@
                                 <td>
                                     <a href="{{ comment.get_content_object_url }}" target="_blank">{{ comment.id }}</a>
                                 </td>
-                                <td><img src="/{% avatar_url comment.user 80 %}" alt="{{ comment.user.get_full_name }}"
-                                                                         class="rounded-circle user-avatar-xxl"></td>
+                                <td>{% avatar comment.user 65 class="img-circle img-responsive" id="user_avatar"%}</td>
                                 <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
                                 <td>{{ comment.submit_date }}</td>
                                 <td>{{ comment.comment }}</td>
