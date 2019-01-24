@@ -12,7 +12,10 @@ from employer.forms import AddJobForm
 from employer.models import Job, Topic
 from search.models import KeywordSearch, QBESearch
 from vatic.models import Solution, Path, Box
+from vatic import models as vatic_models
+from survey import models as survey_models
 from worker.models import Annotator
+from django_comments_xtd.models import Comment
 
 logger = logging.getLogger(__name__)
 import datetime
@@ -76,10 +79,9 @@ class DetailJobView(View):
         if not request.user.is_employer:
             return redirect(to="/")
         id = request.GET.get('id', None)
-        job = None
-        if id is not None:
-            job = Job.objects.filter(id=id).first()
-            tasks = {}
+        job = Job.objects.filter(id=id).first()
+        tasks = {}
+        if job is not None:
             if job.has_keyword_search:
                 tasks['ks'] = KeywordSearch.objects.filter(parent=job)
                 ks_by_date = tasks['ks'].annotate(day=TruncDate('created_at')).values('day').annotate(
@@ -170,7 +172,16 @@ class DetailJobView(View):
                 tasks['vatics_users'] = users
                 tasks['vatics_users_paths'] = users_2
                 tasks['vatics_users_boxes'] = users_3
-
+            # Comments
+            comments = Comment.objects.filter(
+                content_type__app_label__in=['vatic', 'survey']
+            )
+            tasks['comments'] = []
+            for comment in comments:
+                j1 = vatic_models.Job.objects.filter(id=comment.object_pk, group__parent__topic__owner__user=request.user).first()
+                j2 = survey_models.Survey.objects.filter(pyano_survey__parent__topic__owner__user=request.user, id=comment.object_pk).first()
+                if j1 is not None or j2 is not None:
+                    tasks['comments'].append(comment)
         return render(request, template_name=self.template_name, context={'job': job, 'tasks': tasks})
 
 
