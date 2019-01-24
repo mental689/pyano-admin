@@ -35,7 +35,7 @@
                             <div class="text-center">
                                 <a href="{% url 'avatar_change' %}">
                                     <img src="/{% avatar_url user 80 %}" alt="{{ user.get_full_name }}"
-                                                                         class="rounded-circle user-avatar-xxl"></a>
+                                         class="rounded-circle user-avatar-xxl"></a>
                             </div>
                         </div>
                         <div class="col-xl-10 col-lg-8 col-md-8 col-sm-8 col-12">
@@ -101,7 +101,26 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-muted">Total Searches</h5>
+                    <div class="metric-value d-inline-block">
+                        <h1 class="mb-1">{{ this_month_searches.count }}</h1>
+                    </div>
+                    <div class="metric-label d-inline-block float-right
+                    {% if '+' in up_searches %}text-success{% elif '-' in up_searches %}text-danger{% else %}text-primary{% endif %} font-weight-bold">
+                        <span><i
+                                class="fa fa-fw {% if '+' in up_searches %}fa-arrow-up{% elif '-' in up_searches %}fa-arrow-down{% endif %}"></i></span><span>{{ up_searches }}</span>
+                    </div>
+                </div>
+                <div id="sparkline-revenue0">
+                    <canvas width="244" height="100"
+                            style="display: inline-block; width: 244.266px; height: 100px; vertical-align: top;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
             <div class="card">
                 <div class="card-body">
                     <h5 class="text-muted">Total Survey Answers</h5>
@@ -120,7 +139,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+    </div>
+    <div class="row">
+        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
             <div class="card">
                 <div class="card-body">
                     <h5 class="text-muted">Total VATIC Solutions</h5>
@@ -138,7 +159,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
             <div class="card">
                 <div class="card-body">
                     <h5 class="text-muted">Total Tracks</h5>
@@ -156,7 +177,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12">
             <div class="card">
                 <div class="card-body">
                     <h5 class="text-muted">Total Boxes</h5>
@@ -193,16 +214,17 @@
                             </thead>
                             <tbody>
                             {% for comment in this_month_comments %}
-                            <tr>
-                                <td>
-                                    <a href="{{ comment.get_content_object_url }}" target="_blank">{{ comment.id }}</a>
-                                </td>
-                                <td>{% avatar comment.user 65 class="img-circle img-responsive" id="user_avatar"%}</td>
-                                <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
-                                <td>{{ comment.submit_date }}</td>
-                                <td>{{ comment.comment }}</td>
-{#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
-                            </tr>
+                                <tr>
+                                    <td>
+                                        <a href="{{ comment.get_content_object_url }}"
+                                           target="_blank">{{ comment.id }}</a>
+                                    </td>
+                                    <td>{% avatar comment.user 65 class="img-circle img-responsive" id="user_avatar" %}</td>
+                                    <td>{{ comment.content_type.app_label }}-{{ comment.content_type }}</td>
+                                    <td>{{ comment.submit_date }}</td>
+                                    <td>{{ comment.comment }}</td>
+                                    {#                                <td><span class="badge-dot badge-brand mr-1"></span>InTransit</td>#}
+                                </tr>
                             {% endfor %}
                             </tbody>
                         </table>
@@ -232,6 +254,21 @@
                 height: '100',
                 lineColor: '#5969ff',
                 fillColor: '#dbdeff',
+                lineWidth: 2,
+                spotColor: undefined,
+                minSpotColor: undefined,
+                maxSpotColor: undefined,
+                highlightSpotColor: undefined,
+                highlightLineColor: undefined,
+                resize: true
+            });
+
+            $("#sparkline-revenue0").sparkline({{ this_month_searches_by_date }}, {
+                type: 'line',
+                width: '99.5%',
+                height: '100',
+                lineColor: '#59690f',
+                fillColor: '#dbde0f',
                 lineWidth: 2,
                 spotColor: undefined,
                 minSpotColor: undefined,

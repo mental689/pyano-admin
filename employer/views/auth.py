@@ -11,6 +11,7 @@ from common.forms import AddUserForm
 from employer.models import *
 from employer.views.jobs import daterange
 from vatic.models import Solution, Path, Box
+from search.models import KeywordSearch
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,36 @@ class ProfileView(View):
             return redirect(to="/worker/profile/")
         context = {}
         if request.user.is_employer:
+            # Searches
+            this_month_searches = KeywordSearch.objects.filter(
+                parent__topic__owner__user=request.user,
+                created_at__gte=now()-timedelta(+30)
+            )
+            this_month_searches_by_date = KeywordSearch.objects.filter(
+                parent__topic__owner__user=request.user,
+                created_at__gte=now() - timedelta(+30)
+            ).annotate(day=TruncDate('created_at')).values('day').annotate(created_count=Count('id'))
+            data = {}
+            for k in this_month_searches_by_date:
+                data[k['day']] = k['created_count']
+            context['this_month_searches_by_date'] = [data[d] if d in data else 0 for d in
+                                             daterange(start_date=now() - timedelta(+30),
+                                                       end_date=now() + timedelta(+1))]
+            last_month_searches = KeywordSearch.objects.filter(
+                parent__topic__owner__user=request.user,
+                created_at__gte=now()-timedelta(+60),
+                created_at__lt=now()-timedelta(+30)
+            )
+            context['this_month_searches'] = this_month_searches
+            context['last_month_searches'] = last_month_searches
+            if last_month_searches.count() == 0:
+                context['up_searches'] = 'N/A'
+            else:
+                context['up_searches'] = '{:.2f} %'.format(
+                    100 * (
+                            last_month_searches.count() - last_month_searches.count()) / last_month_searches.count()
+                )
+
             # Survey answers
             this_month_survey_answers = Response.objects.filter(
                 survey__pyano_survey__parent__topic__owner__user=request.user,
