@@ -16,6 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 class ProfileView(View):
+    """
+    Private profile view for workers.
+    Basically, workers will not have access to common features such as public profiles or avatars.
+    Those basic features only available for project owners and staffs.
+    """
     template_name = 'common/profile.html'
 
     def get(self,request, *args, **kwargs):
