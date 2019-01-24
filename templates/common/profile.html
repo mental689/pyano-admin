@@ -346,7 +346,7 @@
                     <h5 class="card-header">Author responses to your comments</h5>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped table-bordered first" id="comments">
+                            <table class="table table-striped table-bordered first" id="authors">
                                 <thead class="bg-light">
                                 <tr class="border-0">
                                     <th class="border-0">#</th>
@@ -428,13 +428,9 @@
                 elementsPerPage: 5,
                 effect: 'default'
             });
-            {% if user.is_reviewer %}
             $('#comments').DataTable({});
-            $('#authors').easyPaginate({
-                paginateElement: 'li',
-                elementsPerPage: 5,
-                effect: 'default'
-            });
+            {% if user.is_reviewer %}
+            $('#authors').DataTable({});
 
             $("#sparkline-revenue").sparkline({{ this_month_comments_by_date }}, {
                 type: 'line',
