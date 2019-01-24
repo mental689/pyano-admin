@@ -10,6 +10,7 @@ from employer.views.surveys import AddSurveyView, SurveyDetailView, DeleteSurvey
 
 urlpatterns = [
     path('', IndexView.as_view(), name='home'),
+    path('accounts/profile/', ProfileView.as_view(), name='profile'),
     path('employer/profile/', ProfileView.as_view(), name='profile'),
     path('employer/register/', AddEmployerView.as_view(), name='add_employer'),
     path('login/', auth_views.LoginView.as_view(template_name='common/login.html',

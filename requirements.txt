@@ -5,6 +5,7 @@ django-tinymce4-lite
 django-countries
 django-comments-xtd # for comments
 cleanerversion # for versioning
+django-avatar # for user avatar
 pinax-notifications # for notifications, annotators will be notified when owners invited them to a job.
 pinax-templates
 opencv-contrib-python
