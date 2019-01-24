@@ -109,7 +109,7 @@ class DetailJobView(View):
                              daterange(start_date=now() - timedelta(+30), end_date=now() + timedelta(+1))]
                     answers.append({'id': survey.id, 'data': data2})
                 tasks['answers_by_date'] = answers
-                users = PyanoUser.objects.all().annotate(c=Count('responses')).values('username', 'c').order_by('-c')[
+                users = PyanoUser.objects.all().annotate(c=Count('responses')).values('id', 'c').order_by('-c')[
                         :5]
 
                 tasks['users_surveys'] = users
@@ -162,11 +162,11 @@ class DetailJobView(View):
                 tasks['vatic_box_by_date'] = boxes
 
                 # Contributions of participants
-                users = Annotator.objects.all().annotate(c=Count('solutions')).values('user__username', 'c').order_by('-c')[
+                users = Annotator.objects.all().annotate(c=Count('solutions')).values('user__id', 'c').order_by('-c')[
                         :5]
-                users_2 = Annotator.objects.all().annotate(c=Count('solutions__paths')).values('user__username', 'c').order_by(
+                users_2 = Annotator.objects.all().annotate(c=Count('solutions__paths')).values('user__id', 'c').order_by(
                     '-c')[:5]
-                users_3 = Annotator.objects.all().annotate(c=Count('solutions__paths__boxes')).values('user__username',
+                users_3 = Annotator.objects.all().annotate(c=Count('solutions__paths__boxes')).values('user__id',
                                                                                                'c').order_by(
                     '-c')[:5]
                 tasks['vatics_users'] = users

@@ -50,7 +50,7 @@
                             <tr>
                                 <td>{{ task.id }}</td>
                                 <td>{{ task.created_at }}</td>
-                                <td>{{ task.worker }}</td>
+                                <td>{{ task.worker.get_full_name }}</td>
                                 <td>{{ task.keyword }}</td>
                                 <td><a href="/search/ks/outcome/?id={{ task.id }}">JSON</a></td>
                             </tr>
@@ -354,7 +354,7 @@
                     data: {
                         columns: [
                             {% for k in tasks.users_surveys %}
-                                ['{{ k.username }}', {{ k.c }}],
+                                ['Annotator {{ k.id }}', {{ k.c }}],
                             {% endfor %}
                             {#['data1', 30],#}
                             {#['data2', 50]#}
@@ -365,7 +365,7 @@
                             {#data1: '#5969ff',#}
                             {#data2: '#ff407b'#}
                             {% for k in tasks.users_surveys %}
-                                '{{ k.username }}': getRandomColor(),
+                                'Annotator {{ k.id }}': getRandomColor(),
                             {% endfor %}
 
                         }
@@ -385,7 +385,7 @@
                     data: {
                         columns: [
                             {% for k in tasks.vatics_users %}
-                                ['{{ k.user__username }}', {{ k.c }}],
+                                ['Annotator {{ k.user__id }}', {{ k.c }}],
                             {% endfor %}
                             {#['data1', 30],#}
                             {#['data2', 50]#}
@@ -396,7 +396,7 @@
                             {#data1: '#5969ff',#}
                             {#data2: '#ff407b'#}
                             {% for k in tasks.vatics_users %}
-                                '{{ k.username }}': getRandomColor(),
+                                'Annotator {{ k.user__id }}': getRandomColor(),
                             {% endfor %}
 
                         }
@@ -417,7 +417,7 @@
                     data: {
                         columns: [
                             {% for k in tasks.vatics_users_paths %}
-                                ['{{ k.user__username }}', {{ k.c }}],
+                                ['Annotator {{ k.user__id }}', {{ k.c }}],
                             {% endfor %}
                             {#['data1', 30],#}
                             {#['data2', 50]#}
@@ -428,7 +428,7 @@
                             {#data1: '#5969ff',#}
                             {#data2: '#ff407b'#}
                             {% for k in tasks.vatics_users_paths %}
-                                '{{ k.user__username }}': getRandomColor(),
+                                'Annotator {{ k.user__id }}': getRandomColor(),
                             {% endfor %}
 
                         }
@@ -449,7 +449,7 @@
                     data: {
                         columns: [
                             {% for k in tasks.vatics_users_boxes %}
-                                ['{{ k.user__username }}', {{ k.c }}],
+                                ['Annotator {{ k.user__id }}', {{ k.c }}],
                             {% endfor %}
                             {#['data1', 30],#}
                             {#['data2', 50]#}
@@ -460,7 +460,7 @@
                             {#data1: '#5969ff',#}
                             {#data2: '#ff407b'#}
                             {% for k in tasks.vatics_users_boxes %}
-                                '{{ k.user__username }}': getRandomColor(),
+                                'Annotator {{ k.user__id }}': getRandomColor(),
                             {% endfor %}
 
                         }
