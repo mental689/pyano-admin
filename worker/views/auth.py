@@ -31,9 +31,11 @@ class ProfileView(View):
             context['this_month_searches'] = this_month_searches
             context['last_month_searches'] = last_month_searches
             if last_month_searches.count() == 0:
-                context['up_searches'] = 'Last month data is NA'
+                context['up_searches'] = 'N/A'
             else:
-                context['up_searches'] = (this_month_searches.count() - last_month_searches.count()) / last_month_searches.count() * 100
+                context['up_searches'] = '{:.2f} %'.format(
+                    (this_month_searches.count() - last_month_searches.count()) / last_month_searches.count() * 100
+                )
             this_month_suvery_answers = survey_models.Response.objects.filter(created__gte=now()-timedelta(+30),
                                                                               user=request.user).annotate(earning=Sum('survey__pyano_survey__credits__amount'))
             last_month_survey_answers = survey_models.Response.objects.filter(created__gte=now() - timedelta(+60),
@@ -44,9 +46,9 @@ class ProfileView(View):
             context['this_month_earning'] = sum([response.earning for response in this_month_suvery_answers])
             context['last_month_earning'] = sum([response.earning for response in last_month_survey_answers])
             if last_month_survey_answers.count() != 0:
-                context['up_answers'] = '{:.2f}'.format((this_month_suvery_answers.count()-last_month_survey_answers.count())/last_month_survey_answers.count() * 100)
+                context['up_answers'] = '{:.2f} %'.format((this_month_suvery_answers.count()-last_month_survey_answers.count())/last_month_survey_answers.count() * 100)
             else:
-                context['up_answers'] = 'Last month data is NA'
+                context['up_answers'] = 'N/A'
             this_month_vatics = Solution.objects.filter(created_at__gte=now() - timedelta(+30),
                                                         submitter__user=request.user)#.annotate(earning=Sum('job__group__credits__amount'))
             last_month_vatics = Solution.objects.filter(created_at__gte=now() - timedelta(+60),
@@ -58,19 +60,21 @@ class ProfileView(View):
             context['last_month_earning'] += sum(
                 [va.job.group.cost if va.job.completed else 0 for va in last_month_vatics])
             if last_month_vatics.count() != 0:
-                context['up_vatics'] = '{:.2f}'.format((this_month_vatics.count() - last_month_vatics.count()) / last_month_vatics.count() * 100)
+                context['up_vatics'] = '{:.2f} %'.format((this_month_vatics.count() - last_month_vatics.count()) / last_month_vatics.count() * 100)
             else:
-                context['up_vatics'] = 'Last month data is NA'
+                context['up_vatics'] = 'N/A'
             if context['last_month_earning'] != 0:
-                context['up_earning'] = '{:.2f}'.format((context['this_month_earning']-context['last_month_earning'])/context['last_month_earning']*100)
+                context['up_earning'] = '{:.2f} %'.format((context['this_month_earning']-context['last_month_earning'])/context['last_month_earning']*100)
             else:
-                context['up_earning'] = 'Last month data is NA'
+                context['up_earning'] = 'N/A'
             # Comments
             this_month_comments = Comment.objects.filter(is_removed=False,
+                                                         user__is_annotator=False,
                                                          content_type__app_label__contains='vatic',
                                                          object_pk__in=[s.job.id for s in this_month_vatics],
                                                          submit_date__gte=now() - timedelta(+30))
             last_month_comments = Comment.objects.filter(is_removed=False,
+                                                         user__is_annotator=False,
                                                          content_type__app_label__contains='vatic',
                                                          object_pk__in=[s.job.id for s in last_month_vatics],
                                                          submit_date__gte=now() - timedelta(+60),
