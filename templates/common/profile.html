@@ -22,7 +22,7 @@
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>
-    <li class="breadcrumb-item active" aria-current="page">{{ user.username }}</li>
+    <li class="breadcrumb-item active" aria-current="page">{{ user.get_full_name }}</li>
 {% endblock %}
 
 {% block body_content %}
