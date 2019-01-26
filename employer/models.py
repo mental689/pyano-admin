@@ -21,7 +21,7 @@ class Topic(models.Model):
     """
     name = models.CharField(max_length=255, blank=False, null=False)
     description = models.TextField(default='', help_text='Teachers will provide a description of the topics in their labs.')
-    owner = models.ForeignKey(Employer, help_text='Owner of the topic', on_delete=models.CASCADE, null=True)
+    owner = models.ForeignKey(Employer, help_text='Owner of the topic', on_delete=models.CASCADE, null=True, related_name='topics')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -47,8 +47,23 @@ class Job(models.Model):
     guideline = HTMLField(blank=True, null=False, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.name
+
+
+class CollaborationProject(models.Model):
+    project = models.OneToOneField(Job, related_name='collaboration_project', unique=False, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Employer, help_text='Collaborator of the project', on_delete=models.CASCADE, null=True,
+                              related_name='collaboration_projects')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.project.name, self.owner.user.username)
+
+    class Meta:
+        unique_together = ('project', 'owner')
 
 
 class Survey(models.Model):

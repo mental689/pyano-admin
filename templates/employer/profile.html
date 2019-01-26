@@ -34,7 +34,7 @@
                         <div class="col-xl-2 col-lg-4 col-md-4 col-sm-4 col-12">
                             <div class="text-center">
                                 <a href="{% url 'avatar_change' %}">
-                                    <img src="/{% avatar_url user 80 %}" alt="{{ user.get_full_name }}"
+                                    <img src="{% avatar_url user 80 %}" alt="{{ user.get_full_name }}"
                                          class="rounded-circle user-avatar-xxl"></a>
                             </div>
                         </div>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="border-top user-social-box">
                     <div class="user-social-media d-xl-inline-block"><span class="mr-2 twitter-color"> <i
-                            class="fab fa-twitter-square"></i></span><span>13,291</span></div>
+                            class="fab fa-mail-reply"></i></span><span>{{ user.email }}</span></div>
                     <div class="user-social-media d-xl-inline-block"><span class="mr-2  pinterest-color"> <i
                             class="fab fa-pinterest-square"></i></span><span>84,019</span></div>
                     <div class="user-social-media d-xl-inline-block"><span class="mr-2 instagram-color"> <i

@@ -5,7 +5,7 @@ from django.contrib.auth import forms as auth_forms
 from employer.views.auth import ProfileView, AddEmployerView
 from employer.views.common import IndexView, PublishDatasetView
 from employer.views.topics import AddTopicView, TopicListView, TopicDetailView, ChangeTopicView
-from employer.views.jobs import AddJobView, ListJobView, DetailJobView, ChangeJobView
+from employer.views.jobs import AddJobView, ListJobView, DetailJobView, ChangeJobView, AddCollaboratorView
 from employer.views.surveys import AddSurveyView, SurveyDetailView, DeleteSurveyView, EditSurveyView, InviteReviewerView
 
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
     path('accounts/profile/', ProfileView.as_view(), name='profile'),
     path('employer/profile/', ProfileView.as_view(), name='profile'),
     path('employer/register/', AddEmployerView.as_view(), name='add_employer'),
+    path('collaborator/add/', AddCollaboratorView.as_view(), name='add_collaborator'),
     path('login/', auth_views.LoginView.as_view(template_name='common/login.html',
                                                 authentication_form=auth_forms.AuthenticationForm), name='login'),
     path('logout/',auth_views.LogoutView.as_view(), name='logout'),

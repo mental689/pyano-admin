@@ -1,16 +1,17 @@
 import logging
 
 from django.conf import settings
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Q
 from django.db.models.functions import TruncDate
 from django.shortcuts import redirect, render
 from django.utils.timezone import now, timedelta
 from django.views import View
+from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from common.models import PyanoUser
 from employer.forms import AddJobForm
-from employer.models import Job, Topic
+from employer.models import Job, Topic, Employer, CollaborationProject
 from search.models import KeywordSearch, QBESearch
 from vatic.models import Solution, Path, Box
 from vatic import models as vatic_models
@@ -73,6 +74,7 @@ class DetailJobView(LoginRequiredMixin, View):
             return redirect(to="/")
         id = request.GET.get('id', None)
         job = Job.objects.filter(id=id, topic__owner__user=request.user).first()
+        owner = Employer.objects.filter(user=request.user).annotate(num_projects=Count('topics__jobs')).first()
         tasks = {}
         if job is not None:
             if job.has_keyword_search:
@@ -176,9 +178,13 @@ class DetailJobView(LoginRequiredMixin, View):
                 j2 = survey_models.Survey.objects.filter(pyano_survey__parent__topic__owner__user=request.user, id=comment.object_pk).first()
                 if j1 is not None or j2 is not None:
                     tasks['comments'].append(comment)
+
+            # Get list of other project owners, who can be invited into this project (as managers and staffs)
+            tasks['pyano_owners'] = Employer.objects.filter(~Q(user__id=request.user.id),~Q(collaboration_projects__project__in=[job])).annotate(num_projects=Count('topics__jobs'))
+            tasks['collaborators'] = CollaborationProject.objects.filter(project=job)
         else:
             return redirect(to="/")
-        return render(request, template_name=self.template_name, context={'job': job, 'tasks': tasks})
+        return render(request, template_name=self.template_name, context={'job': job, 'tasks': tasks, 'owner': owner})
 
 
 class ChangeJobView(LoginRequiredMixin, View):
@@ -220,3 +226,21 @@ class ChangeJobView(LoginRequiredMixin, View):
             context['error'] = 'Internal Server Error while saving topic'
             render(request, template_name=self.template_name, context=context)
         return redirect(to='/job/list/')
+
+
+class AddCollaboratorView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        employer = Employer.objects.filter(user=request.user).first()
+        job = Job.objects.filter(id=request.POST.get('pid', None), topic__owner=employer).first()
+        collaborator = Employer.objects.filter(user_id=request.POST.get('cid', None)).first()
+        if job is None:
+            return JsonResponse({'error': 'Project is not found.'})
+        if collaborator is None:
+            return JsonResponse({'error': 'The collaborator does not exist.'})
+        collaboration = CollaborationProject(project=job, owner=collaborator)
+        try:
+            collaboration.save()
+        except Exception as e:
+            logger.debug(e)
+            return JsonResponse({'error': 'Internal Server Error'})
+        return JsonResponse({'message': 'Successfully setup this collaboration.'})
