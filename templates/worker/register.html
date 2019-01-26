@@ -1,86 +1,100 @@
-{% extends 'worker/index.html' %}
+{% extends 'common/signup.html' %}
 {% load static %}
 
 {% block custom_css %}
     <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
 {% endblock %}
 
-{% block body_content %}
-    <div class="card">
-        <h5 class="card-header">Reviewer/Annotator registration</h5>
-        <div class="card-body">
-            {% if not user.is_authenticated %}
-                {% if error %}
-                    {{ error }}
-                {% else %}
-                    {% if form %}
-                        <form method="post" class="needs-validation">
-                        {% csrf_token %}
-{#                        <h6 class="card-header">Basic information</h6>#}
-{#                        {{ form.non_field_errors }}#}
-{#                        <div class="form-group">#}
-{#                            {{ form.username.errors }}#}
-{#                            <label for="{{ form.username.id_for_label }}" class="col-form-label">{{ form.username.label }}: {{ form.username.help_text }}</label>#}
-{#                            <input id="{{ form.username.id_for_label }}" name="{{ form.username.name }}" type="text"#}
-{#                                   class="form-control" required>#}
-{#                        </div>#}
-{#                        <div class="form-group">#}
-{#                            {{ form.email.errors }}#}
-{#                            <label for="{{ form.email.id_for_label }}" class="col-form-label">{{ form.email.label }}: {{ form.email.help_text }}</label>#}
-{#                            <input id="{{ form.email.id_for_label }}" name="{{ form.email.name }}" type="text"#}
-{#                                   class="form-control" required>#}
-{#                        </div>#}
-{#                        <div class="form-group">#}
-{#                            {{ form.first_name.errors }}#}
-{#                            <label for="{{ form.first_name.id_for_label }}" class="col-form-label">{{ form.first_name.label }}: {{ form.first_name.help_text }}</label>#}
-{#                            <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.name }}" type="text"#}
-{#                                   class="col-lg-4 col-md-4 form-control" required>#}
-{#                            {{ form.last_name.errors }}#}
-{#                            <label for="{{ form.last_name.id_for_label }}" class="col-form-label">{{ form.last_name.label }}: {{ form.last_name.help_text }}</label>#}
-{#                            <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.name }}" type="text"#}
-{#                                   class="col-lg-4 col-md-4 form-control" required>#}
-{#                        </div>#}
-{#                        <div class="form-group">#}
-{#                            {{ form.birthday.errors }}#}
-{#                            <label for="{{ form.birthday.id_for_label }}" class="col-form-label">{{ form.birthday.label }}: {{ form.birthday.help_text }}</label>#}
-{#                            <input id="{{ form.birthday.id_for_label }}" name="{{ form.birthday.name }}" type="text"#}
-{#                                   class="datepicker form-control" required>#}
-{#                        </div>#}
-{#                        <h6 class="card-header">Position to apply for</h6>#}
-{#                        <div class="form-group">#}
-{#                            <label class="custom-control custom-checkbox custom-control-inline">#}
-{#                                <input type="checkbox" name="{{ form.is_reviewer.name }}" class="custom-control-input"><span#}
-{#                                    class="custom-control-label">{{ form.is_reviewer.label }}</span>#}
-{#                            </label>#}
-{#                            <label class="custom-control custom-checkbox custom-control-inline">#}
-{#                                <input type="checkbox" name="{{ form.is_annotator.name }}" class="custom-control-input"><span#}
-{#                                    class="custom-control-label">{{ form.is_annotator.label }}</span>#}
-{#                            </label>#}
-{#                        </div>#}
-{#                        <h6 class="card-header">Personal background</h6>#}
-{#                        <div class="form-group">#}
-{#                        {{ form.job_name.errors }}#}
-{#                                                <label for="{{ form.job_name.id_for_label }}">{{ form.job_name.label }}: {{ form.job_name.help_text }}</label>#}
-{#                            <div class="form-control">{{ form.job_name }}</div>#}
-{#                                            </div>#}
-                        {{ form.as_p }}
-                        <div class="form-group">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 ">
-                            <button class="btn btn-primary" type="submit">Submit</button>
-                            </div>
-                        </div>
-                        </div>
-                    {% elif status %}
-                        The topic is saved!
-                    {% endif %}
-                </form>
-                {% endif %}
-            {% else %}
-                You are already registered! You have nothing to do here!
-            {% endif %}
-        </div>
-    </div>
+{% block form_name %}
+    Workers
+{% endblock %}
 
+{% block form_action %}
+"/worker/register/"
+{% endblock %}
+
+{% block form_info %}
+    {{ form.non_field_errors }}
+    <div class="form-group">
+        <h5>Please select type of your account</h5>
+        <label class="custom-control custom-checkbox custom-control-inline">
+            <input type="checkbox" class="custom-control-input" name="{{ form.is_reviewer.name }}" {% if form.is_reviewer.value %}checked{% endif %}><span class="custom-control-label">Reviewer</span>
+        </label>
+        <label class="custom-control custom-checkbox custom-control-inline">
+            <input type="checkbox" class="custom-control-input" name="{{ form.is_annotator.name }}" {% if form.is_annotator.value %}checked{% endif %}><span
+                class="custom-control-label">Annotator</span>
+        </label>
+    </div>
+    <div class="form-group">
+        {{ form.username.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.username.name }}" required=""
+               placeholder="Username" value="{{ form.username.value }}" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.first_name.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.first_name.name }}" required=""
+               placeholder="First name" value="{{ form.first_name.value }}" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.last_name.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.last_name.name }}" required=""
+               placeholder="Last name" value="{{ form.last_name.value }}" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.email.errors }}
+        <input class="form-control form-control-lg" type="email" name="{{ form.email.name }}" required=""
+               placeholder="E-mail" value="{{ form.email.value }}" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.affiliation.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.affiliation.name }}"
+               placeholder="Affiliation: University of XXX" value="{{ form.affiliation.value }}" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.phone.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.phone.name }}" required=""
+               placeholder="Phone number: +1-xxx-xxxx-xxxx" value="{{ form.phone.value }}" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.sex.errors }}
+        <select class="form-control" name="{{ form.sex.name }}">
+            {% for x,y in form.fields.sex.choices %}
+                <option value="{{ x }}" {% if x == 3 %}selected{% endif %}>Sex: {{ y }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        {{ form.country.errors }}
+        <select class="form-control" name="{{ form.country.name }}">
+            {% for x,y in form.fields.country.choices %}
+                <option value="{{ x }}" {% if y == 'United States of America' %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        {{ form.location.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.location.name }}"
+               placeholder="Location: Pennsylvania" value="{{ form.location.value }}" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.job_name.errors }}
+        <select class="form-control" name="{{ form.job_name.name }}">
+            {% for x,y in form.fields.job_name.choices %}
+                <option value="{{ x }}" {% if y == "Education" %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        {{ form.birthday.errors }}
+        <input class="form-control form-control-lg datepicker" type="text" name="{{ form.birthday.name }}"
+               placeholder="Your birthday" value="{{ form.birthday.value }}" autocomplete="off">
+    </div>
+    <div class="form-group">
+        <input class="form-control form-control-lg" id="pass1" name="{{ form.password1.name }}" type="password" required="" placeholder="Password">
+    </div>
+    <div class="form-group">
+        <input class="form-control form-control-lg" name="{{ form.password2.name }}" required="" type="password" placeholder="Confirm">
+    </div>
 {% endblock %}
 
 {% block custom_js %}
@@ -90,6 +104,7 @@
             $(".datepicker").datepicker({
                 changeMonth: true,
                 changeYear: true,
+                yearRange: '1945:2000'
             });
         });
     </script>

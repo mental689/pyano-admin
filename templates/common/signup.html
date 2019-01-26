@@ -1,0 +1,84 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>PYANO - signup</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <link href="{% static 'vendor/fonts/circular-std/style.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/fonts/fontawesome/css/fontawesome-all.css' %}">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+    </style>
+    {% block custom_css %}
+
+    {% endblock %}
+</head>
+<!-- ============================================================== -->
+<!-- signup form  -->
+<!-- ============================================================== -->
+
+<body>
+<!-- ============================================================== -->
+<!-- signup form  -->
+<!-- ============================================================== -->
+<form class="splash-container" method="post" action={% block form_action %}{% endblock %}>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="mb-1">Signup Form for {% block form_name %}Project owners{% endblock %}</h3>
+            <p>Please enter your user information.</p>
+        </div>
+        <div class="card-body">
+        {% if error %}
+            <p class="text-danger">{{ error }}</p>
+        {% endif %}
+            {% csrf_token %}
+            {% block form_info %}
+            {% endblock %}
+            <div class="form-group pt-2">
+                <input class="btn btn-block btn-primary" type="submit" value="Register My Account">
+            </div>
+            <div class="form-group">
+                <label class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" required><span class="custom-control-label">By creating an account, you agree the <a
+                        href="#">terms and conditions</a></span>
+                </label>
+            </div>
+            {#            <div class="form-group row pt-0">#}
+            {#                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2">#}
+            {#                    <button class="btn btn-block btn-social btn-facebook " type="button">Facebook</button>#}
+            {#                </div>#}
+            {#                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">#}
+            {#                    <button class="btn  btn-block btn-social btn-twitter" type="button">Twitter</button>#}
+            {#                </div>#}
+            {#            </div>#}
+        </div>
+        <div class="card-footer bg-white">
+            <p>Already member? <a href="/login/" class="text-secondary">Login Here.</a></p>
+        </div>
+    </div>
+</form>
+<script src="{% static 'vendor/jquery/jquery-3.3.1.min.js' %}"></script>
+{% block custom_js %}
+{% endblock %}
+</body>
+
+
+</html>

@@ -152,16 +152,16 @@ class AddWorkerView(View):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            redirect(to='/')
+            redirect(to='/worker/profile/')
         form = AddWorkerForm()
         return render(request, template_name=self.template_name, context={'form': form})
 
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            redirect(to='/')
+            redirect(to='/worker/profile/')
         context = {}
+        form = AddWorkerForm(request.POST)
         try:
-            form = AddWorkerForm(request.POST)
             if form.is_valid():
                 user = form.save()
                 if form.instance.is_annotator:
@@ -174,9 +174,11 @@ class AddWorkerView(View):
                     reviewer.save()
             else:
                 context['error'] = 'Your information is invalid'
+                context['form'] = form
                 return render(request, template_name=self.template_name, context=context)
         except Exception as e:
             logger.debug(e)
+            context['form'] = form
             context['error'] = 'Internal Server Error! Failed to register your information. {}'.format(e)
             return render(request, template_name=self.template_name, context=context)
         return redirect(to='/login/')

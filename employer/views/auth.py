@@ -7,11 +7,13 @@ from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django_comments_xtd.models import Comment
 from survey.models import Response
+from survey import models as survey_models
 
 from common.forms import AddUserForm
 from employer.models import *
 from employer.views.jobs import daterange
 from vatic.models import Solution, Path, Box
+from vatic import models as vatic_models
 from search.models import KeywordSearch
 
 logger = logging.getLogger(__name__)
@@ -177,7 +179,13 @@ class ProfileView(LoginRequiredMixin, View):
                 content_type__app_label__in=['vatic', 'survey'],
                 submit_date__gte=now()-timedelta(+30)
             )
-            context['this_month_comments'] = this_month_comments
+            comments = []
+            for comment in this_month_comments:
+                j1 = vatic_models.Job.objects.filter(id=comment.object_pk, group__parent__topic__owner__user=request.user).first()
+                j2 = survey_models.Survey.objects.filter(id=comment.object_pk, pyano_survey__parent__topic__owner__user=request.user).first()
+                if j1 is not None or j2 is not None:
+                    comments.append(comment)
+            context['this_month_comments'] = comments
         return render(request, template_name=self.template_name, context=context)
 
 
@@ -186,26 +194,31 @@ class AddEmployerView(View):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            redirect(to='/')
+            redirect(to='/employer/profile/')
         form = AddUserForm()
         return render(request, template_name=self.template_name, context={'form': form})
 
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            redirect(to='/')
+            redirect(to='/employer/profile/')
         context = {}
+        form = AddUserForm(request.POST)
         try:
-            form = AddUserForm(request.POST)
             form.Meta.model.is_annotator = False
             form.Meta.model.is_reviewer = False
             form.Meta.model.is_employer = True
             if form.is_valid():
                 form.save()
-            employer = Employer()
-            employer.user = form.instance
-            employer.save()
+                employer = Employer()
+                employer.user = form.instance
+                employer.save()
+            else:
+                context['error'] = 'Form information is invalid!'
+                context['form'] = form
+                return render(request, template_name=self.template_name, context=context)
         except Exception as e:
             logger.debug(e)
             context['error'] = 'Internal Server Error'
+            context['form'] = form
             return render(request, template_name=self.template_name, context=context)
         return redirect(to='/login/')

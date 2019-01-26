@@ -1,26 +1,86 @@
-{% extends 'employer/index.html' %}
+{% extends 'common/signup.html' %}
 {% load static %}
 
 {% block custom_css %}
     <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
 {% endblock %}
 
-{% block body_content %}
-    {% if error %}
-        {{ error }}
-    {% else %}
-        {% if form %}
-            <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="form-group">
-                <button type="submit">Add</button>
-            </div>
-        {% elif status %}
-            The topic is saved!
-        {% endif %}
-    </form>
-    {% endif %}
+{% block form_action %}
+    "/employer/register/"
+{% endblock %}
+
+{% block form_info %}
+    {{ form.non_field_errors }}
+    <div class="form-group">
+        {{ form.username.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.username.name }}" required=""
+               placeholder="Username" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.first_name.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.first_name.name }}" required=""
+               placeholder="First name" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.last_name.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.last_name.name }}" required=""
+               placeholder="Last name" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.email.errors }}
+        <input class="form-control form-control-lg" type="email" name="{{ form.email.name }}" required=""
+               placeholder="E-mail" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.affiliation.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.affiliation.name }}"
+               placeholder="Affiliation: University of XXX" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.phone.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.phone.name }}" required=""
+               placeholder="Phone number: +1-xxx-xxxx-xxxx" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.sex.errors }}
+        <select class="form-control" name="{{ form.sex.name }}">
+            {% for x,y in form.fields.sex.choices %}
+                <option value="{{ x }}" {% if x == 3 %}selected{% endif %}>Sex: {{ y }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        {{ form.country.errors }}
+        <select class="form-control" name="{{ form.country.name }}">
+            {% for x,y in form.fields.country.choices %}
+                <option value="{{ x }}" {% if y == 'United States of America' %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        {{ form.location.errors }}
+        <input class="form-control form-control-lg" type="text" name="{{ form.location.name }}"
+               placeholder="Location: Pennsylvania" autocomplete="off">
+    </div>
+    <div class="form-group">
+        {{ form.job_name.errors }}
+        <select class="form-control" name="{{ form.job_name.name }}">
+            {% for x,y in form.fields.job_name.choices %}
+                <option value="{{ x }}" {% if y == "Education" %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        {{ form.birthday.errors }}
+        <input class="form-control form-control-lg datepicker" type="text" name="{{ form.birthday.name }}"
+               placeholder="Your birthday" autocomplete="off">
+    </div>
+    <div class="form-group">
+        <input class="form-control form-control-lg" id="pass1" name="{{ form.password1.name }}" type="password" required="" placeholder="Password">
+    </div>
+    <div class="form-group">
+        <input class="form-control form-control-lg" name="{{ form.password2.name }}" required="" type="password" placeholder="Confirm">
+    </div>
 {% endblock %}
 
 {% block custom_js %}

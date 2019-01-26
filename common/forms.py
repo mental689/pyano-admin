@@ -50,6 +50,8 @@ class AddWorkerForm(UserCreationForm):
         user.is_employer = False
         user.is_reviewer = bool(self.cleaned_data.get('is_reviewer'))
         user.is_annotator = bool(self.cleaned_data.get('is_annotator'))
+        if not (user.is_annotator or user.is_reviewer):
+            raise ValidationError('Users must choose one of two jobs: reviewer or annotator.')
         user.affiliation = self.cleaned_data.get('affiliation')
         user.phone = self.cleaned_data.get('phone')
         user.location = self.cleaned_data.get('location')
@@ -59,7 +61,7 @@ class AddWorkerForm(UserCreationForm):
         try:
             user.save()
         except Exception as e:
-            logging.error(e)
+            raise Exception(e)
         return user
 
 
