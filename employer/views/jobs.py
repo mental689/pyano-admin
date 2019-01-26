@@ -6,6 +6,7 @@ from django.db.models.functions import TruncDate
 from django.shortcuts import redirect, render
 from django.utils.timezone import now, timedelta
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from common.models import PyanoUser
 from employer.forms import AddJobForm
@@ -30,20 +31,16 @@ def daterange(start_date, end_date):
         yield (start_date + datetime.timedelta(n)).date()
 
 
-class AddJobView(View):
+class AddJobView(LoginRequiredMixin, View):
     template_name = 'employer/job/add.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/job/add/'.format(settings.LOGIN_URL))
         if not request.user.is_employer:
             return redirect(to="/")
         form = AddJobForm()
         return render(request, template_name=self.template_name, context={'form': form})
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/job/add/'.format(settings.LOGIN_URL))
         if not request.user.is_employer:
             return redirect(to="/")
         context = {}
@@ -58,24 +55,20 @@ class AddJobView(View):
         return redirect(to='/job/list/')
 
 
-class ListJobView(View):
+class ListJobView(LoginRequiredMixin, View):
     template_name = 'employer/job/list.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/topic/list/'.format(settings.LOGIN_URL))
         if not request.user.is_employer:
             return redirect(to="/")
         jobs = Job.objects.filter(topic__owner__user=request.user)
         return render(request, template_name=self.template_name, context={'jobs': jobs})
 
 
-class DetailJobView(View):
+class DetailJobView(LoginRequiredMixin, View):
     template_name = 'employer/job/detail.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/job/list/'.format(settings.LOGIN_URL))
         if not request.user.is_employer:
             return redirect(to="/")
         id = request.GET.get('id', None)
@@ -188,13 +181,10 @@ class DetailJobView(View):
         return render(request, template_name=self.template_name, context={'job': job, 'tasks': tasks})
 
 
-class ChangeJobView(View):
+class ChangeJobView(LoginRequiredMixin, View):
     template_name = 'employer/job/change.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(
-                to='{}/login/?next=/job/change/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
         if not request.user.is_employer:
             return redirect(to="/")
         id = request.GET.get('id', None)
@@ -206,8 +196,6 @@ class ChangeJobView(View):
         return render(request, template_name=self.template_name, context={'id': id, 'job': job, 'topics': topics})
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/'.format(settings.LOGIN_URL))
         if not request.user.is_employer:
             return redirect(to="/")
         context = {}

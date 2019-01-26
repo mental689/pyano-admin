@@ -1,24 +1,23 @@
-from django.conf import settings
+import logging
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
 from django.shortcuts import redirect, render
 from django.views import View
-from survey.models import Response, Video, Survey, Answer
+from survey.models import Response, Video, Survey
 
 from employer.models import Survey as PyanoSurvey
-from worker.models import SurveyAssignment
 from vatic.models import JobGroup
+from worker.models import SurveyAssignment
 
-import logging
 logger = logging.getLogger(__name__)
 
 
-class SurveyReviewView(View):
+class SurveyReviewView(LoginRequiredMixin, View):
     template_name = 'survey/review.html'
 
     def get(self, request, sid):
         context = {}
-        if not request.user.is_authenticated:
-            return redirect(to="/login/?next=/worker/survey/review/{}/".format(settings.LOGIN_URL,sid))
         survey = PyanoSurvey.objects.filter(survey__id=sid).first()
         if survey is None:
             context['error'] = 'Survey ID {} is not found.'.format(sid)
@@ -35,13 +34,11 @@ class SurveyReviewView(View):
         return render(request, template_name=self.template_name, context=context)
 
 
-class SurveyVideoReviewView(View):
+class SurveyVideoReviewView(LoginRequiredMixin, View):
     template_name = 'survey/survey_for_review.html'
 
     def get(self, request, sid, vid):
         context = {}
-        if not request.user.is_authenticated:
-            return redirect(to="/login/?next=/worker/survey/review/{}/{}/".format(sid,vid))
         # Check if the reviewer is assigned to this job
         video = Video.objects.filter(id=vid).first()
         survey = Survey.objects.filter(id=sid).first()

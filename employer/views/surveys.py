@@ -6,6 +6,7 @@ from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from employer.forms import *
 from employer.models import Credit
@@ -15,13 +16,10 @@ from worker.models import Reviewer, SurveyAssignment
 logger = logging.getLogger(__name__)
 
 
-class SurveyDetailView(View):
+class SurveyDetailView(LoginRequiredMixin, View):
     template_name = 'employer/survey/detail.html'
 
     def get(self, request, *args, **kwarg):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/survey/add/?id={}'.format(settings.LOGIN_URL,
-                                                                                 request.GET.get('id', None)))
         id = request.GET.get('id', None)
         context = {}
         if id is None:
@@ -37,13 +35,10 @@ class SurveyDetailView(View):
         return render(request, template_name=self.template_name, context=context)
 
 
-class DeleteSurveyView(View):
+class DeleteSurveyView(LoginRequiredMixin, View):
     template_name = 'employer/survey/delete.html'
 
     def get(self, request, *args, **kwarg):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/survey/delete/?id={}'.format(settings.LOGTIN_URL,
-                                                                                 request.GET.get('id', None)))
         id = request.GET.get('id', None)
         context = {}
         if id is None:
@@ -60,12 +55,10 @@ class DeleteSurveyView(View):
         return render(request, template_name=self.template_name, context=context)
 
 
-class AddSurveyView(View):
+class AddSurveyView(LoginRequiredMixin, View):
     template_name = 'employer/survey/add.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/survey/add/?projectId={}'.format(settings.LOGTIN_URL,request.GET.get('projectId', None)))
         projectId = request.GET.get('projectId', None)
         if projectId is None:
             return redirect(to='/')
@@ -76,14 +69,10 @@ class AddSurveyView(View):
         return render(request, template_name=self.template_name, context={'formset': formset, 'main_form': form, 'job': job})
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/survey/add/'.format(settings.LOGTIN_URL))
-        projectId = request.GET.get('projectId', None)
-        if projectId is None:
-            return redirect(to='/')
         # survey
         form = AddSurveyForm(request.POST)
-        instance = form.save()
+        if form.is_valid():
+            instance = form.save()
         # pyano
         projectId = request.GET.get('projectId', None)
         survey = PyanoSurvey()
@@ -120,15 +109,11 @@ class AddSurveyView(View):
         return render(request, self.template_name, context={})
 
 
-class EditSurveyView(View):
+class EditSurveyView(LoginRequiredMixin, View):
     template_name = 'employer/survey/change.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/survey/edit/?id={}'.format(settings.LOGTIN_URL,request.GET.get('id', None)))
         id = request.GET.get('id', None)
-        if id is None:
-            return redirect(to='/')
         survey = PyanoSurvey.objects.filter(id=id).annotate(num_questions=Count('survey__questions')).first()
         if survey is None:
             return redirect(to='/')
@@ -141,11 +126,7 @@ class EditSurveyView(View):
                                                                           'formset': formset, 'credit': credit})
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/survey/edit/?id={}'.format(settings.LOGTIN_URL, request.GET.get('id', None)))
-        id = request.GET.get('id', None)
-        if id is None:
-            return redirect(to='/')
+        id = request.POST.get('id', None)
         # pyano
         survey = PyanoSurvey.objects.filter(id=id).annotate(num_questions=Count('survey__questions')).first()
         survey.guideline = request.POST.get('guideline', '')
@@ -161,25 +142,6 @@ class EditSurveyView(View):
         formset = QuestionsFormSet(request.POST, request.FILES, instance=survey.survey)
         if formset.is_valid():
             formset.save()
-        # nq = int(request.POST.get('num_of_questions'))
-        # nqm = survey.num_questions + 3
-        # for i in range(nqm, nq):
-        #     if request.POST.get('questions-{}-text'.format(i), '') != '' and \
-        #             request.POST.get('questions-{}-type'.format(i), '') != '':
-        #         question = Question()
-        #         question.category = None
-        #         question.text = request.POST.get('questions-{}-text'.format(i))
-        #         question.type = request.POST.get('questions-{}-type'.format(i))
-        #         order = request.POST.get('questions-{}-order'.format(i), None)
-        #         try:
-        #             order = int(order)
-        #         except:
-        #             order = 1
-        #         question.order = order
-        #         question.required = bool(request.POST.get('questions-{}-required'.format(i), True))
-        #         question.choices = request.POST.get('questions-{}-choices'.format(i))
-        #         question.survey = survey.survey
-        #         question.save()
         # credits
         credit = float(request.POST.get('credit', 0.0))
         c = Credit.objects.filter(job=survey).first()
@@ -188,11 +150,11 @@ class EditSurveyView(View):
         return redirect(to='/job/list/')
 
 
-class InviteReviewerView(View):
+class InviteReviewerView(LoginRequiredMixin, View):
     template_name = 'employer/invite_reviewer.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.is_employer:
+        if not request.user.is_employer:
             return redirect(to="/")
         id = request.GET.get('id', None)
         context = {}
@@ -210,7 +172,7 @@ class InviteReviewerView(View):
         return render(request, template_name=self.template_name, context=context)
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.is_employer:
+        if not request.user.is_employer:
             return redirect(to="/")
         rid = request.POST.get('rid', None)
         sid = request.POST.get('sid', None)

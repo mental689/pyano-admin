@@ -6,6 +6,7 @@ from django.views.generic import View
 from django_comments_xtd.models import Comment
 from django.db.models import Count, Sum, Q, Avg
 from django.db.models.functions import TruncDate
+from django.contrib.auth.mixins import LoginRequiredMixin
 from survey import models as survey_models
 
 from common.forms import AddWorkerForm
@@ -17,7 +18,7 @@ from worker.models import *
 logger = logging.getLogger(__name__)
 
 
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, View):
     """
     Private profile view for workers.
     Basically, workers will not have access to common features such as public profiles or avatars.
@@ -26,8 +27,6 @@ class ProfileView(View):
     template_name = 'common/profile.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/accounts/profile'.format(settings.LOGIN_URL))
         if not request.user.is_annotator and not request.user.is_reviewer:
             return redirect(to='/')
         context = {}

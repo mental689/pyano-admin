@@ -4,29 +4,27 @@ from django.conf import settings
 from employer.forms import AddTopicForm
 from employer.models import Topic, Job, Employer
 from django.db.models import Count
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-class AddTopicView(View):
+class AddTopicView(LoginRequiredMixin, View):
     template_name = 'employer/topic/add.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            redirect(to='{}/login/?next=/topic/add/'.format(settings.LOGIN_URL))
         form = AddTopicForm()
         return render(request, template_name=self.template_name, context={'form': form})
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            redirect(to='{}/login/?next=/topic/add/'.format(settings.LOGIN_URL))
         context = {}
         try:
             owner = Employer.objects.filter(user=request.user).first()
             form = AddTopicForm(request.POST)
             form.instance.owner = owner
-            form.save()
+            if form.is_valid():
+                form.save()
         except Exception as e:
             logging.debug(e)
             context['error'] = 'Internal Server Error'
@@ -34,12 +32,10 @@ class AddTopicView(View):
         return redirect(to='/topic/list/')
 
 
-class ChangeTopicView(View):
+class ChangeTopicView(LoginRequiredMixin, View):
     template_name = 'employer/topic/change.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/topic/change/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
         if not request.user.is_employer:
             return redirect(to="/")
         id = request.GET.get('id', None)
@@ -50,8 +46,6 @@ class ChangeTopicView(View):
         return render(request, template_name=self.template_name, context={'id': id, 'topic': topic})
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/'.format(settings.LOGIN_URL))
         if not request.user.is_employer:
             return redirect(to="/")
         context = {}
@@ -72,24 +66,20 @@ class ChangeTopicView(View):
         return redirect(to='/topic/list/')
 
 
-class TopicListView(View):
+class TopicListView(LoginRequiredMixin, View):
     template_name = 'employer/topic/list.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/topic/list/'.format(settings.LOGIN_URL))
         if not request.user.is_employer:
             return redirect(to="/")
         topics = Topic.objects.filter(owner__user=request.user).annotate(num_jobs=Count('jobs'))
         return render(request, template_name=self.template_name, context={'topics': topics})
 
 
-class TopicDetailView(View):
+class TopicDetailView(LoginRequiredMixin, View):
     template_name = 'employer/topic/detail.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to='{}/login/?next=/topic/details/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
         if not request.user.is_employer:
             return redirect(to="/")
         topic = Topic.objects.filter(id=request.GET.get('id', None)).first()

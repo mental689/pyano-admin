@@ -4,6 +4,7 @@ from django.db.models import Count
 from django.db.models.functions import TruncDate
 from django.shortcuts import redirect, render
 from django.views.generic import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django_comments_xtd.models import Comment
 from survey.models import Response
 
@@ -16,7 +17,7 @@ from search.models import KeywordSearch
 logger = logging.getLogger(__name__)
 
 
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, View):
     template_name = 'employer/profile.html'
 
     def get(self, request, *args, **kwargs):

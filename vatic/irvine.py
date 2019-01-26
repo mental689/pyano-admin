@@ -5,6 +5,7 @@ import json
 
 from django.http import JsonResponse
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from vatic.video import *
 
@@ -12,10 +13,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class VATICJobView(View):  # equal to getjob in VATIC
+class VATICJobView(LoginRequiredMixin, View):  # equal to getjob in VATIC
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return JsonResponse({'error': 'Login is required.'})
         id = request.GET.get('id')
         verified = request.GET.get('verified')
         logger.debug('id: {}'.format(id))
@@ -79,10 +78,8 @@ class VATICJobView(View):  # equal to getjob in VATIC
         return JsonResponse({'error': 'No job found.', 'request': request.GET})
 
 
-class VATICBoxesForJobView(View):  # getboxesforjob
+class VATICBoxesForJobView(LoginRequiredMixin, View):  # getboxesforjob
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return JsonResponse({'error': 'Login is required.'})
         id = request.GET.get('id')
         employer = Employer.objects.filter(user=request.user).first()
         reviewer = Reviewer.objects.filter(user=request.user, vatic_assignments__job__id=id).first()
@@ -107,7 +104,7 @@ class VATICBoxesForJobView(View):  # getboxesforjob
         return JsonResponse({'result': result})
 
 
-class VATICSaveJobView(View):  # savejob
+class VATICSaveJobView(LoginRequiredMixin, View):  # savejob
     def readpaths(self, solution, tracks):
         logging.debug("Reading {0} total tracks".format(len(tracks)))
         for track in tracks:
@@ -160,8 +157,6 @@ class VATICSaveJobView(View):  # savejob
                     path.save()
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return JsonResponse({'error': 'Login is required.'})
         id = request.POST.get('id')
         tracks = json.loads(request.POST.get('tracks'))
         solution = Solution.objects.filter(job__id=id, submitter__user=request.user).first()
@@ -181,7 +176,7 @@ class VATICSaveJobView(View):  # savejob
         return JsonResponse({})
 
 
-class VATICValidateJobView(View):
+class VATICValidateJobView(LoginRequiredMixin, View):
     """
     validatejob: to validate whether if annotator did a training job good or not?
     This class is majorly for training.

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from search.models import *
 from employer.models import Job
 from employer.models import Video as PyanoVideo
@@ -15,10 +16,8 @@ from search.youtube import *
 # Create your views here.
 
 
-class KeywordSearchJSONOutcomeView(View):
+class KeywordSearchJSONOutcomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(to="/")
         id = request.GET.get('id', None)
         if id is not None:
             try:
@@ -30,7 +29,7 @@ class KeywordSearchJSONOutcomeView(View):
         return JsonResponse({})
 
 
-class KeywordSearchView(View):
+class KeywordSearchView(LoginRequiredMixin, View):
     template_name = 'search/index.html'
 
     def _get_dev_key(self):
@@ -102,9 +101,6 @@ class KeywordSearchView(View):
         return videos
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(
-                to="/login/?next=/search/?projectId={}".format(settings.LOGIN_URL, request.GET.get('projectId', None)))
         context = {}
         try:
             annotator = Annotator.objects.filter(user=request.user).first()
@@ -130,9 +126,6 @@ class KeywordSearchView(View):
         return render(request, template_name=self.template_name, context=context)
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(
-                to="/login/?next=/search/?projectId={}".format(settings.LOGIN_URL, request.POST.get('projectId', None)))
         context = {}
         try:
             annotator = Annotator.objects.filter(user=request.user).first()

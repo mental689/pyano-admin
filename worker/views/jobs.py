@@ -4,28 +4,25 @@ from django.conf import settings
 from django.db.models import Sum
 from django.shortcuts import redirect, render
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from employer.models import Job
 
 logger = logging.getLogger(__name__)
 
 
-class ListJobView(View):
+class ListJobView(LoginRequiredMixin, View):
     template_name = 'worker/job/list.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            redirect(to='{}/login/?next=/worker/jobs/'.format(settings.LOGIN_URL))
         jobs = Job.objects.filter(is_completed=False)
         return render(request, template_name=self.template_name, context={'jobs': jobs})
 
 
-class JobDetailView(View):
+class JobDetailView(LoginRequiredMixin, View):
     template_name = 'worker/job/detail.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            redirect(to='{}/login/?next=/worker/job/?id={}'.format(settings.LOGIN_URL, request.GET.get('id', None)))
         id = request.GET.get('id', None)
         context = {}
         if id is not None:
