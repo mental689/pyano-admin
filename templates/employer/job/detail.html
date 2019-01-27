@@ -785,7 +785,7 @@
                         columns: [
                             ['x', {% for k in tasks.vatic_solution_by_date.0.data %}'{{ k.day }}', {% endfor %}],
                             {% for data in tasks.vatic_solution_by_date %}
-                                ['Job Group {{ data.title }}', {% for k in data.data %}{{ k.c }}, {% endfor %}],
+                                ['{{ data.id }}', {% for k in data.data %}{{ k.c }}, {% endfor %}],
                             {% endfor %}
                             {#['data1', 130, 200, 320, 400, 530, 750],#}
                             {#['data2', -130, 10, 130, 200, 150, 250],#}
@@ -794,7 +794,7 @@
                         type: 'bar',
                         groups: [
                             [{% for data in tasks.vatic_solution_by_date %}
-                                'Job Group {{ data.title }}',
+                                '{{ data.id }}',
                             {% endfor %}]
                         ],
                         order: 'desc', // stack order by sum of values descendantly. this is default.
@@ -803,7 +803,7 @@
 
                         colors: {
                             {% for data in tasks.vatic_solution_by_date %}
-                                'Job Group {{ data.title }}': vatic_colors['{{ data.title }}'],
+                                '{{ data.id }}': vatic_colors['{{ data.title }}'],
                             {% endfor %}
                         }
                     },
@@ -838,7 +838,7 @@
                         columns: [
                             ['x', {% for k in tasks.vatic_path_by_date.0.data %}'{{ k.day }}', {% endfor %}],
                             {% for data in tasks.vatic_path_by_date %}
-                                ['Job Group {{ data.title }}', {% for k in data.data %}{{ k.c }}, {% endfor %}],
+                                ['{{ data.id }}', {% for k in data.data %}{{ k.c }}, {% endfor %}],
                             {% endfor %}
                             {#['data1', 130, 200, 320, 400, 530, 750],#}
                             {#['data2', -130, 10, 130, 200, 150, 250],#}
@@ -847,7 +847,7 @@
                         type: 'bar',
                         groups: [
                             [{% for data in tasks.vatic_path_by_date %}
-                                'Job Group {{ data.title }}',
+                                '{{ data.id }}',
                             {% endfor %}]
                         ],
                         order: 'desc', // stack order by sum of values descendantly. this is default.
@@ -856,7 +856,7 @@
 
                         colors: {
                             {% for data in tasks.vatic_path_by_date %}
-                                'Job Group {{ data.title }}': vatic_colors['{{ data.title }}'],
+                                '{{ data.id }}': vatic_colors['{{ data.title }}'],
                             {% endfor %}
                         }
                     },
@@ -891,7 +891,7 @@
                         columns: [
                             ['x', {% for k in tasks.vatic_box_by_date.0.data %}'{{ k.day }}', {% endfor %}],
                             {% for data in tasks.vatic_box_by_date %}
-                                ['Job Group {{ data.title }}', {% for k in data.data %}{{ k.c }}, {% endfor %}],
+                                ['{{ data.id }}', {% for k in data.data %}{{ k.c }}, {% endfor %}],
                             {% endfor %}
                             {#['data1', 130, 200, 320, 400, 530, 750],#}
                             {#['data2', -130, 10, 130, 200, 150, 250],#}
@@ -900,7 +900,7 @@
                         type: 'bar',
                         groups: [
                             [{% for data in tasks.vatic_box_by_date %}
-                                'Job Group {{ data.title }}',
+                                '{{ data.id }}',
                             {% endfor %}]
                         ],
                         order: 'desc', // stack order by sum of values descendantly. this is default.
@@ -909,7 +909,7 @@
 
                         colors: {
                             {% for data in tasks.vatic_box_by_date %}
-                                'Job Group {{ data.title }}': vatic_colors['{{ data.title }}'],
+                                '{{ data.id }}': vatic_colors['{{ data.title }}'],
                             {% endfor %}
                         }
                     },
