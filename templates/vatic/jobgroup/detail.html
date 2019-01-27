@@ -142,7 +142,7 @@
         var selected_idx = {};
         $(document).ready(function () {
             vatic = $('#vatics').DataTable({
-                {% if not user.is_employer %}
+                {% if user.is_employer %}
                     columnDefs: [{
                         orderable: false,
                         className: 'select-checkbox',
@@ -155,7 +155,7 @@
                 {% endif %}
                 order: [[1, 'asc']]
             });
-            {% if not user.is_employer %}
+            {% if user.is_employer %}
                 vatic
                     .on('select', function (e, dt, type, indexes) {
                         var rowData = vatic.rows(indexes).data().toArray();
@@ -171,7 +171,7 @@
                     });
             {% endif %}
         });
-        {% if not user.is_employer %}
+        {% if user.is_employer %}
             function move_group() {
                 let selected_list = Array();
                 for (i in selected_idx) {
