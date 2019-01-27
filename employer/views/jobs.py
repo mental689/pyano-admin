@@ -121,7 +121,7 @@ class DetailJobView(LoginRequiredMixin, View):
                     data = {}
                     for k in vatic_solution_by_date:
                         data[k['day']] = k['c']
-                        data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0}
+                    data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0}
                                  for d in
                                  daterange(start_date=now() - timedelta(+30),
                                            end_date=now() + timedelta(+1))]
@@ -134,7 +134,7 @@ class DetailJobView(LoginRequiredMixin, View):
                     data = {}
                     for k in vatic_path_by_date:
                         data[k['day']] = k['c']
-                        data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0}
+                    data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0}
                                  for d in
                                  daterange(start_date=now() - timedelta(+30),
                                            end_date=now() + timedelta(+1))]
@@ -147,7 +147,7 @@ class DetailJobView(LoginRequiredMixin, View):
                     data = {}
                     for k in vatic_box_by_date:
                         data[k['day']] = k['c']
-                        data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0}
+                    data2 = [{'day': d.strftime('%Y-%m-%d'), 'c': data[d] if d in data else 0}
                                  for d in
                                  daterange(start_date=now() - timedelta(+30),
                                            end_date=now() + timedelta(+1))]
