@@ -37,25 +37,28 @@
                     </li>
                 </ul>
             </h6>
-            <div class="card-body">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend be-addon">
-                        <button tabindex="-1" type="button" class="btn btn-secondary">Select an action</button>
-                        <button tabindex="-1" data-toggle="dropdown" type="button"
-                                class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-                                aria-expanded="false"><span class="sr-only">Toggle Dropdown</span></button>
-                        <div class="dropdown-menu" x-placement="bottom-start"
-                             style="position: absolute; transform: translate3d(99px, 41px, 0px); top: 0px; left: 0px; will-change: transform;">
-                            <a href="javascript:void(0);" class="dropdown-item" onclick="move_group();">Move selected
-                                jobs to another
-                                group</a>
-                            {#                            <a href="#" class="dropdown-item">Assign reviewers to selected jobs</a>#}
-                            {#                            <div class="dropdown-divider"></div>#}
-                            {#                            <a href="#" class="dropdown-item text-danger">Delete selected jobs</a>#}
+            {% if user.is_employer %}
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend be-addon">
+                            <button tabindex="-1" type="button" class="btn btn-secondary">Select an action</button>
+                            <button tabindex="-1" data-toggle="dropdown" type="button"
+                                    class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                                    aria-expanded="false"><span class="sr-only">Toggle Dropdown</span></button>
+                            <div class="dropdown-menu" x-placement="bottom-start"
+                                 style="position: absolute; transform: translate3d(99px, 41px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                <a href="javascript:void(0);" class="dropdown-item" onclick="move_group();">Move
+                                    selected
+                                    jobs to another
+                                    group</a>
+                                {#                            <a href="#" class="dropdown-item">Assign reviewers to selected jobs</a>#}
+                                {#                            <div class="dropdown-divider"></div>#}
+                                {#                            <a href="#" class="dropdown-item text-danger">Delete selected jobs</a>#}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
             <div class="card-body">
                 {#            <div class="row">#}
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -81,7 +84,9 @@
                             <tbody>
                             {% for job in jobs %}
                                 <tr>
-                                    <td></td>
+                                    {% if user.is_employer %}
+                                        <td></td>
+                                    {% endif %}
                                     <td>{{ job.id }}</td>
                                     <td><a href="{{ job.get_absolute_url }}"
                                            target="_blank">{{ job.get_absolute_url }}</a>
@@ -106,8 +111,10 @@
                                                         class="fa fa-people-carry"></i></a>
                                             {% endif %}
                                         </td>
+                                    {% elif not user.is_employer %}
+                                        <td><p class="text-primary">None</p></td>
                                     {% else %}
-                                        <td><p class="text-success">Completed</p> </td>
+                                        <td><p class="text-success">Completed</p></td>
                                     {% endif %}
                                 </tr>
                             {% endfor %}
