@@ -1,6 +1,6 @@
 from django.urls import path
 from vatic.views import IndexView, VATICDownloadView, AddJobGroupView, DetailJobGroupView, JobView, InvitationView, \
-    ReviewerInviteView, ReviewJobView
+    ReviewerInviteView, ReviewJobView, MoveItemsToAnotherGroupView
 from vatic.irvine import VATICJobView, VATICBoxesForJobView, VATICSaveJobView, VATICValidateJobView
 
 
@@ -17,4 +17,5 @@ urlpatterns = [
     path('review/', ReviewJobView.as_view(), name='review'),
     path('notify/', InvitationView.as_view(), name='invitations'),
     path('invite/', ReviewerInviteView.as_view(), name='invite_reviewer'),
+    path('group/move/', MoveItemsToAnotherGroupView.as_view(), name='move_to_another_group')
 ]

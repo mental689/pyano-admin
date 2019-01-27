@@ -1,0 +1,98 @@
+{% extends 'employer/index.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block custom_css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+{% endblock %}
+
+{% block page_header %}
+    Move items to a new group
+{% endblock %}
+
+{% block body_content %}
+    {% if not error %}
+        <div class="card">
+            <h5 class="card-header">Selected items</h5>
+            <h6 class="card-header">
+                <ul>
+                    <li>Please review carefully the below items before moving.
+                    </li>
+                </ul>
+            </h6>
+            <form method="post" action="/vatic/group/move/">
+            {% csrf_token %}
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="input-select">First, select the group to move to</label>
+                        <select class="form-control" id="input-select" name="group_id">
+                            {% for g in groups %}
+                                <option value="{{ g.id }}">{{ g.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {#            <div class="row">#}
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered first" id="vatics">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Link</th>
+                                    <th>Created at</th>
+                                    <th>P</th>
+                                    <th>PB</th>
+                                    <th>CB</th>
+                                    <th>T</th>
+                                    <th>A</th>
+                                    <th>R</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for job in jobs %}
+                                    <tr>
+                                        <td>{{ job.id }}</td>
+                                        <td><a href="{{ job.get_absolute_url }}"
+                                               target="_blank">{{ job.get_absolute_url }}</a>
+                                        </td>
+                                        <td>{{ job.created_at }}</td>
+                                        <td>
+                                            {{ group.cost }}
+                                        </td>
+                                        <td>{{ job.segment.video.perobjectbonus }}</td>
+                                        <td>{{ job.segment.video.completionbonus }}</td>
+                                        <td>{{ job.num_paths }}</td>
+                                        <td>{{ job.solutions.count }}</td>
+                                        <td>{{ job.assignments.count }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <input type="hidden" name="idx" value="{{ idx }}">
+                <input type="submit" value="Move" class="btn btn-primary">
+                </div>
+            </form>
+            {#            </div>#}
+        </div>
+    {% else %}
+        <div class="alert alert-danger" role="alert">
+            You cannot access this page due to {{ error }}.
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    <script>
+        var vatic = null;
+        var selected_idx = {};
+        $(document).ready(function () {
+            vatic = $('#vatics').DataTable({
+                order: [[1, 'asc']]
+            });
+        });
+    </script>
+{% endblock %}

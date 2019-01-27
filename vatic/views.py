@@ -21,9 +21,8 @@ from worker.models import *
 from glob import glob
 import uuid
 
-
-DOWNLOAD_DIR='{}/static/videos'.format(settings.BASE_DIR)
-FRAME_DIR='{}/static/frames'.format(settings.BASE_DIR)
+DOWNLOAD_DIR = '{}/static/videos'.format(settings.BASE_DIR)
+FRAME_DIR = '{}/static/frames'.format(settings.BASE_DIR)
 
 
 class IndexView(LoginRequiredMixin, View):
@@ -65,22 +64,23 @@ class VATICDownloadView(LoginRequiredMixin, View):
             logger.debug(e)
             return render(request, template_name=self.template_name, context={'error': 'Download error.'})
         try:
-            files = glob(DOWNLOAD_DIR+'/' + video.vid + '.*')
+            files = glob(DOWNLOAD_DIR + '/' + video.vid + '.*')
             extractor = Extractor(video_path=files[0],
-                              output_path=os.path.join(FRAME_DIR, '{}'.format(video.vid)),
-                              width=width, height=height, no_resize=noresize)
+                                  output_path=os.path.join(FRAME_DIR, '{}'.format(video.vid)),
+                                  width=width, height=height, no_resize=noresize)
             extractor()
         except Exception as e:
             logger.debug(e)
             return render(request, template_name=self.template_name, context={'error': 'Frame extraction error.'})
         try:
             loader = Loader(location=os.path.join(FRAME_DIR, '{}'.format(video.vid)),
-                        labels=labels.split(','), pyano_video_id=videoID, length=length)
+                            labels=labels.split(','), pyano_video_id=videoID, length=length)
             group = JobGroup.objects.filter(id=groupId).first()
             loader(group=group)
         except Exception as e:
             logger.debug(e)
-            return render(request, template_name=self.template_name, context={'error': 'Segment loading error. {}'.format(e)})
+            return render(request, template_name=self.template_name,
+                          context={'error': 'Segment loading error. {}'.format(e)})
         return render(request, template_name=self.template_name, context={})
 
 
@@ -110,7 +110,7 @@ class DetailJobGroupView(LoginRequiredMixin, View):
         group = JobGroup.objects.filter(id=id).first()
         if group is None:
             return render(request, template_name=self.template_name, context={'status': 400})
-        jobs = group.jobs.filter(completed=False).annotate(num_paths=Count('solutions__paths'))
+        jobs = group.jobs.annotate(num_paths=Count('solutions__paths'))
         return render(request, template_name=self.template_name, context={'jobs': jobs, 'group': group})
 
 
@@ -118,13 +118,13 @@ class JobView(LoginRequiredMixin, View):
     template_name = 'vatic/index.html'
 
     def get(self, request, *args, **kwargs):
-        id = request.GET.get('id',None)
+        id = request.GET.get('id', None)
         if id is None:
             return redirect(to='/')
         job = vatic_models.Job.objects.filter(id=id).first()
         if job is None:
             return redirect(to='/')
-        return render(request, template_name=self.template_name, context={'job':job, 'id': id})
+        return render(request, template_name=self.template_name, context={'job': job, 'id': id})
 
 
 class ReviewJobView(LoginRequiredMixin, View):
@@ -134,7 +134,7 @@ class ReviewJobView(LoginRequiredMixin, View):
     template_name = 'vatic/review.html'
 
     def get(self, request, *args, **kwargs):
-        id = request.GET.get('id',None)
+        id = request.GET.get('id', None)
         if id is None:
             return redirect(to='/')
         reviewer = Reviewer.objects.filter(user=request.user, vatic_assignments__job__id=id).first()
@@ -144,7 +144,7 @@ class ReviewJobView(LoginRequiredMixin, View):
         job = vatic_models.Job.objects.filter(id=id).first()
         if job is None:
             return redirect(to='/')
-        is_owner = True # whether if the job is owned by the owner.
+        is_owner = True  # whether if the job is owned by the owner.
         if employer is not None:
             job = vatic_models.Job.objects.filter(id=id, group__parent__topic__owner=employer).first()
             if job is None:
@@ -154,7 +154,7 @@ class ReviewJobView(LoginRequiredMixin, View):
         # logger.info(job.group.parent.topic.owner)
         form = CommentForm()
         meta_comment = Comment.objects.filter(job=job).first()
-        return render(request, template_name=self.template_name, context={'job':job, 'id': id,
+        return render(request, template_name=self.template_name, context={'job': job, 'id': id,
                                                                           'form': form, "is_owner": is_owner,
                                                                           'meta_comment': meta_comment})
 
@@ -172,7 +172,7 @@ class ReviewJobView(LoginRequiredMixin, View):
                 form.instance.reviewer = employer
                 form.instance.job = job
                 if form.instance.score > 5:
-                    job.completed = True # accepted job is marked as completed. Weak-accepted works and below will be considered further.
+                    job.completed = True  # accepted job is marked as completed. Weak-accepted works and below will be considered further.
                     job.save()
                 if form.is_valid():
                     form.save()
@@ -200,7 +200,7 @@ class InvitationView(LoginRequiredMixin, View):
         job = vatic_models.Job.objects.filter(id=id, group__parent__topic__owner__user=request.user).first()
         if job is None:
             return JsonResponse({'error': 'Jobs of this user are not found.'})
-        annotators = Annotator.objects.all() # all annotators who has not been assigned to this job
+        annotators = Annotator.objects.all()  # all annotators who has not been assigned to this job
         users = [annotator.user for annotator in annotators]
         if notification:
             try:
@@ -247,3 +247,43 @@ class ReviewerInviteView(LoginRequiredMixin, View):
             assignment = Assignment(worker=reviewer, job=job, uuid=uuid.uuid4())
             assignment.save()
         return JsonResponse({})
+
+
+class MoveItemsToAnotherGroupView(LoginRequiredMixin, View):
+    template_name = 'vatic/jobgroup/move.html'
+
+    def get(self, request, *args, **kwargs):
+        idx = request.GET.get('idx', '').split(',')
+        gid = request.GET.get('gid', None)
+        context = {}
+        if len(idx) < 1 or idx[0] == '':
+            context['error'] = 'No job is found.'
+            return render(request, template_name=self.template_name, context=context)
+        jobs = vatic_models.Job.objects.filter(id__in=idx, group__parent__topic__owner__user=request.user,
+                                               group_id=gid).annotate(num_paths=Count('solutions__paths'))
+        context['jobs'] = jobs
+        groups = vatic_models.JobGroup.objects.filter(~Q(id=gid), parent__topic__owner__user=request.user)
+        context['groups'] = groups
+        group = vatic_models.JobGroup.objects.filter(id=gid).first()
+        context['group'] = group
+        context['idx'] = request.GET.get('idx', '')
+        return render(request, template_name=self.template_name, context=context)
+
+    def post(self, request, *args, **kwargs):
+        idx = request.POST.get('idx', '').split(',')
+        gid = request.POST.get('group_id', None)
+        context = {}
+        jobs = vatic_models.Job.objects.filter(id__in=idx, group__parent__topic__owner__user=request.user).all()
+        group = vatic_models.JobGroup.objects.filter(id=gid).first()
+        if group is None:
+            context['error'] = 'Target group is not found.'
+            return render(request, template_name=self.template_name, context=context)
+        for job in jobs:
+            try:
+                job.group = group
+                job.save()
+            except Exception as e:
+                logger.debug(e)
+                context['error'] = 'Cannot move the job ID {} to group {}'.format(job.id, group.title)
+                return render(request, template_name=self.template_name, context=context)
+        return redirect(to='/vatic/group/detail/?id={}'.format(gid))
