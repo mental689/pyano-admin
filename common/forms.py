@@ -18,7 +18,7 @@ class AddUserForm(UserCreationForm):
         }
 
     @transaction.atomic
-    def save(self):
+    def save(self, commit=True):
         user = super().save(commit=True)
         user.is_employer = True
         user.is_reviewer = False

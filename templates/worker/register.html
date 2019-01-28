@@ -28,32 +28,32 @@
     <div class="form-group">
         {{ form.username.errors }}
         <input class="form-control form-control-lg" type="text" name="{{ form.username.name }}" required=""
-               placeholder="Username" value="{{ form.username.value }}" autocomplete="off">
+               placeholder="Username" value="{% if form.username.value %}{{ form.username.value }}{% endif %}" autocomplete="off">
     </div>
     <div class="form-group">
         {{ form.first_name.errors }}
         <input class="form-control form-control-lg" type="text" name="{{ form.first_name.name }}" required=""
-               placeholder="First name" value="{{ form.first_name.value }}" autocomplete="off">
+               placeholder="First name" value="{% if form.first_name.value %}{{ form.first_name.value }}{% endif %}" autocomplete="off">
     </div>
     <div class="form-group">
         {{ form.last_name.errors }}
         <input class="form-control form-control-lg" type="text" name="{{ form.last_name.name }}" required=""
-               placeholder="Last name" value="{{ form.last_name.value }}" autocomplete="off">
+               placeholder="Last name" value="{% if form.last_name.value %}{{ form.last_name.value }}{% endif %}" autocomplete="off">
     </div>
     <div class="form-group">
         {{ form.email.errors }}
         <input class="form-control form-control-lg" type="email" name="{{ form.email.name }}" required=""
-               placeholder="E-mail" value="{{ form.email.value }}" autocomplete="off">
+               placeholder="E-mail" value="{% if form.email.value %}{{ form.email.value }}{% endif %}" autocomplete="off">
     </div>
     <div class="form-group">
         {{ form.affiliation.errors }}
         <input class="form-control form-control-lg" type="text" name="{{ form.affiliation.name }}"
-               placeholder="Affiliation: University of XXX" value="{{ form.affiliation.value }}" autocomplete="off">
+               placeholder="Affiliation: University of XXX" value="{% if form.affiliation.value %}{{ form.affiliation.value }}{% endif %}" autocomplete="off">
     </div>
     <div class="form-group">
         {{ form.phone.errors }}
         <input class="form-control form-control-lg" type="text" name="{{ form.phone.name }}" required=""
-               placeholder="Phone number: +1-xxx-xxxx-xxxx" value="{{ form.phone.value }}" autocomplete="off">
+               placeholder="Phone number: +1-xxx-xxxx-xxxx" value="{% if form.phone.value %}{{ form.phone.value }}{% endif %}" autocomplete="off">
     </div>
     <div class="form-group">
         {{ form.sex.errors }}
@@ -74,7 +74,7 @@
     <div class="form-group">
         {{ form.location.errors }}
         <input class="form-control form-control-lg" type="text" name="{{ form.location.name }}"
-               placeholder="Location: Pennsylvania" value="{{ form.location.value }}" autocomplete="off">
+               placeholder="Location: Pennsylvania" value="{% if form.location.value %}{{ form.location.value }}{% endif %}" autocomplete="off">
     </div>
     <div class="form-group">
         {{ form.job_name.errors }}
@@ -87,7 +87,7 @@
     <div class="form-group">
         {{ form.birthday.errors }}
         <input class="form-control form-control-lg datepicker" type="text" name="{{ form.birthday.name }}"
-               placeholder="Your birthday" value="{{ form.birthday.value }}" autocomplete="off">
+               placeholder="Your birthday" value="{% if form.birthday.value %}{{ form.birthday.value }}{% endif %}" autocomplete="off">
     </div>
     <div class="form-group">
         <input class="form-control form-control-lg" id="pass1" name="{{ form.password1.name }}" type="password" required="" placeholder="Password">
