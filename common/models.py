@@ -43,7 +43,7 @@ class PyanoUser(AbstractUser):
     SEX = (
         (1, 'Male'),
         (2, 'Female'),
-        (3, 'Rather not to say')
+        (3, 'None of above'),
     )
     sex = models.IntegerField(choices=SEX, blank=False, default=3, help_text=_('Sex'))
     # JOB fields from https://career.berkeley.edu/InfoLab/CareerFields
