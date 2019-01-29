@@ -121,5 +121,40 @@ class Dataset(Versionable):
     current_json = models.TextField(default='')
 
 
+class InformedConsent(models.Model):
+    name = models.CharField(max_length=255, help_text=_('Name of the consent form'))
+    parent = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='informent_consents')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'Informed consent form {} - {}'.format(self.parent.id, self.id)
+
+
+class ConsentTerm(models.Model):
+    text = models.TextField(help_text=_('A term to add to the consent forms'))
+    required = models.BooleanField(default=True,
+                                   help_text=_('Whether if this term is required or is just an optional warning. If required, users must check for it.'))
+    parent = models.ForeignKey(InformedConsent, on_delete=models.CASCADE, related_name='terms')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.text
+
+
+class ConsentConfirmationStatus(models.Model):
+    worker = models.ForeignKey(PyanoUser, on_delete=models.CASCADE, related_name='consent_agreements')
+    consent = models.ForeignKey(InformedConsent, on_delete=models.CASCADE, related_name='consent_agreements')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'User {} agreed with consent {}'.format(self.worker.id, self.consent.id)
+
+    class Meta:
+        unique_together = ('worker', 'consent')
+
+
 
 
