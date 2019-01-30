@@ -203,6 +203,9 @@ class Solution(models.Model):
     def __iter__(self):
         return self.paths
 
+    def __str__(self):
+        return '{} - {}'.format(self.job.id, self.submitter.user.get_full_name())
+
 
 class Path(models.Model):
     # job = models.ForeignKey(Job, related_name='paths', on_delete=models.CASCADE)

@@ -6,6 +6,10 @@ from django.utils.timezone import now, timedelta
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import *
 from django_countries.fields import CountryField
+<<<<<<< HEAD
+=======
+# from birthday.fields import BirthdayField
+>>>>>>> cedc59d31125870103a8a2dd1da3905643585c84
 from tinymce.models import HTMLField
 # Create your models here.
 
