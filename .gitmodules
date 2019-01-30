@@ -1,3 +1,6 @@
 [submodule "thirdparty/pytorch-pwc"]
 	path = thirdparty/pytorch-pwc
 	url = https://github.com/salmedina/pytorch-pwc.git
+[submodule "thirdparty/pytorch-i3d"]
+	path = thirdparty/pytorch-i3d
+	url = https://github.com/piergiaj/pytorch-i3d.git
