@@ -6,10 +6,7 @@ from django.utils.timezone import now, timedelta
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import *
 from django_countries.fields import CountryField
-<<<<<<< HEAD
-=======
 # from birthday.fields import BirthdayField
->>>>>>> cedc59d31125870103a8a2dd1da3905643585c84
 from tinymce.models import HTMLField
 # Create your models here.
 
@@ -80,7 +77,7 @@ class PyanoUser(AbstractUser):
             return int((now().date()-self.birthday).days/365)
         else:
             return "-"
-        
+
     def get_full_name(self):
         """
         Override the get_full_name() function to ensure that only project owners and staffs can display their full names.

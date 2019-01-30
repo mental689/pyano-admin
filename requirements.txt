@@ -11,19 +11,15 @@ pinax-notifications # for notifications, annotators will be notified when owners
 pinax-templates
 opencv-contrib-python
 ffmpy
-<<<<<<< HEAD
 
 # For modeling
 numpy==1.15.4
 cupy # for PWC-NET
 torch==0.3.1
 torchvision
-Pillow
 h5py
-=======
 youtube-dl # for download youtube videos
 
 # Pyvision dependencies
 Pillow # for image
 munkres # for Hungarian matching algorithm
->>>>>>> cedc59d31125870103a8a2dd1da3905643585c84
