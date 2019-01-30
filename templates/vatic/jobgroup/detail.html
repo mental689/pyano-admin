@@ -97,8 +97,12 @@
                                     </td>
                                     <td>{{ job.segment.video.perobjectbonus }}</td>
                                     <td>{{ job.segment.video.completionbonus }}</td>
-                                    <td>{{ job.num_paths }}</td>
-                                    <td>{{ job.solutions.count }}</td>
+                                    <td>{{ job.num_paths }}/td>
+                                    <td>{% if not user.is_employer %}{{ job.solutions.count }}{% else %}
+                                        {% for s in job.solutions.all %}
+                                            {{ s.submitter.user.username }}
+                                        {% endfor %}
+                                    {% endif %}</td>
                                     <td>{{ job.assignments.count }}</td>
                                     {% if user.is_employer and not job.completed %}
                                         <td><a href="javascript:void(0);" onclick="invite({{ job.id }});"
