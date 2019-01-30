@@ -1,7 +1,7 @@
 # PYANO's dependencies
 django>=2.1.5
 git+https://github.com/mental689/django-survey.git
-Cython
+Cython==0.28.5
 django-tinymce4-lite
 django-countries
 django-comments-xtd # for comments
