@@ -12,8 +12,9 @@ opencv-contrib-python
 ffmpy
 
 # For modeling
+numpy==1.15.4
 cupy # for PWC-NET
-pytorch==0.3
+torch==0.3.1
 torchvision
 Pillow
 h5py
