@@ -10,3 +10,10 @@ pinax-notifications # for notifications, annotators will be notified when owners
 pinax-templates
 opencv-contrib-python
 ffmpy
+
+# For modeling
+cupy # for PWC-NET
+pytorch==0.3
+torchvision
+Pillow
+h5py

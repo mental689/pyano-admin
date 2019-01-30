@@ -1,0 +1,3 @@
+[submodule "thirdparty/pytorch-pwc"]
+	path = thirdparty/pytorch-pwc
+	url = https://github.com/salmedina/pytorch-pwc.git
