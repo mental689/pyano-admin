@@ -53,7 +53,7 @@ def write_command_for_jobgroup(id, output_file):
 
 if __name__ == '__main__':
     output_file = '{}/thirdparty/pytorch-pwc/{}.sh'
-    write_command_for_jobgroup(id=2, output_file=output_file)
+    write_command_for_jobgroup(id=2, output_file=output_file.format(settings.BASE_DIR, 'pwc'))
     # videos = Video.objects.all()
     # for v in tqdm(videos):
     #     write_command_pwc(v, output_file=output_file.format(settings.BASE_DIR, v.slug))
