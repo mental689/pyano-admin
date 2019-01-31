@@ -1,4 +1,6 @@
 from modeling import *
+from tqdm import tqdm
+import subprocess, shlex
 logger = logging.getLogger(__name__)
 
 
@@ -26,8 +28,22 @@ def write_command_pwc(v, output_file):
     f.close()
 
 
+def create_command_for_jobgroup(id):
+    jobs = Job.objects.filter(group_id=id, completed=True).all()
+    for job in tqdm(jobs):
+        segment = job.segment
+        v = segment.video
+        for i in range(segment.start, segment.stop-1):
+            cmd = "python3 run.py --model default --first {} --second {} --out {}.flo" \
+                .format(get_frame_path(v, i), get_frame_path(v, i + 1), get_frame_path(v, i))
+            args = shlex.split(cmd)
+            logger.debug(subprocess.run(args, capture_output=True))
+
+
+
 if __name__ == '__main__':
-    output_file = '{}/thirdparty/pytorch-pwc/{}.sh'
-    videos = Video.objects.all()
-    for v in videos:
-        write_command_pwc(v, output_file=output_file.format(settings.BASE_DIR, v.slug))
+    create_command_for_jobgroup(id=2)
+    # output_file = '{}/thirdparty/pytorch-pwc/{}.sh'
+    # videos = Video.objects.all()
+    # for v in tqdm(videos):
+    #     write_command_pwc(v, output_file=output_file.format(settings.BASE_DIR, v.slug))
