@@ -18,6 +18,7 @@ cupy # for PWC-NET
 torch==0.4.0 # IT seems like I3D and PWC-Net implementation only work well with this version
 torchvision
 git+https://github.com/ncullen93/torchsample.git
+nibabel # for torchsample
 tensorboardX
 h5py
 youtube-dl # for download youtube videos
