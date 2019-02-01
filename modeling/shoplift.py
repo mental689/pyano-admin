@@ -136,7 +136,7 @@ def make_dataset(split_file, split, mode, num_classes=len(STATES)):
         attributes = []
         for solution in solutions.all():
             for path in solution.paths.all():
-                attributes.extend(path.attributes)
+                attributes.extend(path.attributes.all())
         for attr in tqdm(attributes):
             nf = attr.frame
             nc = _STATES[attr.attribute.text]
