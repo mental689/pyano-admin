@@ -138,7 +138,7 @@ def make_dataset(split_file, split, mode, num_classes=len(STATES)):
             for path in solution.paths.all():
                 attributes.extend(path.attributes.all())
         for attr in tqdm(attributes):
-            nf = attr.frame
+            nf = attr.frame - job.segment.start
             nc = _STATES[attr.attribute.text]
             if attr.value:
                 label[nc, nf] = 1
