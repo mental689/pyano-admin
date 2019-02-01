@@ -25,7 +25,7 @@ After that, you can access the service website at [http://localhost:8000/](http:
 ### Training I3D
 
 This branch provides an example of how to train a deep learning model with the completed labels from workers.
-Thanks our workers (Annotator 1, 2, 20, 21, 22) to make this available.
+Thanks our workers (Annotator 1, 2, 20, 21, 22, and Reviewer 27) to make this available.
 
 * To extract flow features using PWC-Net (CVPR 2018), first a bash script need to be extracted.
 ```bash
