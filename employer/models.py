@@ -6,6 +6,7 @@ from versions.fields import VersionedForeignKey
 
 from common.models import *
 import survey.models as survey_models
+from worker.models import Annotator
 
 
 class Employer(models.Model):
@@ -154,6 +155,19 @@ class ConsentConfirmationStatus(models.Model):
 
     class Meta:
         unique_together = ('worker', 'consent')
+
+
+class BadWorker(models.Model):
+    worker = models.ForeignKey(PyanoUser, on_delete=models.CASCADE, related_name='bad_reputations')
+    bad_at = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="bad_workers")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'Worker {} was marked as a bad worker at project {}'.format(self.worker.id, self.bad_at_id)
+
+    class Meta:
+        unique_together = ('worker', 'bad_at')
 
 
 
