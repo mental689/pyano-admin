@@ -183,7 +183,7 @@ class ShopliftDataset(data_utl.Dataset):
 
 def get_splits(n_splits=3, group_id=2, output_dir=None):
     jobs = Job.objects.filter(group_id=group_id, completed=True).all()
-    X = [job.id for job in jobs]
+    X = np.array([job.id for job in jobs])
     y = np.arange(0, len(X))
     kf = KFold(n_splits=n_splits)
     if output_dir is not None and os.path.exists(output_dir):
