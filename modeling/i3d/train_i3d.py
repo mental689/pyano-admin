@@ -9,6 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-mode', type=str, help='rgb or flow')
 parser.add_argument('-save_model', type=str)
 parser.add_argument('-split_file', type=str)
+parser.add_argument('-train_length', type=int, default=75)
 
 args = parser.parse_args()
 
@@ -32,18 +33,18 @@ from modeling.shoplift import STATES
 
 
 def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
-        batch_size=8 * 5, save_model=''):
+        batch_size=1, save_model='', train_length=75):
     # setup dataset
     train_transforms = transforms.Compose([videotransforms.RandomCrop(224),
                                            videotransforms.RandomHorizontalFlip(),
                                            ])
     test_transforms = transforms.Compose([videotransforms.CenterCrop(224)])
 
-    dataset = Dataset(train_split, 'train', mode, train_transforms)
+    dataset = Dataset(train_split, 'train', mode, train_transforms, video_length=train_length)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=36,
                                              pin_memory=True)
 
-    val_dataset = Dataset(train_split, 'test', mode, test_transforms)
+    val_dataset = Dataset(train_split, 'test', mode, test_transforms, video_length=train_length)
     val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=True, num_workers=36,
                                                  pin_memory=True)
 
@@ -135,4 +136,4 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
 
 if __name__ == '__main__':
     # need to add argparse
-    run(mode=args.mode, train_split=args.split_file, save_model=args.save_model)
+    run(mode=args.mode, train_split=args.split_file, save_model=args.save_model, train_length=args.train_length)

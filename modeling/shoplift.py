@@ -150,12 +150,13 @@ def make_dataset(split_file, split, mode, num_classes=len(STATES)):
 
 class ShopliftDataset(data_utl.Dataset):
 
-    def __init__(self, split_file, split, mode, transforms=None):
+    def __init__(self, split_file, split, mode, transforms=None, video_length=75):
 
         self.data = make_dataset(split_file, split, mode)
         self.split_file = split_file
         self.transforms = transforms
         self.mode = mode
+        self.length = video_length
         # self.save_dir = save_dir
 
     def __getitem__(self, index):
@@ -168,10 +169,11 @@ class ShopliftDataset(data_utl.Dataset):
         """
         job, label, nf = self.data[index]
         v = job.segment.video
+        start = np.random.randint(low=0, high=nf-self.length)
         if self.mode == 'rgb':
-            imgs = load_rgb_frames(v, 0, nf)
+            imgs = load_rgb_frames(v, start, self.length)
         else:
-            imgs = load_flow_frames(v, 0, nf)
+            imgs = load_flow_frames(v, start, self.length)
 
         imgs = self.transforms(imgs)
 
