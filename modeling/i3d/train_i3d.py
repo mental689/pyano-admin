@@ -2,7 +2,6 @@ import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"]='0,1,2,3'
-import sys
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -17,14 +16,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.optim import lr_scheduler
 from torch.autograd import Variable
 
-import torchvision
-from torchvision import datasets, transforms
+from torchvision import transforms
+from torchsample.callbacks import EarlyStopping
+from tensorboardX import SummaryWriter
 from modeling.i3d import videotransforms
-
-import numpy as np
 
 from modeling.i3d.pytorch_i3d import InceptionI3d
 
@@ -66,6 +63,8 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
     lr = init_lr
     optimizer = optim.SGD(i3d.parameters(), lr=lr, momentum=0.9, weight_decay=0.0000001)
     lr_sched = optim.lr_scheduler.MultiStepLR(optimizer, [300, 1000])
+    callbacks = [EarlyStopping(monitor='val_tot_loss', patience=5)]
+    i3d.set_callbacks(callbacks)
 
     num_steps_per_update = 4  # accum gradient
     steps = 0
