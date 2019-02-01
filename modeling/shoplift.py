@@ -193,9 +193,9 @@ def get_splits(n_splits=3, group_id=2, output_dir=None):
                 data = {}
                 X_train, X_test = X[train_index], X[test_index]
                 for id in X_train:
-                    data[id] = {'subset': 'train'}
+                    data[str(id)] = {'subset': 'train'}
                 for id in X_test:
-                    data[id] = {'subset': 'test'}
+                    data[str(id)] = {'subset': 'test'}
                 json.dump(data, f)
             f.close()
             i += 1
