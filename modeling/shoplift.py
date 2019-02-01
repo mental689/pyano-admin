@@ -170,6 +170,7 @@ class ShopliftDataset(data_utl.Dataset):
         job, label, nf = self.data[index]
         v = job.segment.video
         start = np.random.randint(low=0, high=nf-self.length)
+        label = label[:, start:start + self.length]
         if self.mode == 'rgb':
             imgs = load_rgb_frames(v, start, self.length)
         else:

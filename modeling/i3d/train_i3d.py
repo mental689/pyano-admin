@@ -91,7 +91,7 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
             for data in dataloaders[phase]:
                 num_iter += 1
                 # get the inputs
-                inputs, labels = data
+                inputs, labels, _ = data
 
                 # wrap them in Variable
                 inputs = Variable(inputs.cuda())
