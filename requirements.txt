@@ -19,6 +19,9 @@ torch==1.0.0
 torchvision
 h5py
 youtube-dl # for download youtube videos
+scikit-learn
+scipy
+scikit-image
 
 # Pyvision dependencies
 Pillow # for image
