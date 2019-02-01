@@ -15,13 +15,14 @@ ffmpy
 # For modeling
 numpy==1.15.4
 cupy # for PWC-NET
-torch==1.0.0
+torch==0.4.0 # IT seems like I3D and PWC-Net implementation only work well with this version
 torchvision
+git+https://github.com/ncullen93/torchsample.git
 h5py
 youtube-dl # for download youtube videos
-scikit-learn
+scikit-learn==0.20.2
 scipy
-scikit-image
+scikit-image==0.14.2
 
 # Pyvision dependencies
 Pillow # for image
