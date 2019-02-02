@@ -79,3 +79,8 @@ Step 15/64000.0
 ...
 ```
 **Note**: Depends on how hard-working your workers are, the training can go well or overfit after several steps.
+
+
+### Workflow of this example
+
+![PYANO_example](./static/images/modeling.png)
