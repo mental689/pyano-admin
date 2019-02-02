@@ -237,7 +237,7 @@ class Network(torch.nn.Module):
 
 		self.moduleRefiner = Refiner()
 
-		self.load_state_dict(torch.load('./network-' + model_name + '.pytorch'))
+		self.load_state_dict(torch.load('./thirdparty/pytorch-pwc/network-' + model_name + '.pytorch'))
 
 	def forward(self, tensorFirst, tensorSecond):
 		tensorFirst = self.moduleExtractor(tensorFirst)
@@ -296,9 +296,9 @@ def estimate(arguments_strModel, tensorFirst, tensorSecond):
 
 def process_image_pair(strModel, strFirst, strSecond, strOut):
 	if os.path.exists(strOut):
-		logger.debug('{} existed!'.format(strOut))
+		logger.info('{} existed!'.format(strOut))
 		return
-	logger.debug('Running with {} and {}'.format(strFirst, strSecond))
+	logger.info('Running with {} and {}'.format(strFirst, strSecond))
 	tensorFirst = torch.FloatTensor(
 		numpy.array(PIL.Image.open(strFirst))[:, :, ::-1].transpose(2, 0, 1).astype(numpy.float32) * (
 					1.0 / 255.0))
