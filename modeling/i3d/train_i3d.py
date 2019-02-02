@@ -58,8 +58,6 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
     i3d.replace_logits(len(STATES))
     # i3d.load_state_dict(torch.load('/ssd/models/000920.pt'))
     i3d.cuda()
-    # callbacks = [EarlyStopping(monitor='val_tot_loss', patience=5)]
-    # i3d.set_callbacks(callbacks)
     i3d = nn.DataParallel(i3d)
 
     lr = init_lr

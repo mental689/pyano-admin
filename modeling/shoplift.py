@@ -174,7 +174,7 @@ class ShopliftDataset(data_utl.Dataset):
         if self.mode == 'rgb':
             imgs = load_rgb_frames(v, start, self.length)
         else:
-            imgs = load_flow_frames(v, start, self.length)
+            imgs = load_flow_frames(v, start, self.length - 1)
 
         imgs = self.transforms(imgs)
 
