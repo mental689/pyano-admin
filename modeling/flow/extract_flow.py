@@ -325,6 +325,7 @@ def extract_jobgroup(id, strModel):
 			process_image_pair(strModel, strFirst=get_frame_path(v, i),
 							   strSecond=get_frame_path(v, i+1),
 							   strOut='{}.flo'.format(get_frame_path(v,i)))
+			print('{}.flo'.format(get_frame_path(v,i)))
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Calculates optical flow through PWC-net')

@@ -27,6 +27,7 @@ from modeling.i3d.pytorch_i3d import InceptionI3d
 
 from modeling.shoplift import ShopliftDataset as Dataset
 from modeling.shoplift import STATES
+from modeling import *
 
 
 def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
@@ -66,6 +67,7 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
 
     num_steps_per_update = 4  # accum gradient
     steps = 0
+    summary = SummaryWriter(log_dir=os.path.join(settings.BASE_DIR, 'log'))
     # train it
     while steps < max_steps:  # for epoch in range(num_epochs):
         print('Step {}/{}'.format(steps, max_steps))
@@ -119,6 +121,11 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
                     optimizer.zero_grad()
                     lr_sched.step()
                     if steps % 10 == 0:
+                        summary.add_scalars('Train losses', {
+                            'Localization loss': tot_loc_loss,
+                            'Classification loss': tot_cls_loss,
+                            'Total loss': tot_loss
+                        }, steps)
                         print('{} Loc Loss: {:.4f} Cls Loss: {:.4f} Tot Loss: {:.4f}'.format(phase, tot_loc_loss / (
                                 10 * num_steps_per_update), tot_cls_loss / (10 * num_steps_per_update),
                                                                                              tot_loss / 10))
@@ -126,6 +133,11 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
                         torch.save(i3d.module.state_dict(), save_model + str(steps).zfill(6) + '.pt')
                         tot_loss = tot_loc_loss = tot_cls_loss = 0.
             if phase == 'val':
+                summary.add_scalars('Val losses', {
+                    'Localization loss': tot_loc_loss,
+                    'Classification loss': tot_cls_loss,
+                    'Total loss': tot_loss
+                }, num_iter)
                 print('{} Loc Loss: {:.4f} Cls Loss: {:.4f} Tot Loss: {:.4f}'.format(phase, tot_loc_loss / num_iter,
                                                                                      tot_cls_loss / num_iter, (
                                                                                              tot_loss * num_steps_per_update) / num_iter))
