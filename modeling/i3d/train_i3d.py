@@ -121,7 +121,7 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
                     optimizer.zero_grad()
                     lr_sched.step()
                     if steps % 10 == 0:
-                        summary.add_scalars('Train losses', {
+                        summary.add_scalars('Train losses {}/{}'.format(mode, train_length), {
                             'Localization loss': tot_loc_loss,
                             'Classification loss': tot_cls_loss,
                             'Total loss': tot_loss
@@ -133,7 +133,7 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
                         torch.save(i3d.module.state_dict(), save_model + str(steps).zfill(6) + '.pt')
                         tot_loss = tot_loc_loss = tot_cls_loss = 0.
             if phase == 'val':
-                summary.add_scalars('Val losses', {
+                summary.add_scalars('Val losses {}/{}'.format(mode, train_length), {
                     'Localization loss': tot_loc_loss,
                     'Classification loss': tot_cls_loss,
                     'Total loss': tot_loss
