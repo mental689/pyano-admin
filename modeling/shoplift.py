@@ -185,8 +185,8 @@ class ShopliftDataset(data_utl.Dataset):
         return len(self.data)
 
 
-def get_splits(n_splits=3, group_id=2, output_dir=None):
-    jobs = Job.objects.filter(group_id=group_id, completed=True).all()
+def get_splits(n_splits=3, group_id=[2], output_dir=None):
+    jobs = Job.objects.filter(group_id__in=group_id, completed=True).all()
     X = np.array([job.id for job in jobs])
     y = np.arange(0, len(X))
     kf = KFold(n_splits=n_splits)

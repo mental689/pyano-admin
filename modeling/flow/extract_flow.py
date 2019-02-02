@@ -316,8 +316,8 @@ def process_image_pair(strModel, strFirst, strSecond, strOut):
 
 	fileOutput.close()
 
-def extract_jobgroup(id, strModel):
-	jobs = Job.objects.filter(group_id=id, completed=True).all()
+def extract_jobgroup(id=[2], strModel='default'):
+	jobs = Job.objects.filter(group_id__in=id, completed=True).all()
 	for job in tqdm(jobs):
 		segment = job.segment
 		v = segment.video
