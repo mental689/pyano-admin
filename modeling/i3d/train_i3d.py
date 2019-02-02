@@ -137,7 +137,7 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
                     'Localization loss': tot_loc_loss,
                     'Classification loss': tot_cls_loss,
                     'Total loss': tot_loss
-                }, num_iter)
+                }, steps)
                 print('{} Loc Loss: {:.4f} Cls Loss: {:.4f} Tot Loss: {:.4f}'.format(phase, tot_loc_loss / num_iter,
                                                                                      tot_cls_loss / num_iter, (
                                                                                              tot_loss * num_steps_per_update) / num_iter))
