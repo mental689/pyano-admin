@@ -46,7 +46,7 @@ def run(init_lr=0.1, max_steps=64e3, mode='rgb', train_split='fold_1.json',
                                                  pin_memory=True)
 
     dataloaders = {'train': dataloader, 'val': val_dataloader}
-    datasets = {'train': dataset, 'val': val_dataset}
+    # datasets = {'train': dataset, 'val': val_dataset}
 
     # setup the model
     if mode == 'flow':

@@ -126,8 +126,8 @@ def make_dataset(split_file, split, mode, num_classes=len(STATES)):
         if job is None:
             continue
         num_frames = job.segment.stop - job.segment.start + 1
-        # if mode == 'flow':
-        #     num_frames = num_frames - 1
+        if mode == 'flow':
+            num_frames = num_frames - 1
 
         label = np.zeros((num_classes, num_frames), np.float32)
 
@@ -152,7 +152,7 @@ class ShopliftDataset(data_utl.Dataset):
 
     def __init__(self, split_file, split, mode, transforms=None, video_length=75):
 
-        self.data = make_dataset(split_file, split, mode)
+        self.data = make_dataset(split_file, split, mode, len(STATES))
         self.split_file = split_file
         self.transforms = transforms
         self.mode = mode
@@ -170,11 +170,12 @@ class ShopliftDataset(data_utl.Dataset):
         job, label, nf = self.data[index]
         v = job.segment.video
         start = np.random.randint(low=0, high=nf-self.length)
-        label = label[:, start:start + self.length]
         if self.mode == 'rgb':
             imgs = load_rgb_frames(v, start, self.length)
+            label = label[:, start:start + self.length]
         else:
             imgs = load_flow_frames(v, start, self.length)
+            label = label[:, start:start + self.length - 1]
 
         imgs = self.transforms(imgs)
 
