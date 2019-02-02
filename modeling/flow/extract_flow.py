@@ -7,6 +7,7 @@ import getopt
 import math
 import numpy
 from modeling import *
+logger = logging.getLogger(__name__)
 from modeling.model import *
 from tqdm import tqdm
 import PIL
@@ -294,6 +295,10 @@ def estimate(arguments_strModel, tensorFirst, tensorSecond):
 ##########################################################
 
 def process_image_pair(strModel, strFirst, strSecond, strOut):
+	if os.path.exists(strOut):
+		logger.debug('{} existed!'.format(strOut))
+		return
+	logger.debug('Running with {} and {}'.format(strFirst, strSecond))
 	tensorFirst = torch.FloatTensor(
 		numpy.array(PIL.Image.open(strFirst))[:, :, ::-1].transpose(2, 0, 1).astype(numpy.float32) * (
 					1.0 / 255.0))
@@ -313,7 +318,6 @@ def process_image_pair(strModel, strFirst, strSecond, strOut):
 
 def extract_jobgroup(id, strModel):
 	jobs = Job.objects.filter(group_id=id, completed=True).all()
-	cmds = []
 	for job in tqdm(jobs):
 		segment = job.segment
 		v = segment.video
