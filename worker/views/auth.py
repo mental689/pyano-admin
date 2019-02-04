@@ -7,6 +7,7 @@ from django_comments_xtd.models import Comment
 from django.db.models import Count, Sum, Q, Avg
 from django.db.models.functions import TruncDate
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.timezone import now, timedelta
 from survey import models as survey_models
 
 from common.forms import AddWorkerForm

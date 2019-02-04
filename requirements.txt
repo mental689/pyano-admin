@@ -1,5 +1,5 @@
 django>=2.1.5
-git+https://github.com/mental689/django-survey.git
+git+https://github.com/mental689/django-survey.git#egg=django_survey_and_report
 Cython
 django-tinymce4-lite
 django-countries
@@ -10,3 +10,6 @@ pinax-notifications # for notifications, annotators will be notified when owners
 pinax-templates
 opencv-contrib-python
 ffmpy
+munkres
+Pillow
+youtube-dl

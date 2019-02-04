@@ -7,6 +7,7 @@ from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django_comments_xtd.models import Comment
 from survey.models import Response
+from django.utils.timezone import now, timedelta
 from survey import models as survey_models
 
 from common.forms import AddUserForm

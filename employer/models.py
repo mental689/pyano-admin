@@ -4,7 +4,7 @@ from tinymce.models import HTMLField
 from versions.models import Versionable
 from versions.fields import VersionedForeignKey
 
-from common.models import *
+from common.models import PyanoUser
 import survey.models as survey_models
 from worker.models import Annotator
 

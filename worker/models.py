@@ -1,7 +1,6 @@
 from django.db import models
 
-from common.models import *
-from employer.models import *
+from common.models import PyanoUser
 from survey.models import Video, Survey
 
 # Create your models here.
