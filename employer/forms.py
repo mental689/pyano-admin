@@ -23,8 +23,8 @@ class AddSurveyForm(ModelForm):
         fields = ['name', 'need_logged_user', 'display_by_question', 'randomize_questions']
 
     @transaction.atomic
-    def save(self):
+    def save(self, commit=True):
         self.instance.is_published = True
         self.instance.description = ''
-        survey = super().save(commit=True)
+        survey = super().save(commit=commit)
         return survey

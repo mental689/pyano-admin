@@ -4,9 +4,11 @@ from django.db.models import Count, Sum
 from django.db.models.functions import TruncDate
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.timezone import now, timedelta
 from django.views import View
 
 from employer.models import *
+from common.models import SystemSetting
 from employer.views.jobs import daterange
 from search.models import KeywordSearch, QBESearch
 
