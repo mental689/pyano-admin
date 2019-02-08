@@ -1,9 +1,11 @@
 import logging
+logger = logging.getLogger(__name__)
 
 import vision
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.db.models import Q
 from survey import models as surveys
 from vision.track.interpolation import LinearFill
 
@@ -202,6 +204,16 @@ class Solution(models.Model):
 
     def __iter__(self):
         return self.paths
+
+
+class ZombieSolution(models.Model):
+    """
+    Escaped workers often leave with incomplete (zombies) solutions.
+    This class is used to model the zombies.
+    """
+    solution = models.OneToOneField(Solution, on_delete=models.CASCADE, related_name='zoombie_identity', unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Path(models.Model):
